@@ -15,12 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\MySuper3DApp.cpp">
-      <Filter>Resource Files</Filter>
+    <ClCompile Include="MySuper3DApp.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Shaders\MyVeryFirstShader.hlsl">
+    <FxCompile Include="Shaders\MyVeryFirstShader.hlsl">
       <Filter>Header Files</Filter>
     </FxCompile>
   </ItemGroup>

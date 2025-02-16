@@ -152,7 +152,7 @@ int main()
 	// Compile vertex shader
 	ID3DBlob* vertexBC = nullptr;
 	ID3DBlob* errorVertexCode = nullptr;
-	res = D3DCompileFromFile(L"../Shaders/MyVeryFirstShader.hlsl",
+	res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
 		nullptr /*macros*/,
 		nullptr /*include*/,
 		"VSMain",
@@ -183,7 +183,7 @@ int main()
 
 	ID3DBlob* pixelBC;
 	ID3DBlob* errorPixelCode;
-	res = D3DCompileFromFile(L"../Shaders/MyVeryFirstShader.hlsl",
+	res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
 		Shader_Macros /*macros*/,
 		nullptr /*include*/,
 		"PSMain",
