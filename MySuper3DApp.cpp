@@ -43,10 +43,12 @@ int main()
 	LPCWSTR applicationName = L"My3DApp";
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
 
+
+	// 1. Настройка окна
+
 #pragma region Window init
 
-	// Настройка окна
-    WNDCLASSEX wc;
+	WNDCLASSEX wc;
     
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc = WndProc;
@@ -63,7 +65,6 @@ int main()
 
 	// Register the window class.
 	RegisterClassEx(&wc);
-
 
 	auto screenWidth = 800;
 	auto screenHeight = 800;
@@ -91,9 +92,13 @@ int main()
 
 #pragma endregion Window init
 
-
+	// Describes the set of features targeted by a Direct3D device
+	// D3D_FEATURE_LEVEL_11_1 - Targets features supported by Direct3D 11.1, including shader model 5 and logical blend operations
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_1 };
 
+	// 2. Create Device with the SwapChain
+
+	// Описание swapChain
 	DXGI_SWAP_CHAIN_DESC swapDesc = {};
 	swapDesc.BufferCount = 2;
 	swapDesc.BufferDesc.Width = screenWidth;
@@ -111,11 +116,12 @@ int main()
 	swapDesc.SampleDesc.Count = 1;
 	swapDesc.SampleDesc.Quality = 0;
 
-
+	// device
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
 	ID3D11DeviceContext* context;
 	IDXGISwapChain* swapChain;
 
+	// Непосредственно создание
 	auto res = D3D11CreateDeviceAndSwapChain(
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
@@ -135,12 +141,15 @@ int main()
 		// Well, that was unexpected
 	}
 
+	// 3. Get the BackBuffer and create RTV
 	ID3D11Texture2D* backTex;
 	ID3D11RenderTargetView* rtv;
 	res = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backTex);	// __uuidof(ID3D11Texture2D)
 	res = device->CreateRenderTargetView(backTex, nullptr, &rtv);
 
+	// 4. Compile the shaders
 
+	// Compile vertex shader
 	ID3DBlob* vertexBC = nullptr;
 	ID3DBlob* errorVertexCode = nullptr;
 	res = D3DCompileFromFile(L"../Shaders/MyVeryFirstShader.hlsl",
@@ -169,12 +178,23 @@ int main()
 		return 0;
 	}
 
+	// Compile pixel shader 
 	D3D_SHADER_MACRO Shader_Macros[] = { "TEST", "1", "TCOLOR", "float4(0.0f, 1.0f, 0.0f, 1.0f)", nullptr, nullptr };
 
 	ID3DBlob* pixelBC;
 	ID3DBlob* errorPixelCode;
-	res = D3DCompileFromFile(L"../Shaders/MyVeryFirstShader.hlsl", Shader_Macros /*macros*/, nullptr /*include*/, "PSMain", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &pixelBC, &errorPixelCode);
-
+	res = D3DCompileFromFile(L"../Shaders/MyVeryFirstShader.hlsl",
+		Shader_Macros /*macros*/,
+		nullptr /*include*/,
+		"PSMain",
+		"ps_5_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		&pixelBC,
+		&errorPixelCode);
+	
+	// A vertex-shader/pixel-shader interface manages an executable program (a vertex/pixel shader) that controls the vertex-shader/pixel-shader stage
+	// ? Интерфейс для управления шеёдерами?
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
 	device->CreateVertexShader(
@@ -187,6 +207,9 @@ int main()
 		pixelBC->GetBufferSize(),
 		nullptr, &pixelShader);
 
+	// 5. Create Input Layout for IA Stage
+
+	// Описываем какие элементы будут на входе
 	D3D11_INPUT_ELEMENT_DESC inputElements[] = {
 		D3D11_INPUT_ELEMENT_DESC {
 			"POSITION",
@@ -206,6 +229,7 @@ int main()
 			0}
 	};
 
+	// Непосредственно Input Layout
 	ID3D11InputLayout* layout;
 	device->CreateInputLayout(
 		inputElements,
@@ -214,14 +238,17 @@ int main()
 		vertexBC->GetBufferSize(),
 		&layout);
 
+	// 6. Create Set of Points
 	DirectX::XMFLOAT4 points[8] = {
 		DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
 		DirectX::XMFLOAT4(-0.5f, -0.5f, 0.5f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
 		DirectX::XMFLOAT4(0.5f, -0.5f, 0.5f, 1.0f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
 		DirectX::XMFLOAT4(-0.5f, 0.5f, 0.5f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-	};
+	};	
 
+	// 7. Create Vertex and Index Buffers
 
+	// Describe vertex buffer
 	D3D11_BUFFER_DESC vertexBufDesc = {};
 	vertexBufDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -230,35 +257,44 @@ int main()
 	vertexBufDesc.StructureByteStride = 0;
 	vertexBufDesc.ByteWidth = sizeof(DirectX::XMFLOAT4) * std::size(points);
 
+	// Specify data for initializing a subresource
 	D3D11_SUBRESOURCE_DATA vertexData = {};
 	vertexData.pSysMem = points;
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
+	// Create vb
 	ID3D11Buffer* vb;
 	device->CreateBuffer(&vertexBufDesc, &vertexData, &vb);
 
-	int indeces[] = { 0,1,2, 1,0,3 };
+	// Create Set of indices
+	int indices[] = { 0,1,2, 1,0,3 };
+
+	// Describe index buffer
 	D3D11_BUFFER_DESC indexBufDesc = {};
 	indexBufDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufDesc.CPUAccessFlags = 0;
 	indexBufDesc.MiscFlags = 0;
 	indexBufDesc.StructureByteStride = 0;
-	indexBufDesc.ByteWidth = sizeof(int) * std::size(indeces);
+	indexBufDesc.ByteWidth = sizeof(int) * std::size(indices);
 
+	// Specify data for initializing a subresource 
 	D3D11_SUBRESOURCE_DATA indexData = {};
-	indexData.pSysMem = indeces;
+	indexData.pSysMem = indices;
 	indexData.SysMemPitch = 0;
 	indexData.SysMemSlicePitch = 0;
 
+	// Create ib
 	ID3D11Buffer* ib;
 	device->CreateBuffer(&indexBufDesc, &indexData, &ib);
+
+	// 8. Setup the IA stage
 
 	UINT strides[] = { 32 };
 	UINT offsets[] = { 0 };
 
-
+	// 10. Setup Rasterizer Stage and Viewport
 
 	CD3D11_RASTERIZER_DESC rastDesc = {};
 	rastDesc.CullMode = D3D11_CULL_NONE;
@@ -269,14 +305,14 @@ int main()
 
 	context->RSSetState(rastState);
 
+	// 12. Create Window Message Loop
 
-
-
+	// Timer for changing color and measure FPS
 	std::chrono::time_point<std::chrono::steady_clock> PrevTime = std::chrono::steady_clock::now();
 	float totalTime = 0;
 	unsigned int frameCount = 0;
 
-
+	// For handling messages (including exit)
 	MSG msg = {};
 	bool isExitRequested = false;
 	while (!isExitRequested) {
@@ -290,9 +326,21 @@ int main()
 		if (msg.message == WM_QUIT) {
 			isExitRequested = true;
 		}
+		
+		// 
+		/*device->CreateVertexShader(
+			vertexBC->GetBufferPointer(),
+			vertexBC->GetBufferSize(),
+			nullptr, &vertexShader);
 
-		context->ClearState();
+		device->CreatePixelShader(
+			pixelBC->GetBufferPointer(),
+			pixelBC->GetBufferSize(),
+			nullptr, &pixelShader);*/
 
+
+		// 10. Setup Rasterizer Stage and Viewport
+		context->ClearState(); // Restore all default settings
 		context->RSSetState(rastState);
 
 		D3D11_VIEWPORT viewport = {};
@@ -305,14 +353,19 @@ int main()
 
 		context->RSSetViewports(1, &viewport);
 
+		// 8. Setup the IA stage
+
 		context->IASetInputLayout(layout);
 		context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		context->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
 		context->IASetVertexBuffers(0, 1, &vb, strides, offsets);
+
+		// 9. Set Vertex and Pixel Shaders
+
 		context->VSSetShader(vertexShader, nullptr, 0);
 		context->PSSetShader(pixelShader, nullptr, 0);
 
-
+		// For changing color and measure FPS
 		auto	curTime = std::chrono::steady_clock::now();
 		float	deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - PrevTime).count() / 1000000.0f;
 		PrevTime = curTime;
@@ -332,17 +385,27 @@ int main()
 			frameCount = 0;
 		}
 
+		// 11. Set BackBuffer for Output
 		context->OMSetRenderTargets(1, &rtv, nullptr);
 
+		// 13. At the End of While(!isExitRequested) : Clear BackBuffer
 		float color[] = { totalTime, 0.1f, 0.1f, 1.0f };
 		context->ClearRenderTargetView(rtv, color);
 
+		// 14. At the End of While (!isExitRequested): Draw the Triangle
 		context->DrawIndexed(6, 0, 0);
 
+		// зачем эта строчка? 
 		context->OMSetRenderTargets(0, nullptr, nullptr);
-
+		
+		// 15. At the End of While (!isExitRequested): Present the Result
 		swapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+
+		// 16. Clean the mess
+		/*vertexShader->Release();
+		pixelShader->Release();*/
 	}
+
 
     std::cout << "Hello World!\n";
 }
