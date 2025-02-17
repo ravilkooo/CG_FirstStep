@@ -40,7 +40,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 
 int main()
 {
-	LPCWSTR applicationName = L"My3DApp";
+	LPCWSTR applicationName = L"Framework";
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
 
 
