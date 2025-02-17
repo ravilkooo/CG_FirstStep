@@ -136,6 +136,13 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
     </FxCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DisplayWin32.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameComponent.h" />
+    <ClInclude Include="InputDevice.h" />
+    <ClInclude Include="TriangleComponent.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
