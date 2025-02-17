@@ -18,7 +18,7 @@
 #pragma comment(lib, "dxguid.lib")
 
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc_1(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
 	switch (umessage)
 	{
@@ -38,7 +38,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 }
 
 
-int main()
+int main_1()
 {
 	LPCWSTR applicationName = L"Framework";
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
@@ -51,7 +51,7 @@ int main()
 	WNDCLASSEX wc;
     
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wc.lpfnWndProc = WndProc;
+	wc.lpfnWndProc = WndProc_1;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;
@@ -394,6 +394,7 @@ int main()
 
 		// 14. At the End of While (!isExitRequested): Draw the Triangle
 		context->DrawIndexed(6, 0, 0);
+		//context->Draw(6, 0);
 
 		// зачем эта строчка? 
 		context->OMSetRenderTargets(0, nullptr, nullptr);
