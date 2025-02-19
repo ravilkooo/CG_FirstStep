@@ -1,5 +1,5 @@
-#ifndef DISPLAY_WIN_32_H
-#define DISPLAY_WIN_32_H
+#ifndef OLD_DISPLAY_WIN_32_H
+#define OLD_DISPLAY_WIN_32_H
 
 #include <windows.h>
 #include <WinUser.h>

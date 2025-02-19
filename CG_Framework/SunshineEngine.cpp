@@ -17,8 +17,8 @@
 
 int main()
 {
-	Game game(L"SunApp");
-	game.Initialize();
+	Game game = Game();
 	game.Run();
+
 	return 0;
 }
