@@ -36,13 +36,18 @@ void InputAssembler::SetIndexBuffer(ID3D11Buffer* indexBuffer)
 
 void InputAssembler::SetInputLayout()
 {
-	context->IASetInputLayout(layout);
+	context->IASetInputLayout(layout.Get());
 }
 
 
 void InputAssembler::SetInputLayout(ID3D11InputLayout* inputLayout)
 {
     context->IASetInputLayout(inputLayout);
+}
+
+void InputAssembler::Release()
+{
+	layout->Release();
 }
 
 void InputAssembler::SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY topology)

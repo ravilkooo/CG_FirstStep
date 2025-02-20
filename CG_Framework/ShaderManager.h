@@ -3,6 +3,7 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <wrl.h>
 
 #include <iostream>
 #include <string>
@@ -18,7 +19,7 @@ public:
     bool LoadPixelShader(LPCWSTR filePath, ID3D11PixelShader** pixelShader);
 
 private:
-    ID3D11Device* device;
+    Microsoft::WRL::ComPtr<ID3D11Device> device;
 };
 
 #endif // SHADERMANAGER_H

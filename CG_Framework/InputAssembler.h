@@ -17,13 +17,14 @@ public:
     void SetIndexBuffer(ID3D11Buffer* indexBuffer);
     void SetInputLayout();
     void SetInputLayout(ID3D11InputLayout* inputLayout);
+    void Release();
     void SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
 
 private:
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     ID3D11DeviceContext* context;
 
-    ID3D11InputLayout* layout;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout> layout;
 };
 
 #endif // INPUTASSEMBLER_H

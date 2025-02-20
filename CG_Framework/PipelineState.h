@@ -2,6 +2,7 @@
 #define PIPELINESTATE_H
 
 #include <d3d11.h>
+#include <wrl.h>
 
 class PipelineState
 {
@@ -15,7 +16,7 @@ public:
     void SetDepthStencilState(bool enableDepthTest = true);
 
 private:
-    ID3D11Device* device;
+    Microsoft::WRL::ComPtr<ID3D11Device> device;
     ID3D11DeviceContext* context;
 
     ID3D11RasterizerState* rasterizerState;

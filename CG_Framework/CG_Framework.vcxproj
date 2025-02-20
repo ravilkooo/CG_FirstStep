@@ -138,6 +138,7 @@
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="PipelineState.cpp" />
+    <ClCompile Include="Quad.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -146,6 +147,7 @@
     <ClCompile Include="SunshineEngine.cpp" />
     <ClCompile Include="TestFramework.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\MyVeryFirstShader.hlsl">
@@ -165,12 +167,14 @@
     <ClInclude Include="old_DisplayWin32.h" />
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="PipelineState.h" />
+    <ClInclude Include="Quad.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
