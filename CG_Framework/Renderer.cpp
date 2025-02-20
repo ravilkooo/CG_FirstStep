@@ -117,7 +117,7 @@ void Renderer::RenderScene(const Scene& scene)
 	context->ClearRenderTargetView(renderTargetView, color);
 
 
-	struct Quadic {
+	/*struct Quadic {
 		int indices[6] = { 0,1,2, 1,0,3 };
 		DirectX::XMFLOAT4 points[8] = {
 			DirectX::XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
@@ -132,10 +132,122 @@ void Renderer::RenderScene(const Scene& scene)
 		quad2.points[2 * i].x += 0.5;
 	}
 
-	Quadic quads[2] = { quad1, quad2 };
+	Quadic quads[2] = { quad1, quad2 };*/
 
-	for (size_t i = 0; i < 2; i++)
+	for (SceneNode* node : scene.nodes) {
+		ID3D11VertexShader* vertexShader = nullptr;
+		ID3D11PixelShader* pixelShader = nullptr;
+
+		ID3D11Buffer* ib;
+		ID3D11Buffer* vb;
+		ID3DBlob* vsBlob;
+
+		if (!shaderManager.LoadVertexShader(node->shaderFilePath, &vertexShader, &vsBlob))
+			std::cout << "Ujas!\n";
+		if (!shaderManager.LoadPixelShader(node->shaderFilePath, &pixelShader))
+			std::cout << "Ujas!\n";
+
+		// Input layout handler
+
+
+		// Описываем какие элементы будут на входе
+		D3D11_INPUT_ELEMENT_DESC inputElements[] = {
+			D3D11_INPUT_ELEMENT_DESC {
+				"POSITION",
+				0,
+				DXGI_FORMAT_R32G32B32A32_FLOAT,
+				0,
+				0,
+				D3D11_INPUT_PER_VERTEX_DATA,
+				0},
+			D3D11_INPUT_ELEMENT_DESC {
+				"COLOR",
+				0,
+				DXGI_FORMAT_R32G32B32A32_FLOAT,
+				0,
+				D3D11_APPEND_ALIGNED_ELEMENT,
+				D3D11_INPUT_PER_VERTEX_DATA,
+				0}
+		};
+
+		inputAssembler.CreateInputLayout(inputElements, vsBlob);
+
+		// 6. Create Set of Points
+
+		// 7. Create Vertex and Index Buffers
+
+		// Create vb
+		vb = resourceManager.CreateVertexBuffer(node->points, sizeof(DirectX::XMFLOAT4) * node->pointsNum);
+
+		// Create Set of indices
+
+		// Create ib
+		ib = resourceManager.CreateIndexBuffer(node->indices, sizeof(int) * node->indicesNum);
+
+		//pipelineState.SetRasterizerState(D3D11_CULL_NONE, D3D11_FILL_SOLID);
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		context->Map(vb, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		memcpy(mappedResource.pData, node->points, sizeof(DirectX::XMFLOAT4) * node->pointsNum);
+		context->Unmap(vb, 0);
+
+		pipelineState.SetRasterizerState(D3D11_CULL_NONE, D3D11_FILL_SOLID);
+
+		// 8. Setup the IA stage
+
+		// 10. Setup Rasterizer Stage and Viewport
+
+		D3D11_VIEWPORT viewport = {};
+		viewport.Width = static_cast<float>(screenWidth);
+		viewport.Height = static_cast<float>(screenHeight);
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+		viewport.MinDepth = 0;
+		viewport.MaxDepth = 1.0f;
+
+		context->RSSetViewports(1, &viewport);
+
+		// 8. Setup the IA stage
+
+		inputAssembler.SetInputLayout();
+		inputAssembler.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		context->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
+
+		UINT strides[] = { 32 };
+		UINT offsets[] = { 0 };
+		context->IASetVertexBuffers(0, 1, &vb, strides, offsets);
+
+		// 9. Set Vertex and Pixel Shaders
+
+		context->VSSetShader(vertexShader, nullptr, 0);
+		context->PSSetShader(pixelShader, nullptr, 0);
+
+		// 11. Set BackBuffer for Output
+		context->OMSetRenderTargets(1, &renderTargetView, nullptr);
+
+		// 14. At the End of While (!isExitRequested): Draw the Triangle
+		context->DrawIndexed(6, 0, 0);
+		//context->Draw(6, 0);
+
+		vertexShader->Release();
+		pixelShader->Release();
+
+		if (vb) vb->Release();
+		if (ib) ib->Release();
+		//inputAssembler.Release();
+	}
+	/*
+	for (size_t i = 0; i < 0; i++)
 	{
+
+		ID3D11VertexShader* vertexShader = nullptr;
+		ID3D11PixelShader* pixelShader = nullptr;
+
+		ID3D11Buffer* ib;
+		ID3D11Buffer* vb;
+		ID3DBlob* vsBlob;
+
 		if (!shaderManager.LoadVertexShader(L"./Shaders/MyVeryFirstShader.hlsl", &vertexShader, &vsBlob))
 			std::cout << "Ujas!\n";
 		if (!shaderManager.LoadPixelShader(L"./Shaders/MyVeryFirstShader.hlsl", &pixelShader))
@@ -180,14 +292,6 @@ void Renderer::RenderScene(const Scene& scene)
 
 		//pipelineState.SetRasterizerState(D3D11_CULL_NONE, D3D11_FILL_SOLID);
 
-
-		/*for (size_t i = 0; i < 4; i++)
-		{
-			auto _x = points[2 * i].x;
-			auto _y = points[2 * i].y;
-			points[2 * i].x = _x*cos(0.1 * deltaTime) - _y * sin(0.1 * deltaTime);
-			points[2 * i].y = _x*sin(0.1 * deltaTime) + _y * cos(0.1 * deltaTime);
-		}*/
 
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		context->Map(vb, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -242,7 +346,7 @@ void Renderer::RenderScene(const Scene& scene)
 
 
 	}
-
+	*/
 
 
 

@@ -15,8 +15,8 @@ public:
     void Update(float deltaTime);
     void Draw();
 
-private:
     std::vector<SceneNode*> nodes;
+private:
 };
 
 #endif // SCENE_H

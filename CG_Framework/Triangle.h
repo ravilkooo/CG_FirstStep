@@ -1,5 +1,5 @@
-#ifndef QUAD_H
-#define QUAD_H
+#ifndef TRIANGLE_H
+#define TRIANGLE_H
 
 #include "SceneNode.h"
 
@@ -9,13 +9,11 @@
 class Triangle : public SceneNode
 {
 public:
-    DirectX::XMFLOAT4 points[6];
-    
+    Triangle();
+    Triangle(DirectX::XMFLOAT4* points);
+
     void Update(float deltaTime);
     void Draw();
-
-    ID3D11Buffer* pVertexBuffer;
-    ID3D11Buffer* pIndexBuffer;
 };
 
-#endif
+#endif // TRIANGLE_H

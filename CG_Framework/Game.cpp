@@ -61,6 +61,12 @@ void Game::Initialize()
 
     timer = GameTimer();
 
+    scene = Scene();
+
+    scene.AddNode(new Quad());
+    scene.AddNode(new Quad(DirectX::XMFLOAT4(-1., -1., 0, 1), 0.3));
+    scene.AddNode(new Triangle());
+
     physEngine = PhysicsEngine();
 
     displayWindow = DisplayWindow(applicationName, hInstance, 800, 800);

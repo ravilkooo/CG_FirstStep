@@ -8,6 +8,9 @@
 #include "Renderer.h"
 #include "DisplayWindow.h"
 
+#include "Quad.h"
+#include "Triangle.h"
+
 class Game
 {
 public:

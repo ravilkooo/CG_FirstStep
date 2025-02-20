@@ -45,18 +45,11 @@ private:
     
     DisplayWindow* displayWindow;
 
-    ID3D11VertexShader* vertexShader = nullptr;
-    ID3D11PixelShader* pixelShader = nullptr;
-
     int screenWidth = 800;
     int screenHeight = 800;
 
     std::chrono::time_point<std::chrono::steady_clock> PrevTime;
     float totalTime;
-
-    ID3D11Buffer* ib;
-    ID3D11Buffer* vb;
-    ID3DBlob* vsBlob;
 
     //ID3D11InputLayout* layout;
 
