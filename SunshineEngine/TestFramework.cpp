@@ -18,7 +18,7 @@
 #pragma comment(lib, "dxguid.lib")
 
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc_1(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
 	switch (umessage)
 	{
@@ -38,9 +38,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 }
 
 
-int main()
+int main_1()
 {
-	LPCWSTR applicationName = L"My3DApp";
+	LPCWSTR applicationName = L"Framework";
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
 
 
@@ -51,7 +51,7 @@ int main()
 	WNDCLASSEX wc;
     
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wc.lpfnWndProc = WndProc;
+	wc.lpfnWndProc = WndProc_1;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;
@@ -394,6 +394,7 @@ int main()
 
 		// 14. At the End of While (!isExitRequested): Draw the Triangle
 		context->DrawIndexed(6, 0, 0);
+		//context->Draw(6, 0);
 
 		// зачем эта строчка? 
 		context->OMSetRenderTargets(0, nullptr, nullptr);
@@ -409,14 +410,3 @@ int main()
 
     std::cout << "Hello World!\n";
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
