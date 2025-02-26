@@ -11,6 +11,9 @@
 class Gates : public SceneNode
 {
 public:
+	DirectX::XMFLOAT4 position = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	float width = 0.1;
+
 	Gates();
 	Gates(DirectX::XMFLOAT4 position, float width);
 	void Update(float deltaTime);
@@ -18,6 +21,8 @@ public:
 		ID3D11RenderTargetView* renderTargetView);
 
 	void HitBall(Ball* ball);
+
+	DirectX::BoundingBox GetBoundingBox() const;
 };
 
 #endif // !GATES_H

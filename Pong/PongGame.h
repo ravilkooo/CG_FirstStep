@@ -19,6 +19,11 @@ public:
     void Initialize();
     void Update(float deltaTime);
     void Render();
+
+    bool CheckBorderCollision();
+private:
+    Border* border;
+    Ball* ball;
 };
 
 #endif // PONGGAME_H

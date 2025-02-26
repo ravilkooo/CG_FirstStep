@@ -61,14 +61,17 @@ void PongGame::Initialize()
 
     timer = GameTimer();
 
-    scene = Scene();
-    scene.AddNode(new Border());
-    scene.AddNode(new Gates(DirectX::XMFLOAT4(-0.8, 0.5, 0, 1), 0.1));
-    scene.AddNode(new Gates(DirectX::XMFLOAT4(0.8, 0.5, 0, 1), 0.1));
+    border = new Border();
 
-    scene.AddNode(new Ball(DirectX::XMFLOAT4(0., 0., 0, 1), 0.1));
-    scene.AddNode(new Racket(DirectX::XMFLOAT4(-0.8, 0.5, 0, 1), 0.1, 0.4, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)));
-    scene.AddNode(new Racket(DirectX::XMFLOAT4(0.8, 0.5, 0, 1), 0.1, 0.4, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)));
+    scene = Scene();
+    scene.AddNode(border);
+    scene.AddNode(new Gates(DirectX::XMFLOAT4(-0.8, 0.5, 0.25, 1), 0.1));
+    scene.AddNode(new Gates(DirectX::XMFLOAT4(0.8, 0.5, 0.25, 1), 0.1));
+
+    ball = new Ball(DirectX::XMFLOAT4(0., 0., 0.25, 1), 0.1);
+    scene.AddNode(ball);
+    scene.AddNode(new Racket(DirectX::XMFLOAT4(-0.8, 0.5, 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)));
+    scene.AddNode(new Racket(DirectX::XMFLOAT4(0.8, 0.5, 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)));
 
 
     physEngine = PhysicsEngine(&scene);
@@ -89,12 +92,31 @@ void PongGame::Initialize()
 
 void PongGame::Update(float deltaTime)
 {
+
     physEngine.Update(deltaTime);
     // Обновление состояния игры
+    if (CheckBorderCollision())
+    {
+
+        std::cout << "HH\n";
+        border->HitBall(ball);
+    }
+        
 }
 
 void PongGame::Render()
 {
     // Отрисовка сцены
     renderer.RenderScene(scene);
+}
+
+bool PongGame::CheckBorderCollision()
+{
+
+    DirectX::BoundingBox* racketBox = border->GetBoundingBoxes();
+    DirectX::BoundingBox ballBox = ball->GetBoundingBox();
+    std::cout << racketBox[0].Center.x << " " << racketBox[1].Center.x << ballBox.Center.x << "\n";
+    std::cout << racketBox[0].Center.y << " " << racketBox[1].Center.y << ballBox.Center.y << "\n";
+    std::cout << racketBox[0].Center.z << " " << racketBox[1].Center.z << ballBox.Center.z << "\n";
+    return (racketBox[0].Intersects(ballBox) || racketBox[1].Intersects(ballBox));
 }

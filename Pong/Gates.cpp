@@ -4,7 +4,7 @@ Gates::Gates()
 {
 }
 
-Gates::Gates(DirectX::XMFLOAT4 position, float width)
+Gates::Gates(DirectX::XMFLOAT4 position, float width) : position(position), width(width)
 {
 
 	int _ind[12] = { 0, 1, 2, 1, 0, 3 };
@@ -102,4 +102,22 @@ void Gates::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 void Gates::HitBall(Ball* ball)
 {
 	ball->direction_y *= -1;
+}
+
+DirectX::BoundingBox Gates::GetBoundingBox() const
+{
+
+	DirectX::BoundingBox bbox;
+
+	DirectX::XMVECTOR center = DirectX::XMVectorSet(
+		position.x + width * 0.5f,
+		0.f,
+		position.z, 1.0f);
+	DirectX::XMFLOAT3 extents(width * 0.5f,
+		1.f,
+		0.0f);
+	DirectX::XMStoreFloat3(&(bbox.Center), DirectX::XMVector4Transform(center, cb.wvpMat));
+
+	bbox.Extents = extents;
+	return bbox;
 }

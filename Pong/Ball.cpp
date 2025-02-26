@@ -29,7 +29,7 @@ Ball::Ball()
 	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
-Ball::Ball(DirectX::XMFLOAT4 position, float width)
+Ball::Ball(DirectX::XMFLOAT4 position, float width) : position(position), width(width)
 {
 	int _ind[6] = { 0, 1, 2, 1, 0, 3 };
 	indices = (int*)malloc(6 * sizeof(int));
@@ -45,36 +45,6 @@ Ball::Ball(DirectX::XMFLOAT4 position, float width)
 		DirectX::XMFLOAT4(position.x, position.y, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 		DirectX::XMFLOAT4(position.x + width,position.y, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 		DirectX::XMFLOAT4(position.x, position.y + width, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-	};
-	points = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
-	pointsNum = 8;
-
-	for (int i = 0; i < 8; i++)
-	{
-		points[i] = _points[i];
-	}
-
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
-}
-
-Ball::Ball(DirectX::XMFLOAT4 position, float width, float height)
-{
-	int _ind[6] = { 0, 1, 2, 1, 0, 3 };
-	indices = (int*)malloc(6 * sizeof(int));
-	indicesNum = 6;
-	for (int i = 0; i < 6; i++)
-	{
-		indices[i] = _ind[i];
-	}
-
-
-	width = width > 0 ? width : 0.01;
-	height = height > 0 ? height : 0.01;
-	DirectX::XMFLOAT4 _points[8] = {
-		DirectX::XMFLOAT4(position.x + width, position.y + height, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT4(position.x, position.y, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT4(position.x + width, position.y, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT4(position.x, position.y + height, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 	};
 	points = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
 	pointsNum = 8;
@@ -110,7 +80,7 @@ Ball::Ball(DirectX::XMFLOAT4* points)
 
 void Ball::Update(float deltaTime)
 {
-	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(velocity * deltaTime * direction_x, velocity * deltaTime * direction_y, 0);
+	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(/*velocity * deltaTime * direction_x */ 0.f, velocity * deltaTime * direction_y, 0);
 	cb.wvpMat = cb.wvpMat * moveMat;
 
 	//std::cout << "H\n";
@@ -142,4 +112,20 @@ void Ball::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 
 	// 14. At the End of While (!isExitRequested): Draw the Triangle
 	context->DrawIndexed(6, 0, 0);
+}
+
+DirectX::BoundingBox Ball::GetBoundingBox() const
+{
+	DirectX::BoundingBox bbox;
+
+	DirectX::XMVECTOR center = DirectX::XMVectorSet(position.x + width * 0.5f,
+		position.y + width * 0.5f,
+		position.z, 1.0f);
+	DirectX::XMFLOAT3 extents(width * 0.5f,
+		width * 0.5f,
+		0.0f);
+	DirectX::XMStoreFloat3(&(bbox.Center), DirectX::XMVector4Transform(center, cb.wvpMat));
+
+	bbox.Extents = extents;
+	return bbox;
 }

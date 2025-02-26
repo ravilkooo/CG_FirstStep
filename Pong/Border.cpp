@@ -105,3 +105,22 @@ void Border::HitBall(Ball* ball)
 {
 	ball->direction_y *= -1;
 }
+
+DirectX::BoundingBox* Border::GetBoundingBoxes() const
+{
+	DirectX::BoundingBox bbox_1;
+	DirectX::BoundingBox bbox_2;
+
+	DirectX::XMVECTOR center_1 = DirectX::XMVectorSet(0.f, 1.05f, 0.25, 1.0f);
+	DirectX::XMVECTOR center_2 = DirectX::XMVectorSet(0.f, -1.05f, 0.25, 1.0f);
+
+	DirectX::XMFLOAT3 extents(1.f, 0.05f, 0.0f);
+	DirectX::XMStoreFloat3(&(bbox_1.Center), DirectX::XMVector4Transform(center_1, cb.wvpMat));
+	DirectX::XMStoreFloat3(&(bbox_2.Center), DirectX::XMVector4Transform(center_2, cb.wvpMat));
+
+	bbox_1.Extents = extents;
+	bbox_2.Extents = extents;
+
+	DirectX::BoundingBox bbox[2] = { bbox_1, bbox_2 };
+	return bbox;
+}

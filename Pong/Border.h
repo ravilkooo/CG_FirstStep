@@ -17,6 +17,7 @@ public:
 		ID3D11RenderTargetView* renderTargetView);
 
 	void HitBall(Ball* ball);
+	DirectX::BoundingBox* GetBoundingBoxes() const;
 };
 
 
