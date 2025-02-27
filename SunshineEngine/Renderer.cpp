@@ -112,7 +112,7 @@ void Renderer::RenderScene(const Scene& scene)
 	totalTime = totalTime > 1.0f ? totalTime - 1.0f : totalTime;
 
 	// 13. At the End of While(!isExitRequested) : Clear BackBuffer
-	float color[] = { totalTime, 0.1f, 0.1f, 1.0f };
+	float color[] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	context->ClearRenderTargetView(renderTargetView, color);
 
 	/*struct Quadic {

@@ -64,6 +64,8 @@ void PongGame::Initialize()
     ball = new Ball(DirectX::XMFLOAT4(0., 0., 0.25, 1), 0.1);
     
     racket_player = new Racket(DirectX::XMFLOAT4(-0.8, 0., 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+    racket_player->angle_velocity = 0.1f;
+
     racket_AI = new Racket(DirectX::XMFLOAT4(0.8, 0., 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
 
     gates_player = new Gates(DirectX::XMFLOAT4(-0.8f, 0.f, 0.25f, 1.f), 0.1f);
@@ -90,7 +92,7 @@ void PongGame::Initialize()
     {
         node->LoadAndCompileShader(renderer.shaderManager);
         node->InitBuffers(renderer.resourceManager);
-        std::cout << "f1\n";
+        //std::cout << "f1\n";
     }
 }
 
@@ -102,12 +104,12 @@ void PongGame::Update(float deltaTime)
     // Управление ракеткой игрока
     if (inputHandler->IsKeyDown(InputHandler::KeyCode::UP))
     {
-        std::cout << "MoveUp\n";
+        //std::cout << "MoveUp\n";
         racket_player->MoveUp();
     }
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::DOWN))
     {
-        std::cout << "MoveDown\n";
+        //std::cout << "MoveDown\n";
         racket_player->MoveDown();
     }
     else

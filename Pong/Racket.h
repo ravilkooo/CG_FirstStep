@@ -15,6 +15,7 @@ public:
     //INT direction = 0.f;
     float velocity = .0f;
     float max_velocity = 3.f;
+    float angle_velocity = 0.f;
 
     Racket();
     Racket(DirectX::XMFLOAT4 position, float height);

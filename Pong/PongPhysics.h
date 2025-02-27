@@ -35,6 +35,10 @@ public:
     Border* border;
 
     float AI_max_velocity = 3.f;
+
+
+    int player_score = 0;
+    int AI_score = 0;
 };
 
 #endif // !PONG_PHYSICS_H

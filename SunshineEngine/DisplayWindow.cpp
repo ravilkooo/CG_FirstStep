@@ -58,7 +58,7 @@ void DisplayWindow::Initialize(LPCWSTR applicationName, HINSTANCE hInstance, int
 
 	ShowCursor(true);
 
-	std::cout << "Zdarova vsem!\n";
+	//std::cout << "Zdarova vsem!\n";
 }
 
 LRESULT CALLBACK DisplayWindow::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
@@ -68,7 +68,7 @@ LRESULT CALLBACK DisplayWindow::WndProc(HWND hwnd, UINT umessage, WPARAM wparam,
 	case WM_KEYDOWN:
 	{
 		// If a key is pressed send it to the input object so it can record that state.
-		std::cout << "Key: " << static_cast<unsigned int>(wparam) << std::endl;
+		//std::cout << "Key: " << static_cast<unsigned int>(wparam) << std::endl;
 
 		if (static_cast<unsigned int>(wparam) == 27) PostQuitMessage(0);
 		return 0;

@@ -96,7 +96,15 @@ Racket::Racket(DirectX::XMFLOAT4* points)
 void Racket::Update(float deltaTime)
 {
 	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(0.f, velocity * deltaTime, 0.f);
-	cb.wvpMat = cb.wvpMat * moveMat;
+	
+	DirectX::XMFLOAT3 center_pos;
+	GetCenterLocation(&center_pos);
+	DirectX::XMMATRIX toCenter = DirectX::XMMatrixTranslation(-center_pos.x, -center_pos.y, -center_pos.z);
+	DirectX::XMMATRIX fromCenter = DirectX::XMMatrixTranslation(center_pos.x, center_pos.y, center_pos.z);
+
+	DirectX::XMMATRIX roteMat = DirectX::XMMatrixRotationZ(angle_velocity * deltaTime);
+
+	cb.wvpMat = cb.wvpMat * toCenter * roteMat * fromCenter * moveMat;
 }
 
 void Racket::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
@@ -130,6 +138,18 @@ void Racket::HitBall(Ball* ball)
 {
 	ball->direction_x *= -1;
 	ball->velocity += ball->velocity_step;
+
+	DirectX::XMFLOAT3 bc;
+	ball->GetCenterLocation(&bc);
+	DirectX::XMFLOAT3 rc;
+	GetCenterLocation(&rc);
+
+	float b = bc.y - rc.y;
+	float beta = asin(0.25 * b / height);
+	ball->angle = min(abs(2 * beta - ball->angle), DirectX::XM_PIDIV2*0.95f);
+
+	ball->velocity_x = ball->velocity * cos(ball->angle);
+	ball->velocity_y = ball->velocity * sin(ball->angle);
 }
 
 void Racket::Move(float velocity) {

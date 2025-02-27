@@ -20,7 +20,7 @@ void InputHandler::Update()
 void InputHandler::UpdateKeyState(UINT vKey, bool isPressed)
 {
     keys[vKey] = isPressed;
-    std::cout << "Key: " << vKey << " State: " << isPressed << "\n";
+    //std::cout << "Key: " << vKey << " State: " << isPressed << "\n";
 }
 
 bool InputHandler::IsKeyDown(KeyCode vKey)

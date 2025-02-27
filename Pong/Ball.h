@@ -14,7 +14,10 @@ public:
     INT direction_x = -1;
     INT direction_y = -1;
     float start_velocity = 1;
+    float velocity_x = start_velocity;
+    float velocity_y = 0;
     float velocity = 1;
+    float angle = 0; //DirectX::XM_PIDIV4;
     float velocity_step = 0.1;
 
     Ball();

@@ -30,6 +30,7 @@ public:
     Border* border;
 
     InputHandler* inputHandler;
+
 };
 
 #endif // PONGGAME_H

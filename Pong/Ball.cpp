@@ -53,7 +53,8 @@ Ball::Ball(DirectX::XMFLOAT4 position, float width) : position(position), width(
 	{
 		points[i] = _points[i];
 	}
-
+	velocity_x = velocity * DirectX::XMScalarCos(angle);
+	velocity_y = velocity * DirectX::XMScalarSin(angle);
 	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
@@ -80,7 +81,7 @@ Ball::Ball(DirectX::XMFLOAT4* points)
 
 void Ball::Update(float deltaTime)
 {
-	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(velocity * deltaTime * direction_x, velocity * deltaTime * direction_y, 0);
+	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(velocity_x * deltaTime * direction_x, velocity_y * deltaTime * direction_y, 0);
 	cb.wvpMat = cb.wvpMat * moveMat;
 
 	//std::cout << "H\n";
@@ -117,6 +118,9 @@ void Ball::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 void Ball::Respawn()
 {
 	velocity = start_velocity;
+	angle = 0; // DirectX::XM_PIDIV4;
+	velocity_x = start_velocity * DirectX::XMScalarCos(angle);
+	velocity_y = start_velocity * DirectX::XMScalarCos(angle);
 	cb.wvpMat = DirectX::XMMatrixIdentity();
 }
 

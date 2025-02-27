@@ -35,24 +35,28 @@ void PongPhysics::Update(float deltaTime)
     {
         border->HitBall(ball);
     }
-    if (CheckGatesCollision(deltaTime, gates_AI)) {
-        // AI_lose
-        ball->Respawn();
-    }
-    if (CheckRacketCollision(deltaTime, racket_player)) {
+    
+    if (CheckRacketCollision(deltaTime, racket_player) && ball->direction_x < 0) {
         // player_bounce
         racket_player->HitBall(ball);
     }
-
-    if (CheckRacketCollision(deltaTime, racket_AI)) {
+    if (CheckRacketCollision(deltaTime, racket_AI) && ball->direction_x > 0) {
+        // AI_bounce
         racket_AI->HitBall(ball);
     }
 
-    if (CheckGatesCollision(deltaTime, gates_player)) {
+    if (CheckGatesCollision(deltaTime, gates_player) && ball->direction_x < 0) {
         // player_lose
+        AI_score++;
+        std::cout << player_score << " : " << AI_score << std::endl;
         ball->Respawn();
     }
-
+    if (CheckGatesCollision(deltaTime, gates_AI) && ball->direction_x > 0) {
+        // AI_lose
+        player_score++;
+        std::cout << player_score << " : " << AI_score << std::endl;
+        ball->Respawn();
+    }
 
 
     for (auto node : scene->nodes)
@@ -67,8 +71,8 @@ bool PongPhysics::CheckBorderCollision(float deltaTime)
     DirectX::BoundingBox* borderBoxes = border->GetBoundingBoxes();
     DirectX::BoundingBox ballBox = ball->GetBoundingBox();
     DirectX::BoundingBox ballNextBox = ball->GetNextStepBoundingBox(deltaTime);
-    return ((borderBoxes[0].Intersects(ballBox) && borderBoxes[0].Intersects(ballNextBox))
-        || (borderBoxes[1].Intersects(ballBox) && borderBoxes[1].Intersects(ballNextBox)));
+    return ((borderBoxes[0].Intersects(ballBox) && borderBoxes[0].Intersects(ballNextBox) && ball->direction_y > 0)
+        || (borderBoxes[1].Intersects(ballBox) && borderBoxes[1].Intersects(ballNextBox) && ball->direction_y < 0));
 }
 
 bool PongPhysics::CheckGatesCollision(float deltaTime, Gates* gates)
