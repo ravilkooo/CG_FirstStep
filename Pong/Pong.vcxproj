@@ -143,6 +143,7 @@
     <ClInclude Include="Border.h" />
     <ClInclude Include="Gates.h" />
     <ClInclude Include="PongGame.h" />
+    <ClInclude Include="PongPhysics.h" />
     <ClInclude Include="Racket.h" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +152,7 @@
     <ClCompile Include="Gates.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PongGame.cpp" />
+    <ClCompile Include="PongPhysics.cpp" />
     <ClCompile Include="Racket.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +161,18 @@
       <Private>false</Private>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\MyVeryFirstShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

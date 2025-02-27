@@ -7,14 +7,19 @@
 
 class InputHandler
 {
+
     friend class DisplayWindow;
 public:
+    enum class KeyCode : UINT {
+        UP = 38u, DOWN = 40u
+    };
+
     InputHandler();
 
     void Update();
     void UpdateKeyState(UINT vKey, bool isPressed);
-    bool IsKeyDown(UINT vKey);
-
+    bool IsKeyDown(KeyCode vKey);
+        
 private:
     bool keys[256];
 };

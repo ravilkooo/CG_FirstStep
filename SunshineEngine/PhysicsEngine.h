@@ -11,9 +11,8 @@ public:
     PhysicsEngine(Scene* scene);
     ~PhysicsEngine();
     
-    void Update(float deltaTime);
+    virtual void Update(float deltaTime);
 
-private:
     Scene* scene;
 };
 

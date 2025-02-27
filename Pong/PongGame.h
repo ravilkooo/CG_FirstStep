@@ -1,12 +1,14 @@
 #ifndef PONGGAME_H
 #define PONGGAME_H
 
+#include <Game.h>;
+
 #include "Border.h"
 #include "Racket.h"
 #include "Ball.h"
 #include "Gates.h"
+#include "PongPhysics.h"
 
-#include "Game.h";
 
 class PongGame : public Game
 {
@@ -20,10 +22,14 @@ public:
     void Update(float deltaTime);
     void Render();
 
-    bool CheckBorderCollision();
-private:
-    Border* border;
     Ball* ball;
+    Racket* racket_player;
+    Racket* racket_AI;
+    Gates* gates_player;
+    Gates* gates_AI;
+    Border* border;
+
+    InputHandler* inputHandler;
 };
 
 #endif // PONGGAME_H

@@ -57,30 +57,34 @@ void PongGame::Initialize()
 
     applicationName = L"SunShine_0";
     hInstance = GetModuleHandle(nullptr);
-    //inputHandler = InputHandler();
 
     timer = GameTimer();
 
     border = new Border();
+    ball = new Ball(DirectX::XMFLOAT4(0., 0., 0.25, 1), 0.1);
+    
+    racket_player = new Racket(DirectX::XMFLOAT4(-0.8, 0., 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+    racket_AI = new Racket(DirectX::XMFLOAT4(0.8, 0., 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+
+    gates_player = new Gates(DirectX::XMFLOAT4(-0.8f, 0.f, 0.25f, 1.f), 0.1f);
+    gates_AI = new Gates(DirectX::XMFLOAT4(0.8, 0.f, 0.25f, 1.f), -0.1f);
 
     scene = Scene();
     scene.AddNode(border);
-    scene.AddNode(new Gates(DirectX::XMFLOAT4(-0.8, 0.5, 0.25, 1), 0.1));
-    scene.AddNode(new Gates(DirectX::XMFLOAT4(0.8, 0.5, 0.25, 1), 0.1));
+    scene.AddNode(gates_player);
+    scene.AddNode(gates_AI);
 
-    ball = new Ball(DirectX::XMFLOAT4(0., 0., 0.25, 1), 0.1);
     scene.AddNode(ball);
-    scene.AddNode(new Racket(DirectX::XMFLOAT4(-0.8, 0.5, 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)));
-    scene.AddNode(new Racket(DirectX::XMFLOAT4(0.8, 0.5, 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)));
+    scene.AddNode(racket_player);
+    scene.AddNode(racket_AI);
 
-
-    physEngine = PhysicsEngine(&scene);
+    physEngine = new PongPhysics(&scene, ball, racket_player,
+        racket_AI, gates_player, gates_AI, border);
 
     displayWindow = DisplayWindow(applicationName, hInstance, 800, 800);
-
+    inputHandler = displayWindow.GetInputHandler();
 
     renderer = Renderer(&displayWindow);
-
 
     for (auto node : scene.nodes)
     {
@@ -92,31 +96,31 @@ void PongGame::Initialize()
 
 void PongGame::Update(float deltaTime)
 {
+    // Получаем InputHandler из DisplayWindow
+    inputHandler = displayWindow.GetInputHandler();
 
-    physEngine.Update(deltaTime);
-    // Обновление состояния игры
-    if (CheckBorderCollision())
+    // Управление ракеткой игрока
+    if (inputHandler->IsKeyDown(InputHandler::KeyCode::UP))
     {
-
-        std::cout << "HH\n";
-        border->HitBall(ball);
+        std::cout << "MoveUp\n";
+        racket_player->MoveUp();
     }
-        
+    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::DOWN))
+    {
+        std::cout << "MoveDown\n";
+        racket_player->MoveDown();
+    }
+    else
+    {
+        racket_player->Stop();
+    }
+
+    // Обновление состояния игры
+    physEngine->Update(deltaTime);
 }
 
 void PongGame::Render()
 {
     // Отрисовка сцены
     renderer.RenderScene(scene);
-}
-
-bool PongGame::CheckBorderCollision()
-{
-
-    DirectX::BoundingBox* racketBox = border->GetBoundingBoxes();
-    DirectX::BoundingBox ballBox = ball->GetBoundingBox();
-    std::cout << racketBox[0].Center.x << " " << racketBox[1].Center.x << ballBox.Center.x << "\n";
-    std::cout << racketBox[0].Center.y << " " << racketBox[1].Center.y << ballBox.Center.y << "\n";
-    std::cout << racketBox[0].Center.z << " " << racketBox[1].Center.z << ballBox.Center.z << "\n";
-    return (racketBox[0].Intersects(ballBox) || racketBox[1].Intersects(ballBox));
 }

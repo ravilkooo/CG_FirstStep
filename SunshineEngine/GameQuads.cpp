@@ -68,7 +68,7 @@ void GameQuads::Initialize()
     scene.AddNode(new Quad(DirectX::XMFLOAT4(0., 0.5, 0, 1), 1.2, 0.4));
     scene.AddNode(new Triangle());
 
-    physEngine = PhysicsEngine(&scene);
+    physEngine =  new PhysicsEngine(&scene);
 
     displayWindow = DisplayWindow(applicationName, hInstance, 800, 800);
 
@@ -86,7 +86,7 @@ void GameQuads::Initialize()
 
 void GameQuads::Update(float deltaTime)
 {
-    physEngine.Update(deltaTime);
+    physEngine->Update(deltaTime);
     // Обновление состояния игры
 }
 

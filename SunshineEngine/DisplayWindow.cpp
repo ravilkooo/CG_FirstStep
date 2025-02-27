@@ -11,7 +11,7 @@ DisplayWindow::DisplayWindow(LPCWSTR applicationName, HINSTANCE hInstance, int s
 
 void DisplayWindow::Initialize(LPCWSTR applicationName, HINSTANCE hInstance, int screenWidth, int screenHeight)
 {
-	inputHandler = InputHandler();
+	inputHandler = new InputHandler();
 
 	WNDCLASSEX wc;
 
@@ -48,6 +48,7 @@ void DisplayWindow::Initialize(LPCWSTR applicationName, HINSTANCE hInstance, int
 		windowRect.right - windowRect.left,
 		windowRect.bottom - windowRect.top,
 		nullptr, nullptr, hInstance, nullptr);
+	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(inputHandler));
 
 	ShowWindow(hWnd, SW_SHOW);
 	SetForegroundWindow(hWnd);
@@ -82,14 +83,14 @@ LRESULT CALLBACK DisplayWindow::WndProc(HWND hwnd, UINT umessage, WPARAM wparam,
 
 LRESULT CALLBACK DisplayWindow::WndProc_RawInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static InputHandler inputHandler;
+	InputHandler* pInputHandler = reinterpret_cast<InputHandler*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
 	switch (message)
 	{
 	case WM_INPUT:
 	{
 		HRAWINPUT hRawInput = reinterpret_cast<HRAWINPUT>(lParam);
-		HandleRawInput(hRawInput, inputHandler);
+		HandleRawInput(hRawInput, pInputHandler);
 		break;
 	}
 	case WM_DESTROY:
@@ -102,7 +103,7 @@ LRESULT CALLBACK DisplayWindow::WndProc_RawInput(HWND hWnd, UINT message, WPARAM
 }
 
 
-void DisplayWindow::HandleRawInput(HRAWINPUT hRawInput, InputHandler& inputHandler)
+void DisplayWindow::HandleRawInput(HRAWINPUT hRawInput, InputHandler* inputHandler)
 {
 	UINT dwSize = 0;
 	GetRawInputData(hRawInput, RID_INPUT, nullptr, &dwSize, sizeof(RAWINPUTHEADER));
@@ -120,7 +121,7 @@ void DisplayWindow::HandleRawInput(HRAWINPUT hRawInput, InputHandler& inputHandl
 	{
 		RAWKEYBOARD& keyboard = raw->data.keyboard;
 		bool isPressed = !(keyboard.Flags & RI_KEY_BREAK);
-		inputHandler.UpdateKeyState(keyboard.VKey, isPressed);
+		inputHandler->UpdateKeyState(keyboard.VKey, isPressed);
 	}
 }
 

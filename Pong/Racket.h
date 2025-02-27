@@ -12,8 +12,9 @@ public:
     DirectX::XMFLOAT4 position = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
     float width = 0.1; float height = 0.1;
 
-    INT direction = 0;
-    float velocity = 1;
+    //INT direction = 0.f;
+    float velocity = .0f;
+    float max_velocity = 3.f;
 
     Racket();
     Racket(DirectX::XMFLOAT4 position, float height);
@@ -27,9 +28,14 @@ public:
         ID3D11RenderTargetView* renderTargetView);
 
     void HitBall(Ball* ball);
-    void Move(INT direction);
+    void Move(float velocity);
     
     DirectX::BoundingBox GetBoundingBox() const;
+
+    void GetCenterLocation(DirectX::XMFLOAT3* loc);
+    void MoveUp();
+    void MoveDown();
+    void Stop();
 };
 
 #endif

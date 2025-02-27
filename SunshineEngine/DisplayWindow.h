@@ -12,8 +12,6 @@ public:
 	int screenHeight = 800;
 	HWND hWnd;
 
-	InputHandler inputHandler;
-
 	DisplayWindow();
 	DisplayWindow(LPCWSTR applicationName, HINSTANCE hInstance, int screenWidth, int screenHeight);
 
@@ -23,9 +21,14 @@ public:
 
 	static LRESULT CALLBACK WndProc_RawInput(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
 
-	static void HandleRawInput(HRAWINPUT hRawInput, InputHandler& inputHandler);
+	static void HandleRawInput(HRAWINPUT hRawInput, InputHandler* inputHandler);
 
 	void RegisterRawInput(HWND hWnd);
+
+	InputHandler* GetInputHandler() { return inputHandler; }
+
+private:
+	InputHandler* inputHandler; // Не статический член класса
 };
 
 #endif // DISPLAY_WIN_H

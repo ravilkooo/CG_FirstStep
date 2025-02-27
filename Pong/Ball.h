@@ -13,7 +13,9 @@ public:
 
     INT direction_x = -1;
     INT direction_y = -1;
+    float start_velocity = 1;
     float velocity = 1;
+    float velocity_step = 0.1;
 
     Ball();
     Ball(DirectX::XMFLOAT4 position, float width);
@@ -23,7 +25,12 @@ public:
     void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
         ID3D11RenderTargetView* renderTargetView);
 
+    void Respawn();
+
+    void GetCenterLocation(DirectX::XMFLOAT3* loc);
+
     DirectX::BoundingBox GetBoundingBox() const;
+    DirectX::BoundingBox GetNextStepBoundingBox(float deltaTime) const;
 };
 
 #endif

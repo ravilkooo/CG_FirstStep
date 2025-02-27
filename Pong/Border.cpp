@@ -14,13 +14,13 @@ Border::Border()
 
 
 	DirectX::XMFLOAT4 _points[16] = {
-		DirectX::XMFLOAT4(1.f, 1.1f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
+		DirectX::XMFLOAT4(1.f, 1.f + height, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
 		DirectX::XMFLOAT4(-1.f, 1.f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
 		DirectX::XMFLOAT4(1.f, 1.f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
-		DirectX::XMFLOAT4(-1.f, 1.1f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
+		DirectX::XMFLOAT4(-1.f, 1.f + height, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
 		DirectX::XMFLOAT4(1.f, -1.f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
-		DirectX::XMFLOAT4(-1.f, -1.1f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
-		DirectX::XMFLOAT4(1.f, -1.1f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
+		DirectX::XMFLOAT4(-1.f, -1.f - height, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
+		DirectX::XMFLOAT4(1.f, -1.f - height, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
 		DirectX::XMFLOAT4(-1.f, -1.f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.1f),
 	};
 	points = (DirectX::XMFLOAT4*)malloc(16 * sizeof(DirectX::XMFLOAT4));
@@ -111,10 +111,10 @@ DirectX::BoundingBox* Border::GetBoundingBoxes() const
 	DirectX::BoundingBox bbox_1;
 	DirectX::BoundingBox bbox_2;
 
-	DirectX::XMVECTOR center_1 = DirectX::XMVectorSet(0.f, 1.05f, 0.25, 1.0f);
-	DirectX::XMVECTOR center_2 = DirectX::XMVectorSet(0.f, -1.05f, 0.25, 1.0f);
+	DirectX::XMVECTOR center_1 = DirectX::XMVectorSet(0.f, 1.f + height * 0.5f, 0.25f, 1.0f);
+	DirectX::XMVECTOR center_2 = DirectX::XMVectorSet(0.f, -1.f - height * 0.5f, 0.25f, 1.0f);
 
-	DirectX::XMFLOAT3 extents(1.f, 0.05f, 0.0f);
+	DirectX::XMFLOAT3 extents(1.f, 0.5f * height, 0.0f);
 	DirectX::XMStoreFloat3(&(bbox_1.Center), DirectX::XMVector4Transform(center_1, cb.wvpMat));
 	DirectX::XMStoreFloat3(&(bbox_2.Center), DirectX::XMVector4Transform(center_2, cb.wvpMat));
 

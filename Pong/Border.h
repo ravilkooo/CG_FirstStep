@@ -18,6 +18,8 @@ public:
 
 	void HitBall(Ball* ball);
 	DirectX::BoundingBox* GetBoundingBoxes() const;
+private:
+	float height = 2.f;
 };
 
 

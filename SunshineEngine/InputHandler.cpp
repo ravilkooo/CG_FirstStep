@@ -2,7 +2,11 @@
 
 InputHandler::InputHandler()
 {
-    // Инициализация состояний клавиш
+    // Инициализация массива keys нулями
+    for (size_t i = 0; i < 256; i++)
+    {
+        keys[i] = false;
+    }
 }
 
 void InputHandler::Update()
@@ -16,9 +20,10 @@ void InputHandler::Update()
 void InputHandler::UpdateKeyState(UINT vKey, bool isPressed)
 {
     keys[vKey] = isPressed;
+    std::cout << "Key: " << vKey << " State: " << isPressed << "\n";
 }
 
-bool InputHandler::IsKeyDown(UINT vKey)
+bool InputHandler::IsKeyDown(KeyCode vKey)
 {
-    return keys[vKey];
+    return keys[static_cast<UINT>(vKey)];
 }

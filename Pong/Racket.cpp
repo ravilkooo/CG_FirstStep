@@ -13,10 +13,10 @@ Racket::Racket()
 
 
 	DirectX::XMFLOAT4 _points[8] = {
-		DirectX::XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT4(-0.25f, -0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT4(0.25f, -0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT4(-0.25f, 0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+	  DirectX::XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f),  DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
+	  DirectX::XMFLOAT4(-0.25f, -0.25f, 0.25f, 1.0f),  DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
+	  DirectX::XMFLOAT4(0.25f, -0.25f, 0.25f, 1.0f),  DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+	  DirectX::XMFLOAT4(-0.25f, 0.25f, 0.25f, 1.0f),  DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 	};
 	points = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
 	pointsNum = 8;
@@ -35,34 +35,14 @@ Racket::Racket(DirectX::XMFLOAT4 position, float width) :
 }
 
 Racket::Racket(DirectX::XMFLOAT4 position, float width, float height) :
-	position(position), width(width), height(height)
+	Racket(position, width, height, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f))
+
 {
-	int _ind[6] = { 0, 1, 2, 1, 0, 3 };
-	indices = (int*)malloc(6 * sizeof(int));
-	indicesNum = 6;
-	for (int i = 0; i < 6; i++)
-	{
-		indices[i] = _ind[i];
-	}
 
-	DirectX::XMFLOAT4 _points[8] = {
-		DirectX::XMFLOAT4(position.x + width, position.y + height, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT4(position.x, position.y, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT4(position.x + width, position.y, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT4(position.x, position.y + height, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-	};
-	points = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
-	pointsNum = 8;
-
-	for (int i = 0; i < 8; i++)
-	{
-		points[i] = _points[i];
-	}
-
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 Racket::Racket(DirectX::XMFLOAT4 position, float width, float height, DirectX::XMFLOAT4 color)
+	: position(position), width(width), height(height)
 {
 	int _ind[6] = { 0, 1, 2, 1, 0, 3 };
 	indices = (int*)malloc(6 * sizeof(int));
@@ -76,10 +56,10 @@ Racket::Racket(DirectX::XMFLOAT4 position, float width, float height, DirectX::X
 	width = width > 0 ? width : 0.01;
 	height = height > 0 ? height : 0.01;
 	DirectX::XMFLOAT4 _points[8] = {
-		DirectX::XMFLOAT4(position.x + width, position.y + height, position.z + 0.0f, position.w + 0.0f),	color,
-		DirectX::XMFLOAT4(position.x, position.y, position.z + 0.0f, position.w + 0.0f),	color,
-		DirectX::XMFLOAT4(position.x + width, position.y, position.z + 0.0f, position.w + 0.0f),	color,
-		DirectX::XMFLOAT4(position.x, position.y + height, position.z + 0.0f, position.w + 0.0f),	color,
+	  DirectX::XMFLOAT4(position.x + width * .5f, position.y + height * .5f, position.z + 0.0f, position.w + 0.0f),  color,
+	  DirectX::XMFLOAT4(position.x - width * .5f, position.y - height * .5f, position.z + 0.0f, position.w + 0.0f),  color,
+	  DirectX::XMFLOAT4(position.x + width * .5f, position.y - height * .5f, position.z + 0.0f, position.w + 0.0f),  color,
+	  DirectX::XMFLOAT4(position.x - width * .5f, position.y + height * .5f, position.z + 0.0f, position.w + 0.0f),  color,
 	};
 	points = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
 	pointsNum = 8;
@@ -115,7 +95,7 @@ Racket::Racket(DirectX::XMFLOAT4* points)
 
 void Racket::Update(float deltaTime)
 {
-	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(0.f, velocity * deltaTime * direction, 0.f);
+	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(0.f, velocity * deltaTime, 0.f);
 	cb.wvpMat = cb.wvpMat * moveMat;
 }
 
@@ -123,8 +103,6 @@ void Racket::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 	ID3D11RenderTargetView* renderTargetView)
 {
 	context->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-
 	// 6. Create Set of Points
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	context->Map(pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -151,24 +129,49 @@ void Racket::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 void Racket::HitBall(Ball* ball)
 {
 	ball->direction_x *= -1;
+	ball->velocity += ball->velocity_step;
 }
 
-void Racket::Move(INT direction) {
-	this->direction = direction;
+void Racket::Move(float velocity) {
+	this->velocity = velocity;
 }
 
 DirectX::BoundingBox Racket::GetBoundingBox() const
 {
 	DirectX::BoundingBox bbox;
 
-	DirectX::XMVECTOR center = DirectX::XMVectorSet( position.x + width * 0.5f,
-		position.y + height * 0.5f,
-		position.z, 1.0f );
+	DirectX::XMVECTOR center = DirectX::XMVectorSet(position.x,
+		position.y,
+		position.z, 1.0f);
 	DirectX::XMFLOAT3 extents(width * 0.5f,
 		height * 0.5f,
 		0.0f);
 	DirectX::XMStoreFloat3(&(bbox.Center), DirectX::XMVector4Transform(center, cb.wvpMat));
-	
+
 	bbox.Extents = extents;
 	return bbox;
+}
+
+void Racket::GetCenterLocation(DirectX::XMFLOAT3* loc)
+{
+	DirectX::XMVECTOR center = DirectX::XMVectorSet(position.x,
+		position.y,
+		position.z, 1.0f);
+	DirectX::XMStoreFloat3(loc, DirectX::XMVector4Transform(center, cb.wvpMat));
+	return;
+}
+
+void Racket::MoveUp()
+{
+	velocity = max_velocity;
+}
+
+void Racket::MoveDown()
+{
+	velocity = -max_velocity;
+}
+
+void Racket::Stop()
+{
+	velocity = 0;
 }

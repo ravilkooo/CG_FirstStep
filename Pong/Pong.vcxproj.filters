@@ -30,6 +30,9 @@
     <ClInclude Include="Gates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PongPhysics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Ball.cpp">
@@ -50,5 +53,13 @@
     <ClCompile Include="Gates.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PongPhysics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\MyVeryFirstShader.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

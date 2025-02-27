@@ -24,7 +24,7 @@ public:
     GameTimer timer;
     //InputHandler inputHandler;
     Scene scene;
-    PhysicsEngine physEngine;
+    PhysicsEngine* physEngine;
     Renderer renderer;
     DisplayWindow displayWindow;
 
