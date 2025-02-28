@@ -23,6 +23,8 @@ public:
 
 	DirectX::BoundingBox GetBoundingBox() const;
 
+	DirectX::XMVECTOR normal = { 1.f, 0.f, 0.f, 0.f };
+
 private:
 	float width = 2.f;
 	float racket_width = 0.2f;

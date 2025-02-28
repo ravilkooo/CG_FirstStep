@@ -34,7 +34,7 @@ public:
     Gates* gates_AI;
     Border* border;
 
-    float AI_max_velocity = 3.f;
+    float AI_max_velocity = 1.5f;
 
 
     int player_score = 0;

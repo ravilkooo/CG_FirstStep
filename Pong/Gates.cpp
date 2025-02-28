@@ -18,12 +18,12 @@ Gates::Gates(DirectX::XMFLOAT4 position, float racket_width) : position(position
     pointsNum = 8;
     if (racket_width > 0)
     {
-        this->position.x += -width * 0.5 - racket_width * 0.5;
+        this->position.x += -width * 0.5 - racket_width * 1.5;
     }
     else
     {
         this->racket_width = -this->racket_width;
-        this->position.x += width * 0.5 - racket_width * 0.5;
+        this->position.x += width * 0.5 - racket_width * 1.5;
     }
     DirectX::XMFLOAT4 _points[8] = {
         DirectX::XMFLOAT4(this->position.x + (width + this->racket_width) * 0.5f, 1.f, position.z + 0.0f, position.w + 0.0f),  DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f),
@@ -108,7 +108,9 @@ void Gates::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 
 void Gates::HitBall(Ball* ball)
 {
-    ball->direction_y *= -1;
+    //ball->velocity_x *= -1;
+   
+    ball->velocity = DirectX::XMVector3Reflect(ball->velocity, normal);
 }
 
 DirectX::BoundingBox Gates::GetBoundingBox() const

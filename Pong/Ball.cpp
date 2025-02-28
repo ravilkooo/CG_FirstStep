@@ -53,8 +53,11 @@ Ball::Ball(DirectX::XMFLOAT4 position, float width) : position(position), width(
 	{
 		points[i] = _points[i];
 	}
-	velocity_x = velocity * DirectX::XMScalarCos(angle);
-	velocity_y = velocity * DirectX::XMScalarSin(angle);
+	/*velocity_x = velocity_magn * DirectX::XMScalarCos(angle);
+	velocity_y = velocity_magn * DirectX::XMScalarSin(angle);*/
+	//velocity_magn = start_velocity;
+	velocity = { -start_velocity, 0.f, 0.f, 0.f };
+
 	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
@@ -81,7 +84,7 @@ Ball::Ball(DirectX::XMFLOAT4* points)
 
 void Ball::Update(float deltaTime)
 {
-	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(velocity_x * deltaTime * direction_x, velocity_y * deltaTime * direction_y, 0);
+	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslationFromVector( DirectX::XMVectorScale(velocity, deltaTime));
 	cb.wvpMat = cb.wvpMat * moveMat;
 
 	//std::cout << "H\n";
@@ -117,10 +120,11 @@ void Ball::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 
 void Ball::Respawn()
 {
-	velocity = start_velocity;
-	angle = 0; // DirectX::XM_PIDIV4;
-	velocity_x = start_velocity * DirectX::XMScalarCos(angle);
-	velocity_y = start_velocity * DirectX::XMScalarCos(angle);
+	//velocity_magn = start_velocity;
+	//angle = 0; // DirectX::XM_PIDIV4;
+	//velocity_x = start_velocity * DirectX::XMScalarCos(angle);
+	//velocity_y = start_velocity * DirectX::XMScalarSin(angle);
+	velocity = { -start_velocity, 0.f, 0.f, 0.f };
 	cb.wvpMat = DirectX::XMMatrixIdentity();
 }
 
@@ -159,7 +163,8 @@ DirectX::BoundingBox Ball::GetNextStepBoundingBox(float deltaTime) const
 	DirectX::XMFLOAT3 extents(width * 0.5f,
 		width * 0.5f,
 		0.0f);
-	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(velocity * deltaTime * direction_x, velocity * deltaTime * direction_y, 0);
+	//DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(velocity_x * deltaTime, velocity_y * deltaTime, 0);
+	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorScale(velocity, deltaTime));
 	DirectX::XMStoreFloat3(&(bbox.Center), DirectX::XMVector4Transform(center, cb.wvpMat * moveMat));
 
 	bbox.Extents = extents;

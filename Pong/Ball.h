@@ -11,13 +11,12 @@ public:
     DirectX::XMFLOAT4 position = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
     float width = 0.1;
 
-    INT direction_x = -1;
-    INT direction_y = -1;
-    float start_velocity = 1;
-    float velocity_x = start_velocity;
-    float velocity_y = 0;
-    float velocity = 1;
-    float angle = 0; //DirectX::XM_PIDIV4;
+    float start_velocity = 1.f;
+    DirectX::XMVECTOR velocity = { -start_velocity, 0.f, 0.f, 0.f };
+    //float velocity_x = start_velocity;
+    //float velocity_y = 0;
+    //float velocity_magn = start_velocity;
+    //float angle = 0; //DirectX::XM_PIDIV4;
     float velocity_step = 0.1;
 
     Ball();

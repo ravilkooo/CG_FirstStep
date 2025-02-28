@@ -67,9 +67,14 @@ void PongGame::Initialize()
     racket_player->angle_velocity = 0.1f;
 
     racket_AI = new Racket(DirectX::XMFLOAT4(0.8, 0., 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+    racket_AI->angle_velocity = 0.9f;
+    //racket_AI->normal = { -1.f, 0.f, 0.f, 0.f };
 
     gates_player = new Gates(DirectX::XMFLOAT4(-0.8f, 0.f, 0.25f, 1.f), 0.1f);
+    gates_player->normal = { 1.f, 0.f, 0.f, 0.f };
+
     gates_AI = new Gates(DirectX::XMFLOAT4(0.8, 0.f, 0.25f, 1.f), -0.1f);
+    gates_AI->normal = { -1.f, 0.f, 0.f, 0.f };
 
     scene = Scene();
     scene.AddNode(border);

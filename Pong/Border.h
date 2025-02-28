@@ -20,6 +20,8 @@ public:
 	DirectX::BoundingBox* GetBoundingBoxes() const;
 private:
 	float height = 2.f;
+
+	DirectX::XMVECTOR normal = { 0.f, 1.f, 0.f, 0.f };
 };
 
 

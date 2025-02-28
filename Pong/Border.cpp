@@ -103,7 +103,7 @@ void Border::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 
 void Border::HitBall(Ball* ball)
 {
-	ball->direction_y *= -1;
+	ball->velocity = DirectX::XMVector3Reflect(ball->velocity, normal);
 }
 
 DirectX::BoundingBox* Border::GetBoundingBoxes() const
