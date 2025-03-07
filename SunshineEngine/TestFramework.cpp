@@ -297,7 +297,7 @@ int main_1()
 	// 10. Setup Rasterizer Stage and Viewport
 
 	CD3D11_RASTERIZER_DESC rastDesc = {};
-	rastDesc.CullMode = D3D11_CULL_NONE;
+	rastDesc.CullMode = D3D11_CULL_FRONT;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 
 	ID3D11RasterizerState* rastState;

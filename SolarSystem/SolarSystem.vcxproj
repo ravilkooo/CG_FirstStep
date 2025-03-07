@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{c0d0c22d-83b1-4cc0-bcb2-99a03abeac1b}</ProjectGuid>
-    <RootNamespace>Pong</RootNamespace>
+    <ProjectGuid>{6f4a4fdb-d964-4fad-85ca-e912ef5eea55}</ProjectGuid>
+    <RootNamespace>SolarSystem</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,23 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Ball.h" />
-    <ClInclude Include="Border.h" />
-    <ClInclude Include="Gates.h" />
-    <ClInclude Include="PongGame.h" />
-    <ClInclude Include="PongPhysics.h" />
-    <ClInclude Include="Racket.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Ball.cpp" />
-    <ClCompile Include="Border.cpp" />
-    <ClCompile Include="Gates.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="PongGame.cpp" />
-    <ClCompile Include="PongPhysics.cpp" />
-    <ClCompile Include="Racket.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\DirectXTK-main\DirectXTK_Desktop_2022_Win10.vcxproj">
       <Project>{e0b52ae7-e160-4d32-bf3f-910b785e5a8e}</Project>
       <Private>false</Private>
@@ -163,7 +146,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\MyVeryFirstShader.hlsl">
+    <FxCompile Include="Shaders\CubeShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
@@ -173,6 +156,34 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
+    <FxCompile Include="Shaders\MyVeryFirstShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CosmicBody.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="ShapeGenerator.h" />
+    <ClInclude Include="SolarSystemGame.h" />
+    <ClInclude Include="SolarSystemPhysics.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CosmicBody.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ShapeGenerator.cpp" />
+    <ClCompile Include="SolarSystemGame.cpp" />
+    <ClCompile Include="SolarSystemPhysics.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

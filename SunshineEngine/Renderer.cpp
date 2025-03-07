@@ -11,8 +11,7 @@ Renderer::Renderer(DisplayWindow* displayWin)
 
 Renderer::~Renderer()
 {
-    //if (context) context->Release();
-    //if (device) device->Release();
+
 }
 
 bool Renderer::Initialize(DisplayWindow* displayWin)
@@ -24,21 +23,6 @@ bool Renderer::Initialize(DisplayWindow* displayWin)
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
 
 	this->displayWindow = displayWindow;
-
-	/*HRESULT hr = D3D11CreateDevice(
-		nullptr,
-		D3D_DRIVER_TYPE_HARDWARE,
-		nullptr,
-		0,
-		featureLevels,
-		1,
-		D3D11_SDK_VERSION,
-		&device,
-		nullptr,
-		&context
-	);
-	if (FAILED(hr))
-		throw std::runtime_error("Failed to create D3D11 device");*/
 
 	// swapChain
 
@@ -77,8 +61,6 @@ bool Renderer::Initialize(DisplayWindow* displayWin)
 
 	// backBuffer
 
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
-
 	hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
 	if (FAILED(hr))
 		throw std::runtime_error("Failed to get back buffer");
@@ -89,16 +71,41 @@ bool Renderer::Initialize(DisplayWindow* displayWin)
 	if (FAILED(hr))
 		throw std::runtime_error("Failed to create Render Target View");
 
-	// resourceManagers for buffers
+
+	// depth buffer
+	pipelineState = PipelineState(GetDevice(), GetDeviceContext());
+	pipelineState.SetDepthStencilState(true);
+	
+	D3D11_TEXTURE2D_DESC descDepth = {};
+	descDepth.Width = screenWidth;
+	descDepth.Height = screenHeight;
+	descDepth.MipLevels = 1u;
+	descDepth.ArraySize = 1u;
+	descDepth.Format = DXGI_FORMAT_D32_FLOAT;
+	descDepth.SampleDesc.Count = 1u;
+	descDepth.SampleDesc.Quality = 0u;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	descDepth.CPUAccessFlags = 0; // надо ли
+	descDepth.MiscFlags = 0; // надо ли
+	
+	device->CreateTexture2D(&descDepth, nullptr, &pDepthStencil);
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0u;
+	device->CreateDepthStencilView(pDepthStencil, &descDSV, &pDSV);
+
+	context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
 
 	resourceManager = ResourceManager(GetDevice());
 
-	// Load and compile shaders (move to other section?)
 	shaderManager = ShaderManager(GetDevice());
 
-	inputAssembler = InputAssembler(GetDevice(), GetDeviceContext());
+	pipelineState.SetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID);
 
-	pipelineState = PipelineState(GetDevice(), GetDeviceContext());
+	inputAssembler = InputAssembler(GetDevice(), GetDeviceContext());
 
     return true;
 }
@@ -114,24 +121,7 @@ void Renderer::RenderScene(const Scene& scene)
 	// 13. At the End of While(!isExitRequested) : Clear BackBuffer
 	float color[] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	context->ClearRenderTargetView(renderTargetView, color);
-
-	/*struct Quadic {
-		int indices[6] = { 0,1,2, 1,0,3 };
-		DirectX::XMFLOAT4 points[8] = {
-			DirectX::XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
-			DirectX::XMFLOAT4(-0.25f, -0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
-			DirectX::XMFLOAT4(0.25f, -0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-			DirectX::XMFLOAT4(-0.25f, 0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-		};
-	} quad1, quad2;
-
-	for (size_t i = 0; i < 4; i++)
-	{
-		quad2.points[2 * i].x += 0.5;
-	}
-
-	Quadic quads[2] = { quad1, quad2 };*/
-
+	context->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0f, 0u);
 
 	D3D11_VIEWPORT viewport = {};
 	viewport.Width = static_cast<float>(screenWidth);
@@ -168,8 +158,6 @@ void Renderer::RenderScene(const Scene& scene)
 
 		inputAssembler.CreateInputLayout(inputElements, node->vsBlob);
 
-		pipelineState.SetRasterizerState(D3D11_CULL_NONE, D3D11_FILL_SOLID);
-
 		// 10. Setup Rasterizer Stage and Viewport
 
 		context->RSSetViewports(1, &viewport);
@@ -179,11 +167,11 @@ void Renderer::RenderScene(const Scene& scene)
 		inputAssembler.SetInputLayout();
 		inputAssembler.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		node->Draw(context, renderTargetView);
+		node->Draw(context, renderTargetView, pDSV);
 	}
 
 	// зачем эта строчка? 
-	context->OMSetRenderTargets(0, nullptr, nullptr);
+	context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
 
 	// 15. At the End of While (!isExitRequested): Present the Result
 	swapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);

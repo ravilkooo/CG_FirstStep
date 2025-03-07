@@ -183,7 +183,7 @@ int main()
 
 	ID3DBlob* pixelBC;
 	ID3DBlob* errorPixelCode;
-	res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
+	res = D3DCompileFromFile(L"./Shaders/CubeShader.hlsl",
 		Shader_Macros /*macros*/,
 		nullptr /*include*/,
 		"PSMain",

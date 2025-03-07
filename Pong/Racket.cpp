@@ -97,7 +97,7 @@ void Racket::Update(float deltaTime)
 {
 	curr_angle += angle_velocity * deltaTime;
 	if (curr_angle > DirectX::XM_PI) curr_angle = -DirectX::XM_PI;
-	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(0.f, velocity_magn * deltaTime, 0.f);
+	DirectX::XMMATRIX moveMat = DirectX::XMMatrixTranslation(velocity_magn_x * deltaTime, velocity_magn_y * deltaTime, 0.f);
 	
 	DirectX::XMFLOAT3 center_pos;
 	GetCenterLocation(&center_pos);
@@ -141,8 +141,8 @@ void Racket::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 void Racket::HitBall(Ball* ball, float deltaTime)
 {
 	//ball->velocity_x *= -1;
-	float velocity_magn = DirectX::XMVectorGetX(DirectX::XMVector3Length(ball->velocity));
-	ball->velocity = DirectX::XMVectorScale(ball->velocity, (velocity_magn + ball->velocity_step) / velocity_magn);
+	float velocity_magn_y = DirectX::XMVectorGetX(DirectX::XMVector3Length(ball->velocity));
+	ball->velocity = DirectX::XMVectorScale(ball->velocity, (velocity_magn_y + ball->velocity_step) / velocity_magn_y);
 
 	/*DirectX::XMFLOAT3 bc;
 	ball->GetCenterLocation(&bc);
@@ -188,7 +188,7 @@ void Racket::HitBall(Ball* ball, float deltaTime)
 	{
 		curr_normal = NormalDistribution(b);
 	}
-	std::cout << DirectX::XMVectorGetX(curr_normal) << ", " << DirectX::XMVectorGetY(curr_normal) << "\n";
+	//std::cout << DirectX::XMVectorGetX(curr_normal) << ", " << DirectX::XMVectorGetY(curr_normal) << "\n";
 
 	DirectX::XMVECTOR old_v = DirectX::XMVECTOR(ball->velocity);
 
@@ -196,8 +196,8 @@ void Racket::HitBall(Ball* ball, float deltaTime)
 
 
 	if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(_normal, ball->velocity)) < 0) {
-		std::cout << DirectX::XMVectorGetX(_normal) << ", " << DirectX::XMVectorGetY(_normal) << " :::: ";
-		std::cout << DirectX::XMVectorGetX(ball->velocity) << ", " << DirectX::XMVectorGetY(ball->velocity) << "\n";
+		//std::cout << DirectX::XMVectorGetX(_normal) << ", " << DirectX::XMVectorGetY(_normal) << " :::: ";
+		//std::cout << DirectX::XMVectorGetX(ball->velocity) << ", " << DirectX::XMVectorGetY(ball->velocity) << "\n";
 
 		ball->velocity = ReflectVector(_normal, old_v);
 		/*ball->velocity = DirectX::XMVectorScale(
@@ -211,8 +211,8 @@ void Racket::HitBall(Ball* ball, float deltaTime)
 	}
 }
 
-void Racket::Move(float velocity_magn) {
-	this->velocity_magn = velocity_magn;
+void Racket::Move(float velocity_magn_y) {
+	this->velocity_magn_y = velocity_magn_y;
 }
 
 DirectX::BoundingOrientedBox Racket::GetBoundingBox() const
@@ -243,17 +243,28 @@ void Racket::GetCenterLocation(DirectX::XMFLOAT3* loc)
 
 void Racket::MoveUp()
 {
-	velocity_magn = max_velocity;
+	velocity_magn_y = max_velocity;
 }
 
 void Racket::MoveDown()
 {
-	velocity_magn = -max_velocity;
+	velocity_magn_y = -max_velocity;
+}
+
+void Racket::MoveLeft()
+{
+	velocity_magn_x = -max_velocity;
+}
+
+void Racket::MoveRight()
+{
+	velocity_magn_x = max_velocity;
 }
 
 void Racket::Stop()
 {
-	velocity_magn = 0;
+	velocity_magn_x = 0;
+	velocity_magn_y = 0;
 }
 
 void Racket::Normalize() {

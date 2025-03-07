@@ -30,10 +30,10 @@ void PongPhysics::Update(float deltaTime)
         ball->GetCenterLocation(&ball_loc);
         DirectX::XMFLOAT3 AI_loc;
         racket_AI->GetCenterLocation(&AI_loc);
-        racket_AI->velocity_magn = max(-AI_max_velocity, min((ball_loc.y - AI_loc.y) / deltaTime, AI_max_velocity));
+        racket_AI->velocity_magn_y = max(-AI_max_velocity, min((ball_loc.y - AI_loc.y) / deltaTime, AI_max_velocity));
     }
     else {
-        racket_AI->velocity_magn = 0.f;
+        racket_AI->velocity_magn_y = 0.f;
     }
 
     if (CheckBorderCollision(deltaTime))

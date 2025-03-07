@@ -9,9 +9,9 @@ PipelineState::PipelineState(ID3D11Device* device, ID3D11DeviceContext* context)
     : device(device), context(context), rasterizerState(nullptr), blendState(nullptr), depthStencilState(nullptr)
 {
     // Инициализация состояний по умолчанию
-    SetRasterizerState();
-    SetBlendState();
-    SetDepthStencilState();
+    //SetRasterizerState();
+    //SetBlendState();
+    //SetDepthStencilState();
 }
 
 PipelineState::~PipelineState()
@@ -28,7 +28,6 @@ void PipelineState::SetRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE
         rasterizerState->Release();
         rasterizerState = nullptr;
     }
-    context->ClearState();
     D3D11_RASTERIZER_DESC rasterDesc = {};
     rasterDesc.FillMode = fillMode;
     rasterDesc.CullMode = cullMode;
@@ -52,7 +51,6 @@ void PipelineState::SetBlendState(bool enableBlending)
         blendState->Release();
         blendState = nullptr;
     }
-    context->ClearState();
     D3D11_BLEND_DESC blendDesc = {};
     blendDesc.RenderTarget[0].BlendEnable = enableBlending;
     blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
@@ -71,18 +69,17 @@ void PipelineState::SetBlendState(bool enableBlending)
 
 void PipelineState::SetDepthStencilState(bool enableDepthTest)
 {
-    if (depthStencilState)
+    /*if (depthStencilState)
     {
         depthStencilState->Release();
         depthStencilState = nullptr;
-    }
-    context->ClearState();
+    }*/
     D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
-    depthStencilDesc.DepthEnable = enableDepthTest;
+    depthStencilDesc.DepthEnable = TRUE;
     depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
     depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-    depthStencilDesc.StencilEnable = false;
+    //depthStencilDesc.StencilEnable = false;
 
     device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
-    context->OMSetDepthStencilState(depthStencilState, 0);
+    context->OMSetDepthStencilState(depthStencilState, 1u);
 }

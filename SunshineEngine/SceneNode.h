@@ -13,8 +13,9 @@ public:
     virtual ~SceneNode();
 
     virtual void Update(float deltaTime) = 0;
-    virtual void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
-        ID3D11RenderTargetView* renderTargetView) = 0;
+    void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
+        ID3D11RenderTargetView* renderTargetView,
+        ID3D11DepthStencilView* pDSV);
 
     void InitBuffers(ResourceManager resourceManager);
 
@@ -35,16 +36,25 @@ public:
     ID3D11Buffer* pVertexBuffer;
     ID3D11Buffer* pConstantBuffer;
 
+    DirectX::XMMATRIX worldMat = DirectX::XMMatrixIdentity();   // Мировая матрица
+    DirectX::XMMATRIX viewMat = DirectX::XMMatrixIdentity();    // Матрица вида (камеры)
+    DirectX::XMMATRIX projMat = DirectX::XMMatrixIdentity();    // Проекционная матрица
+
     struct ConstantBuffer
     {
-        DirectX::XMMATRIX wvpMat = DirectX::XMMatrixIdentity();
+        DirectX::XMMATRIX wvpMat = DirectX::XMMatrixIdentity();     // Комбинированная матрица (world * view * proj)
     };
 
     ConstantBuffer cb;
 
+    void SetWorldMatrix(const DirectX::XMMATRIX& worldMatrix);
+    void SetViewMatrix(const DirectX::XMMATRIX& viewMatrix);
+    void SetProjectionMatrix(const DirectX::XMMATRIX& projectionMatrix);
+
 
 protected:
     // Позиция, поворот, масштаб и другие свойства
+    DirectX::XMMATRIX localMatrix = DirectX::XMMatrixIdentity();
 };
 
 #endif // SCENENODE_H

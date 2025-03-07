@@ -331,7 +331,7 @@ void Game::TriangleComponent::Initialize()
 
 	// Вынести в update? Потому что у каждого тр-ка посвоему?
 	CD3D11_RASTERIZER_DESC rastDesc = {};
-	rastDesc.CullMode = D3D11_CULL_NONE;
+	rastDesc.CullMode = D3D11_CULL_FRONT;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 
 	res = game->device->CreateRasterizerState(&rastDesc, &rastState);

@@ -13,7 +13,8 @@ public:
     float width = 0.1; float height = 0.1;
 
     //INT direction = 0.f;
-    float velocity_magn = .0f;
+    float velocity_magn_x = .0f;
+    float velocity_magn_y = .0f;
     float max_velocity = 3.f;
     float angle_velocity = 0.f;
     float curr_angle = 0.f;
@@ -32,13 +33,15 @@ public:
         ID3D11RenderTargetView* renderTargetView);
 
     void HitBall(Ball* ball, float deltaTime);
-    void Move(float velocity_magn);
+    void Move(float velocity_magn_y);
     
     DirectX::BoundingOrientedBox GetBoundingBox() const;
 
     void GetCenterLocation(DirectX::XMFLOAT3* loc);
     void MoveUp();
     void MoveDown();
+    void MoveLeft();
+    void MoveRight();
     void Stop();
 
     void Normalize();

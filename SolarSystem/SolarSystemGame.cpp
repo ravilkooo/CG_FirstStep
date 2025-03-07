@@ -1,16 +1,17 @@
-#include "PongGame.h"
+#include "SolarSystemGame.h"
 
 
-PongGame::PongGame()
+
+SolarSystemGame::SolarSystemGame()
 {
     Initialize();
 }
 
-PongGame::~PongGame()
+SolarSystemGame::~SolarSystemGame()
 {
 }
 
-void PongGame::Run()
+void SolarSystemGame::Run()
 {
     MSG msg = {};
     bool isExitRequested = false;
@@ -34,7 +35,7 @@ void PongGame::Run()
         frameCount++;
 
         if (totalTime > 1.0f) {
-            float fps = frameCount * 1. / totalTime;
+            float fps = frameCount * 1.0f / totalTime;
 
             //std::cout << frameCount << "\n";
 
@@ -52,41 +53,34 @@ void PongGame::Run()
     }
 }
 
-void PongGame::Initialize()
+void SolarSystemGame::Initialize()
 {
 
-    applicationName = L"SunShine_0";
+    applicationName = L"SolarSystem";
     hInstance = GetModuleHandle(nullptr);
 
     timer = GameTimer();
 
-    border = new Border();
-    ball = new Ball(DirectX::XMFLOAT4(0., 0., 0.25, 1), 0.1);
-    
-    racket_player = new Racket(DirectX::XMFLOAT4(-0.8, 0., 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-    racket_player->angle_velocity = 0.1f;
-
-    racket_AI = new Racket(DirectX::XMFLOAT4(0.8, 0., 0.25, 1), 0.1, 0.4, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
-    racket_AI->angle_velocity = 0.9f;
-    //racket_AI->normal = { -1.f, 0.f, 0.f, 0.f };
-
-    gates_player = new Gates(DirectX::XMFLOAT4(-0.8f, 0.f, 0.25f, 1.f), 0.1f);
-    gates_player->normal = { 1.f, 0.f, 0.f, 0.f };
-
-    gates_AI = new Gates(DirectX::XMFLOAT4(0.8, 0.f, 0.25f, 1.f), -0.1f);
-    gates_AI->normal = { -1.f, 0.f, 0.f, 0.f };
-
     scene = Scene();
-    scene.AddNode(border);
-    scene.AddNode(gates_player);
-    scene.AddNode(gates_AI);
 
-    scene.AddNode(ball);
-    scene.AddNode(racket_player);
-    scene.AddNode(racket_AI);
+    // Создание планет и лун
+    CosmicBody* sun = new CosmicBody(0.2f, 0.5f, DirectX::XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
+    //CosmicBody* earth = new CosmicBody(0.3f, 0.8f, 0.0f, DirectX::XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+    CosmicBody* earth = new CosmicBody(0.1f, 2.4f, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT4(0.1f, 0.1f, 1.0f, 1.0f), sun, 0.4f, 0.4f);
+    //CosmicBody* earth = new CosmicBody(1.0f, 0.5f, 0.2f, sun);
+    CosmicBody* moon = new CosmicBody(0.03f, 6.f, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), earth, 0.2f, 2.f);
 
-    physEngine = new PongPhysics(&scene, ball, racket_player,
-        racket_AI, gates_player, gates_AI, border);
+    cosmicBodies.push_back(sun);
+    cosmicBodies.push_back(earth);
+    cosmicBodies.push_back(moon);
+
+    // Добавление объектов на сцену
+    for (auto body : cosmicBodies)
+    {
+        scene.AddNode(body);
+    }
+
+    physEngine = new SolarSystemPhysics(&scene);
 
     displayWindow = DisplayWindow(applicationName, hInstance, 800, 800);
     inputHandler = displayWindow.GetInputHandler();
@@ -99,9 +93,15 @@ void PongGame::Initialize()
         node->InitBuffers(renderer.resourceManager);
         //std::cout << "f1\n";
     }
+
+
+    // Инициализация камеры
+    //camera.SetPosition(DirectX::XMFLOAT3(0.0f, 10.0f, -20.0f));
+    //camera.SetTarget(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+    //camera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 }
 
-void PongGame::Update(float deltaTime)
+void SolarSystemGame::Update(float deltaTime)
 {
     // Получаем InputHandler из DisplayWindow
     inputHandler = displayWindow.GetInputHandler();
@@ -110,33 +110,21 @@ void PongGame::Update(float deltaTime)
     if (inputHandler->IsKeyDown(InputHandler::KeyCode::UP))
     {
         //std::cout << "MoveUp\n";
-        racket_player->MoveUp();
     }
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::DOWN))
     {
         //std::cout << "MoveDown\n";
-        racket_player->MoveDown();
-    }
-    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::LEFT))
-    {
-        //std::cout << "MoveUp\n";
-        racket_player->MoveLeft();
-    }
-    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::RIGHT))
-    {
-        //std::cout << "MoveDown\n";
-        racket_player->MoveRight();
     }
     else
     {
-        racket_player->Stop();
+
     }
 
     // Обновление состояния игры
     physEngine->Update(deltaTime);
 }
 
-void PongGame::Render()
+void SolarSystemGame::Render()
 {
     // Отрисовка сцены
     renderer.RenderScene(scene);

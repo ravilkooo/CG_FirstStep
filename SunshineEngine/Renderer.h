@@ -32,6 +32,10 @@ public:
     ShaderManager shaderManager;
     ResourceManager resourceManager;
 private:
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
+    ID3D11Texture2D* pDepthStencil;
+    ID3D11DepthStencilView* pDSV;
+
     TextureManager textureManager;
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;

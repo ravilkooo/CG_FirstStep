@@ -13,8 +13,6 @@ public:
     Triangle(DirectX::XMFLOAT4* points);
 
     void Update(float deltaTime);
-    void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
-        ID3D11RenderTargetView* renderTargetView);
 };
 
 #endif // TRIANGLE_H
