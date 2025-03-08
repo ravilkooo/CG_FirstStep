@@ -12,23 +12,44 @@ Triangle::Triangle()
 	}
 
 
-	DirectX::XMFLOAT4 _points[6] = {
-		DirectX::XMFLOAT4(0.75f, 0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT4(0.25f, -0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT4(0.75f, -0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)
+	Vertex _points[6] = {
+		DirectX::XMFLOAT3(0.75f, 0.25f, 0.25f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
+		DirectX::XMFLOAT3(0.25f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
+		DirectX::XMFLOAT3(0.75f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)
 	};
-	points = (DirectX::XMFLOAT4*)malloc(6 * sizeof(DirectX::XMFLOAT4));
-	pointsNum = 6;
+	vertices = (Vertex*)malloc(3 * sizeof(Vertex));
+	verticesNum = 3;
 
 	for (int i = 0; i < 6; i++)
 	{
-		points[i] = _points[i];
+		vertices[i] = _points[i];
 	}
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	IALayoutInputElements[0] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"POSITION",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			0,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
+
+	IALayoutInputElements[1] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"COLOR",
+			0,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			0,
+			D3D11_APPEND_ALIGNED_ELEMENT,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
 
 	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
-Triangle::Triangle(DirectX::XMFLOAT4* points)
+Triangle::Triangle(Vertex* vertices)
 {
 	int _ind[3] = { 0, 1, 2 };
 	indices = (int*)malloc(3 * sizeof(int));
@@ -38,13 +59,34 @@ Triangle::Triangle(DirectX::XMFLOAT4* points)
 		indices[i] = _ind[i];
 	}
 
-	this->points = (DirectX::XMFLOAT4*)malloc(6 * sizeof(DirectX::XMFLOAT4));
-	pointsNum = 6;
+	this->vertices = (Vertex*)malloc(3 * sizeof(Vertex));
+	verticesNum = 3;
 
 	for (int i = 0; i < 6; i++)
 	{
-		this->points[i] = points[i];
+		this->vertices[i] = vertices[i];
 	}
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	IALayoutInputElements[0] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"POSITION",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			0,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
+
+	IALayoutInputElements[1] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"COLOR",
+			0,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			0,
+			D3D11_APPEND_ALIGNED_ELEMENT,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
 
 	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }

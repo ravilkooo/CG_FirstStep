@@ -13,25 +13,21 @@ void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 	ID3D11RenderTargetView* renderTargetView,
 	ID3D11DepthStencilView* pDSV)
 {
+	context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     context->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-    // 6. Create Set of Points
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
-    context->Map(pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    memcpy(mappedResource.pData, &cb, sizeof(cb));
-    context->Unmap(pConstantBuffer, 0);
-
-    UINT strides[] = { 32 };
+    UINT strides[] = { sizeof(Vertex) };
     UINT offsets[] = { 0 };
     context->IASetVertexBuffers(0, 1, &(pVertexBuffer), strides, offsets);
 
-    // 9. Set Vertex and Pixel Shaders
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	context->Map(pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &cb, sizeof(cb));
+	context->Unmap(pConstantBuffer, 0);
     context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 
     context->VSSetShader(vertexShader, nullptr, 0);
     context->PSSetShader(pixelShader, nullptr, 0);
-
-    // 11. Set BackBuffer for Output
 
     context->OMSetRenderTargets(1, &renderTargetView, pDSV);
 
@@ -45,7 +41,7 @@ void SceneNode::InitBuffers(ResourceManager resourceManager)
 	// 7. Create Vertex and Index Buffers
 
 	// Create pVertexBuffer
-	pVertexBuffer = resourceManager.CreateVertexBuffer(points, sizeof(DirectX::XMFLOAT4) * pointsNum);
+	pVertexBuffer = resourceManager.CreateVertexBuffer(vertices, sizeof(Vertex) * verticesNum);
 
 	// Create Set of indices
 

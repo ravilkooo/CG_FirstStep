@@ -12,7 +12,6 @@ public:
 	Quad();
 	Quad(DirectX::XMFLOAT4 position, float height);
 	Quad(DirectX::XMFLOAT4 position, float height, float width);
-	Quad(DirectX::XMFLOAT4* points);
     void Update(float deltaTime);
 };
 

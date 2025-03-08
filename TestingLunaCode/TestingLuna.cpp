@@ -32,7 +32,15 @@ ostream& operator<<(ostream& os, DirectX::FXMVECTOR v)
 	return os;
 }
 
+int test_0();
+int test_1();
+
 int main()
+{
+	test_1();
+}
+
+int test_0()
 {
 	cout.setf(ios_base::boolalpha);
 	// Check support for SSE2 (Pentium4, AMD K8, and above).
@@ -51,5 +59,24 @@ int main()
 	cout << "u = " << u << endl;
 	cout << "v = " << v << endl;
 	cout << "w = " << w << endl;
+	return 0;
+}
+
+int test_1() {
+	// Project onto unit sphere.
+	DirectX::XMVECTOR p = DirectX::XMVectorSet(1.0f, 2.0f, 3.0f, 0.0f);
+	cout << "p = " << p << endl;
+	DirectX::XMVECTOR q = DirectX::XMVector3Normalize(p);
+	cout << "q = " << q << endl;
+	DirectX::XMVECTOR r = DirectX::XMVector4Normalize(p);
+	cout << "r = " << r << endl;
+
+	p = DirectX::XMVectorSet(1.0f, 2.0f, 3.0f, 2.0f);
+	cout << "p = " << p << endl;
+	q = DirectX::XMVector3Normalize(p);
+	cout << "q = " << q << endl;
+	r = DirectX::XMVector4Normalize(p);
+	cout << "r = " << r << endl;
+
 	return 0;
 }

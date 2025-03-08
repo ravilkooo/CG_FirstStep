@@ -21,6 +21,9 @@
     <FxCompile Include="Shaders\CubeShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\SphereShader.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SolarSystemPhysics.h">

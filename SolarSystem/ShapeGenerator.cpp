@@ -1,31 +1,38 @@
 #include "ShapeGenerator.h"
+#include <iostream>
 
-void CreateSimpleCubeMesh(float width, float height, float depth,
-    DirectX::XMFLOAT4** vertices, int** indices, DirectX::XMFLOAT4 col) {
+DirectX::XMVECTOR NormalizeHomogeneousVector(DirectX::XMVECTOR vec) {
+    // Получаем компонент w
+    DirectX::XMVECTOR w = DirectX::XMVectorSplatW(vec);
+
+    DirectX::XMVECTOR cartesian = DirectX::XMVectorDivide(vec, w);
+
+    DirectX::XMVECTOR normalized = DirectX::XMVector3Normalize(cartesian);
+
+    return DirectX::XMVectorSetW(normalized, 1.0f);
+}
+
+void CreateSimpleCubeMesh(float width, float height, float depth, DirectX::XMFLOAT4 col,
+    Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
     float w2 = 0.5f * width;
     float h2 = 0.5f * height;
     float d2 = 0.5f * depth;
 
-    DirectX::XMFLOAT4 col_1 = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-    DirectX::XMFLOAT4 col_2 = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+    //DirectX::XMFLOAT4 col_1 = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+    //DirectX::XMFLOAT4 col_2 = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
-    *vertices = (DirectX::XMFLOAT4*)calloc(16, sizeof(DirectX::XMFLOAT4));
+    *vertices = (Vertex*)calloc(8, sizeof(Vertex));
+    *verticesNum = 8;
 
+    (*vertices)[0] = { DirectX::XMFLOAT3(-w2, -h2, -d2), col };
+    (*vertices)[1] = { DirectX::XMFLOAT3(-w2, +h2, -d2), col };
+    (*vertices)[2] = { DirectX::XMFLOAT3(+w2, +h2, -d2), col };
+    (*vertices)[3] = { DirectX::XMFLOAT3(+w2, -h2, -d2), col };
+    (*vertices)[4] = { DirectX::XMFLOAT3(-w2, -h2, +d2), col };
+    (*vertices)[5] = { DirectX::XMFLOAT3(-w2, +h2, +d2), col };
+    (*vertices)[6] = { DirectX::XMFLOAT3(+w2, +h2, +d2), col };
+    (*vertices)[7] = { DirectX::XMFLOAT3(+w2, -h2, +d2), col };
 
-    (*vertices)[0] = DirectX::XMFLOAT4(-w2, -h2, -d2, 1.0f);
-    (*vertices)[2] = DirectX::XMFLOAT4(-w2, +h2, -d2, 1.0f);
-    (*vertices)[4] = DirectX::XMFLOAT4(+w2, +h2, -d2, 1.0f);
-    (*vertices)[6] = DirectX::XMFLOAT4(+w2, -h2, -d2, 1.0f);
-    (*vertices)[8] = DirectX::XMFLOAT4(-w2, -h2, +d2, 1.0f);
-    (*vertices)[10] = DirectX::XMFLOAT4(-w2, +h2, +d2, 1.0f);
-    (*vertices)[12] = DirectX::XMFLOAT4(+w2, +h2, +d2, 1.0f);
-    (*vertices)[14] = DirectX::XMFLOAT4(+w2, -h2, +d2, 1.0f);
-    for (size_t i = 0; i < 8; i++)
-    {
-        (*vertices)[2 * i + 1] = DirectX::XMFLOAT4(i / 2 < 2 ? col_1 : col);
-    }
-
-    *indices = (int*)calloc(36, sizeof(int));
 
     int _indices[36] = {
         0,1,2,
@@ -53,7 +60,8 @@ void CreateSimpleCubeMesh(float width, float height, float depth,
         4,3,7,
     };
 
-    std::cout << "Hi!\n";
+    *indices = (int*)calloc(36, sizeof(int));
+    *indicesNum = 36;
 
     for (size_t i = 0; i < 36; i++)
     {
@@ -63,62 +71,150 @@ void CreateSimpleCubeMesh(float width, float height, float depth,
     return;
 }
 
+void CreateSimpleGeosphereMesh(float radius, DirectX::XMFLOAT4 col,
+    Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
+    
 
-/*
-void GeometryGenerator::CreateGeosphere(float radius, UINT numSubdivisions, MeshData& meshData)
-{
-// Put a cap on the number of subdivisions.
-numSubdivisions = MathHelper::Min(numSubdivisions, 5u);
-// Approximate a sphere by tessellating an icosahedron.
-const float X = 0.525731f;
-const float Z = 0.850651f;
-XMFLOAT3 pos[12] =
-{
-XMFLOAT3(-X, 0.0f, Z), XMFLOAT3(X, 0.0f, Z),
-XMFLOAT3(-X, 0.0f, -Z), XMFLOAT3(X, 0.0f, -Z),
-XMFLOAT3(0.0f, Z, X), XMFLOAT3(0.0f, Z, -X),
-XMFLOAT3(0.0f, -Z, X), XMFLOAT3(0.0f, -Z, -X),
-XMFLOAT3(Z, X, 0.0f), XMFLOAT3(-Z, X, 0.0f),
-XMFLOAT3(Z, -X, 0.0f), XMFLOAT3(-Z, -X, 0.0f)
-};
-DWORD k[60] =
-{
-1,4,0, 4,9,0, 4,5,9, 8,5,4, 1,8,4,
-1,10,8, 10,3,8, 8,3,5, 3,2,5, 3,7,2,
-3,10,7, 10,6,7, 6,11,7, 6,0,11, 6,1,0,
-10,1,6, 11,0,9, 2,11,9, 5,2,9, 11,2,7
-};
-meshData.Vertices.resize(12);
-meshData.Indices.resize(60);
-for(size_t i = 0; i < 12; ++i)
-meshData.Vertices[i].Position = pos[i];
-for(size_t i = 0; i < 60; ++i)
-meshData.Indices[i] = k[i];
-for(size_t i = 0; i < numSubdivisions; ++i)
-Subdivide(meshData);// Project vertices onto sphere and scale.
-for(size_t i = 0; i < meshData.Vertices.size(); ++i)
-{
-// Project onto unit sphere.
-XMVECTOR n = XMVector3Normalize(XMLoadFloat3(
-&meshData.Vertices[i].Position));
-// Project onto sphere.
-XMVECTOR p = radius*n;
-XMStoreFloat3(&meshData.Vertices[i].Position, p);
-XMStoreFloat3(&meshData.Vertices[i].Normal, n);
-// Derive texture coordinates from spherical coordinates.
-float theta = MathHelper::AngleFromXY(
-meshData.Vertices[i].Position.x,
-meshData.Vertices[i].Position.z);
-float phi = acosf(meshData.Vertices[i].Position.y / radius);
-meshData.Vertices[i].TexC.x = theta/XM_2PI;
-meshData.Vertices[i].TexC.y = phi/XM_PI;
-// Partial derivative of P with respect to theta
-meshData.Vertices[i].TangentU.x = -radius*sinf(phi)*sinf(theta);
-meshData.Vertices[i].TangentU.y = 0.0f;
-meshData.Vertices[i].TangentU.z = +radius*sinf(phi)*cosf(theta);
-XMVECTOR T = XMLoadFloat3(&meshData.Vertices[i].TangentU);
-XMStoreFloat3(&meshData.Vertices[i].TangentU,
-XMVector3Normalize(T));
+    //numSubdivisions = MathHelper::Min(numSubdivisions, 5u);
+
+    const float X = 0.525731f;
+    const float Z = 0.850651f;
+    DirectX::XMFLOAT3 pos[12] =
+    {
+        DirectX::XMFLOAT3(-X, 0.0f, Z), DirectX::XMFLOAT3(X, 0.0f, Z),
+        DirectX::XMFLOAT3(-X, 0.0f, -Z), DirectX::XMFLOAT3(X, 0.0f, -Z),
+        DirectX::XMFLOAT3(0.0f, Z, X), DirectX::XMFLOAT3(0.0f, Z, -X),
+        DirectX::XMFLOAT3(0.0f, -Z, X), DirectX::XMFLOAT3(0.0f, -Z, -X),
+        DirectX::XMFLOAT3(Z, X, 0.0f), DirectX::XMFLOAT3(-Z, X, 0.0f),
+        DirectX::XMFLOAT3(Z, -X, 0.0f), DirectX::XMFLOAT3(-Z, -X, 0.0f)
+    };
+    DWORD k[60] =
+    {
+    1,4,0, 4,9,0, 4,5,9, 8,5,4, 1,8,4,
+    1,10,8, 10,3,8, 8,3,5, 3,2,5, 3,7,2,
+    3,10,7, 10,6,7, 6,11,7, 6,0,11, 6,1,0,
+    10,1,6, 11,0,9, 2,11,9, 5,2,9, 11,2,7
+    };
+    
+
+    *vertices = (Vertex*)calloc(12, sizeof(Vertex));
+    *verticesNum = 12;
+    for (size_t i = 0; i < 12; i++) {
+        (*vertices)[i] = { pos[i], col };
+    }
+
+    *indicesNum = 60;
+    *indices = (int*)calloc(60, sizeof(int));
+    for (size_t i = 0; i < 60; ++i)
+        (*indices)[i] = k[i];
+
+    
+    //for (size_t i = 0; i < numSubdivisions; ++i)
+    //    Subdivide(meshData);// Project vertices onto sphere and scale.
+    for (size_t i = 0; i < 12; i++)
+    {
+        // Project onto unit sphere.
+        DirectX::XMVECTOR _n = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&(*vertices)[i].pos));
+        // Project onto sphere.
+        DirectX::XMVECTOR _p = DirectX::XMVectorScale (_n, radius);
+        //DirectX::XMFLOAT4 _p_f4;
+        DirectX::XMStoreFloat3(&((*vertices)[i].pos), _p);
+        //std::cout << i << " " << (*vertices)[2 * i].x << ", ";
+        //(*vertices)[2 * i] = _p_f4;
+    }
+    
+    return;
 }
+
+
+void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
+    DirectX::XMFLOAT4 col,
+    Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
+
+    sliceCount = max(sliceCount, 4);
+    elevationCount = max(elevationCount, 1);
+
+    *verticesNum = 2 + (2 * elevationCount + 1) * sliceCount;
+    *vertices = (Vertex*)malloc(*verticesNum * sizeof(Vertex));
+
+    float sliceStep = DirectX::XM_2PI / sliceCount;
+    float elevationStep = DirectX::XM_PIDIV2 / (elevationCount + 1);
+
+
+    UINT _offsetVertexIdx = 0;
+    // top vertex
+    (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), col };
+    // other vertices
+    for (UINT i = 1; i <= 2 * elevationCount + 1; ++i)
+    {
+        for (UINT j = 0; j < sliceCount; ++j) {
+            (*vertices)[_offsetVertexIdx++] =
+            { DirectX::XMFLOAT3(
+                sinf(elevationStep * i) * cosf(sliceStep * j),
+                sinf(elevationStep * i) * sinf(sliceStep * j),
+                cosf(elevationStep * i)
+            ), col };
+        }
+        std::cout << (*vertices)[_offsetVertexIdx - 1].pos.z << ";\n";
+    }
+    // bottom vertex
+    (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), col };
+
+
+    *indicesNum = 6 * sliceCount + 2 * 6 * elevationCount * sliceCount;
+    //std::cout << *indicesNum << " << \n";
+    *indices = (int*)malloc(*indicesNum * sizeof(int));
+
+    UINT indexIndex = 0;
+
+    for (UINT j = 0; j < sliceCount - 1; ++j) {
+        (*indices)[indexIndex++] = 0;
+        (*indices)[indexIndex++] = j + 1;
+        (*indices)[indexIndex++] = j + 2;
+    }
+    
+    (*indices)[indexIndex++] = 0;
+    (*indices)[indexIndex++] = sliceCount;
+    (*indices)[indexIndex++] = 1;
+    
+
+
+
+
+    for (UINT i = 0; i < 2 * elevationCount; ++i) {
+        UINT startIndex = 1 + i * sliceCount;
+        UINT nextStartIndex = startIndex + sliceCount;
+        for (UINT j = 0; j < sliceCount; ++j) {
+            
+            (*indices)[indexIndex++] = startIndex + j;
+            (*indices)[indexIndex++] = startIndex + j + 1;
+            (*indices)[indexIndex++] = nextStartIndex + j;
+
+            (*indices)[indexIndex++] = startIndex + j + 1;
+            (*indices)[indexIndex++] = nextStartIndex + j + 1;
+            (*indices)[indexIndex++] = nextStartIndex + j;
+        }
+    }
+    
+    
+    UINT bottomIndex = _offsetVertexIdx - 1;
+    UINT startIndex = 1 + 2 * elevationCount * sliceCount;
+    for (UINT j = 0; j < sliceCount-1; ++j) {
+        (*indices)[indexIndex++] = bottomIndex;
+        (*indices)[indexIndex++] = startIndex + j + 1;
+        (*indices)[indexIndex++] = startIndex + j;
+    }
+
+    (*indices)[indexIndex++] = bottomIndex;
+    (*indices)[indexIndex++] = startIndex;
+    (*indices)[indexIndex++] = startIndex + sliceCount - 1;
+
+    for (size_t i = 0; i < _offsetVertexIdx + sliceCount * (elevationCount - 1); i++)
+    {
+        DirectX::XMVECTOR _n = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&(*vertices)[i].pos));
+        DirectX::XMVECTOR _p = DirectX::XMVectorScale(_n, radius);
+        DirectX::XMStoreFloat3(&((*vertices)[i].pos), _p);
+    }
+
+    return;
 }
-*/

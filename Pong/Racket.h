@@ -26,8 +26,6 @@ public:
     Racket(DirectX::XMFLOAT4 position, float height, float width);
     Racket(DirectX::XMFLOAT4 position, float height, float width, DirectX::XMFLOAT4 color);
 
-    Racket(DirectX::XMFLOAT4* points);
-
     void Update(float deltaTime);
     void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
         ID3D11RenderTargetView* renderTargetView);

@@ -8,14 +8,20 @@
 #include "SimpleMath.h"
 #include "ShapeGenerator.h"
 
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
+
 class CosmicBody : public SceneNode
 {
 public:
+    enum class PLANET_TYPE {
+        CUBE = 0, SPHERE = 1, GEOSPHERE = 2,
+    };
 
-    DirectX::XMFLOAT4 position = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+    XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
     CosmicBody(float radius, float rotationSpeed,
-        DirectX::XMFLOAT4 position, DirectX::XMFLOAT4 col,
+        XMFLOAT3 position, XMFLOAT4 col, PLANET_TYPE planet_type,
         CosmicBody* attractedTo = nullptr, float orbitRadius = 0.0, float orbitSpeed = 0.0 );
     ~CosmicBody();  
 
@@ -23,8 +29,9 @@ public:
 
     void SetOrbitSpeed(float speed);
     void SetRotationSpeed(float speed);
-
-    void GetCenterLocation(DirectX::XMFLOAT3* loc);
+    
+    Matrix GetAttractedToTransform();
+    Vector3 GetCenterLocation();
 
 private:
     float radius;

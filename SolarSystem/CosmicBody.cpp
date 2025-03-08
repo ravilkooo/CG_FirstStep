@@ -1,7 +1,7 @@
 #include "CosmicBody.h"
 
 CosmicBody::CosmicBody(float radius, float rotationSpeed,
-    DirectX::XMFLOAT4 position, DirectX::XMFLOAT4 col,
+    XMFLOAT3 position, XMFLOAT4 col, PLANET_TYPE planet_type,
     CosmicBody* attractedTo, float orbitRadius, float orbitSpeed)
     : radius(radius), rotationSpeed(rotationSpeed), position(position),
     orbitAngle(0.0f), rotationAngle(0.0f),
@@ -11,34 +11,48 @@ CosmicBody::CosmicBody(float radius, float rotationSpeed,
     float h2 = 0.5f * radius;
     float d2 = 0.5f * radius;
     
-    pointsNum = 8*2;
+    verticesNum = 8;
     indicesNum = 36;
-    CreateSimpleCubeMesh(radius, radius, radius, &points, &indices, col);
 
-    //position.z = 3 * radius;
-    /*
-    int _ind[6] = { 0, 1, 2, 1, 0, 3 };
-    indices = (int*)malloc(6 * sizeof(int));
-    indicesNum = 6;
-    for (int i = 0; i < 6; i++)
+    switch (planet_type)
     {
-        indices[i] = _ind[i];
+    case CosmicBody::PLANET_TYPE::CUBE:
+        CreateSimpleCubeMesh(radius, radius, radius, col, &vertices, &verticesNum, &indices, &indicesNum);
+        break;
+    case CosmicBody::PLANET_TYPE::SPHERE:
+        CreateSimpleSphereMesh(radius, 20, 10, col, &vertices, &verticesNum, &indices, &indicesNum);
+        break;
+    case CosmicBody::PLANET_TYPE::GEOSPHERE:
+        CreateSimpleGeosphereMesh(radius, col, &vertices, &verticesNum, &indices, &indicesNum);
+        break;
+    default:
+        break;
     }
+    //CreateSimpleCubeMesh(radius, radius, radius, col, &vertices, &verticesNum, &indices, &indicesNum);
+    //CreateSimpleGeosphereMesh(radius, col, &vertices, &verticesNum, &indices, &indicesNum);
+    //CreateSimpleSphereMesh(radius, 6, 3, col, &vertices, &verticesNum, &indices, &indicesNum);
 
-    DirectX::XMFLOAT4 _points[8] = {
-        DirectX::XMFLOAT4(radius, radius, radius, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-        DirectX::XMFLOAT4(-radius, -radius, radius, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-        DirectX::XMFLOAT4(radius, -radius, radius, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-        DirectX::XMFLOAT4(-radius, radius, radius, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-    };
-    points = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
-    pointsNum = 8;
+    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*) malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+    IALayoutInputElements[0] =
+        D3D11_INPUT_ELEMENT_DESC{
+            "POSITION",
+            0,
+            DXGI_FORMAT_R32G32B32_FLOAT,
+            0,
+            0,
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0 };
 
-    for (int i = 0; i < 8; i++)
-    {
-        points[i] = _points[i];
-    }
-    */
+    IALayoutInputElements[1] =
+        D3D11_INPUT_ELEMENT_DESC {
+            "COLOR",
+            0,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            0,
+            D3D11_APPEND_ALIGNED_ELEMENT,
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0};
+
     shaderFilePath = L"./Shaders/CubeShader.hlsl";
 }
 
@@ -51,29 +65,27 @@ void CosmicBody::Update(float deltaTime)
     // Обновление угла вращения вокруг своей оси
     rotationAngle += rotationSpeed * deltaTime;
     //rotationAngle = 0.0f;
-    if (rotationAngle > DirectX::XM_2PI) {
-        rotationAngle -= DirectX::XM_2PI;
+    if (rotationAngle > XM_2PI) {
+        rotationAngle -= XM_2PI;
     }
 
     // Обновление матрицы преобразования
-    DirectX::XMMATRIX rotationXMat = DirectX::XMMatrixRotationX(rotationAngle);
-    DirectX::XMMATRIX rotationYMat = DirectX::XMMatrixRotationY(DirectX::XM_PIDIV4);
-    DirectX::XMMATRIX translationMat = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+    XMMATRIX rotationXMat = XMMatrixRotationX(rotationAngle);
+    XMMATRIX rotationYMat = XMMatrixRotationY(rotationAngle);
+    XMMATRIX translationMat = XMMatrixTranslation(position.x, position.y, position.z);
     cb.wvpMat = rotationXMat * rotationYMat * translationMat;
+    //cb.wvpMat = translationMat;
 
     // Обновление угла орбиты
     if (attractedTo)
     {
         orbitAngle += orbitSpeed * deltaTime;
-        DirectX::XMFLOAT3 orbitCenter;
-        attractedTo->GetCenterLocation(&orbitCenter);
-        DirectX::XMMATRIX translationToOrbit = DirectX::XMMatrixTranslation(orbitRadius, 0.f, 0.f);
-        DirectX::XMMATRIX translationToSunMat = DirectX::XMMatrixTranslation(orbitCenter.x, orbitCenter.y, orbitCenter.z);
-        //position.x = orbitCenter.x + radius * cos(orbitAngle);
-        //position.z = orbitCenter.z + radius * sin(orbitAngle);
-        auto orbitRotate = DirectX::XMMatrixRotationY(orbitAngle);
-        cb.wvpMat = cb.wvpMat * translationToOrbit * orbitRotate * translationToSunMat;
+        auto _attractredTransform = GetAttractedToTransform();
+        for (size_t i = 0; i < 4; i++)
+            for (size_t j = 0; j < 4; j++)
+                std::cout << _attractredTransform.m[i][j] << (j == 3 ? "\n" : " ");
 
+        cb.wvpMat = cb.wvpMat * (XMMATRIX) _attractredTransform;
         /*if (attractedTo->attractedTo) {
             cb.wvpMat = cb.wvpMat * attractedTo->attractedTo->cb.wvpMat;
         }*/
@@ -96,12 +108,35 @@ void CosmicBody::SetRotationSpeed(float speed)
     rotationSpeed = speed;
 }
 
-void CosmicBody::GetCenterLocation(DirectX::XMFLOAT3* loc)
+Matrix CosmicBody::GetAttractedToTransform() {
+    Matrix res = Matrix::Identity;
+    if (attractedTo)
+    {
+        //std::cout << "-";
+        Matrix toOrbit = Matrix::CreateTranslation(Vector3(orbitRadius, 0.0f, 0.0f));
+
+        Quaternion q_orbitRot = Quaternion::CreateFromAxisAngle(Vector3(0.0f, 1.0f, 0.0f), orbitAngle);
+        Matrix m_orbitRot = Matrix::CreateFromQuaternion(q_orbitRot);
+        //Matrix m_orbitRot = Matrix::CreateRotationY(orbitAngle);
+
+        Matrix toAttractedCenter = Matrix::CreateTranslation(attractedTo->GetCenterLocation());
+
+        res = toOrbit * m_orbitRot * toAttractedCenter;
+    }
+    return res;
+}
+
+Vector3 CosmicBody::GetCenterLocation()
 {
-    DirectX::XMVECTOR center = DirectX::XMVectorSet(position.x,
+    /*XMVECTOR center = XMVectorSet(position.x,
         position.y,
-        position.z, 1.0f);
-    DirectX::XMStoreFloat3(loc, DirectX::XMVector4Transform(center, cb.wvpMat));
-    return;
+        position.z, 1.0f);*/
+    Vector3 center = Vector3(position);
+    if (attractedTo)
+    {
+        center = Vector3::Transform(center, GetAttractedToTransform());
+        //center = XMVectorAdd(center, _to_attracted);
+    }
+    return center;
 }
 

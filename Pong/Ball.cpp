@@ -18,13 +18,34 @@ Ball::Ball()
 		DirectX::XMFLOAT4(0.25f, -0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 		DirectX::XMFLOAT4(-0.25f, 0.25f, 0.25f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 	};
-	points = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
-	pointsNum = 8;
+	vertices = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
+	verticesNum = 8;
 
 	for (int i = 0; i < 8; i++)
 	{
-		points[i] = _points[i];
+		vertices[i] = _points[i];
 	}
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	IALayoutInputElements[0] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"POSITION",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			0,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
+
+	IALayoutInputElements[1] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"COLOR",
+			0,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			0,
+			D3D11_APPEND_ALIGNED_ELEMENT,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
 
 	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
@@ -46,22 +67,42 @@ Ball::Ball(DirectX::XMFLOAT4 position, float width) : position(position), width(
 		DirectX::XMFLOAT4(position.x + width,position.y, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 		DirectX::XMFLOAT4(position.x, position.y + width, position.z + 0.0f, position.w + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 	};
-	points = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
-	pointsNum = 8;
+	vertices = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
+	verticesNum = 8;
 
 	for (int i = 0; i < 8; i++)
 	{
-		points[i] = _points[i];
+		vertices[i] = _points[i];
 	}
 	/*velocity_x = velocity_magn * DirectX::XMScalarCos(angle);
 	velocity_y = velocity_magn * DirectX::XMScalarSin(angle);*/
 	//velocity_magn = start_velocity;
 	velocity = { -start_velocity, 0.f, 0.f, 0.f };
 
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	IALayoutInputElements[0] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"POSITION",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			0,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
+
+	IALayoutInputElements[1] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"COLOR",
+			0,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			0,
+			D3D11_APPEND_ALIGNED_ELEMENT,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
 	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
-Ball::Ball(DirectX::XMFLOAT4* points)
+Ball::Ball(DirectX::XMFLOAT4* vertices)
 {
 	int _ind[6] = { 0, 1, 2, 1, 0, 3 };
 	indices = (int*)malloc(6 * sizeof(int));
@@ -71,13 +112,34 @@ Ball::Ball(DirectX::XMFLOAT4* points)
 		indices[i] = _ind[i];
 	}
 
-	this->points = (DirectX::XMFLOAT4*)malloc(6 * sizeof(DirectX::XMFLOAT4));
-	pointsNum = 6;
+	this->vertices = (DirectX::XMFLOAT4*)malloc(6 * sizeof(DirectX::XMFLOAT4));
+	verticesNum = 6;
 
 	for (int i = 0; i < 6; i++)
 	{
-		this->points[i] = points[i];
+		this->vertices[i] = vertices[i];
 	}
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	IALayoutInputElements[0] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"POSITION",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			0,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
+
+	IALayoutInputElements[1] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"COLOR",
+			0,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			0,
+			D3D11_APPEND_ALIGNED_ELEMENT,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
 
 	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }

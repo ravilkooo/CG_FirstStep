@@ -21,7 +21,7 @@ public:
 
     Ball();
     Ball(DirectX::XMFLOAT4 position, float width);
-    Ball(DirectX::XMFLOAT4* points);
+    Ball(DirectX::XMFLOAT4* vertices);
 
     void Update(float deltaTime);
     void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,

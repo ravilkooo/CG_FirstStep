@@ -6,6 +6,12 @@
 #include "ShaderManager.h"
 #include "ResourceManager.h"
 
+
+struct Vertex {
+    DirectX::XMFLOAT3 pos;
+    DirectX::XMFLOAT4 color;
+};
+
 class SceneNode
 {
 public:
@@ -21,12 +27,15 @@ public:
 
     void LoadAndCompileShader(ShaderManager shaderManager);
 
-    LPCWSTR shaderFilePath;
+    Vertex* vertices;
+    UINT verticesNum;
+
     int* indices;
-    DirectX::XMFLOAT4* points;
-    UINT pointsNum;
     UINT indicesNum;
   
+    D3D11_INPUT_ELEMENT_DESC* IALayoutInputElements;
+
+    LPCWSTR shaderFilePath;
     ID3D11VertexShader* vertexShader = nullptr;
     ID3D11PixelShader* pixelShader = nullptr;
 

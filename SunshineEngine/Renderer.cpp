@@ -103,7 +103,7 @@ bool Renderer::Initialize(DisplayWindow* displayWin)
 
 	shaderManager = ShaderManager(GetDevice());
 
-	pipelineState.SetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID);
+	pipelineState.SetRasterizerState(D3D11_CULL_NONE, D3D11_FILL_WIREFRAME); // D3D11_CULL_BACK, D3D11_FILL_SOLID
 
 	inputAssembler = InputAssembler(GetDevice(), GetDeviceContext());
 
@@ -130,6 +130,7 @@ void Renderer::RenderScene(const Scene& scene)
 	viewport.TopLeftY = 0;
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1.0f;
+	context->RSSetViewports(1, &viewport);
 
 	for (SceneNode* node : scene.nodes) {
 
@@ -137,41 +138,17 @@ void Renderer::RenderScene(const Scene& scene)
 		// Input layout handler
 
 		// Описываем какие элементы будут на входе
-		D3D11_INPUT_ELEMENT_DESC inputElements[] = {
-			D3D11_INPUT_ELEMENT_DESC {
-				"POSITION",
-				0,
-				DXGI_FORMAT_R32G32B32A32_FLOAT,
-				0,
-				0,
-				D3D11_INPUT_PER_VERTEX_DATA,
-				0},
-			D3D11_INPUT_ELEMENT_DESC {
-				"COLOR",
-				0,
-				DXGI_FORMAT_R32G32B32A32_FLOAT,
-				0,
-				D3D11_APPEND_ALIGNED_ELEMENT,
-				D3D11_INPUT_PER_VERTEX_DATA,
-				0}
-		};
 
-		inputAssembler.CreateInputLayout(inputElements, node->vsBlob);
-
-		// 10. Setup Rasterizer Stage and Viewport
-
-		context->RSSetViewports(1, &viewport);
-
-		// 8. Setup the IA stage
+		inputAssembler.CreateInputLayout(node->IALayoutInputElements, node->vsBlob);
 
 		inputAssembler.SetInputLayout();
-		inputAssembler.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//inputAssembler.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		node->Draw(context, renderTargetView, pDSV);
 	}
 
 	// зачем эта строчка? 
-	context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
+	//context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
 
 	// 15. At the End of While (!isExitRequested): Present the Result
 	swapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);

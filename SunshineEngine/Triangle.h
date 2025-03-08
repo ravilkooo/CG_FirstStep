@@ -10,7 +10,7 @@ class Triangle : public SceneNode
 {
 public:
     Triangle();
-    Triangle(DirectX::XMFLOAT4* points);
+    Triangle(Vertex* vertices);
 
     void Update(float deltaTime);
 };

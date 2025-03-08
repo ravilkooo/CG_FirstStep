@@ -14,8 +14,8 @@ Gates::Gates(DirectX::XMFLOAT4 position, float racket_width) : position(position
         indices[i] = _ind[i];
     }
 
-    points = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
-    pointsNum = 8;
+    vertices = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
+    verticesNum = 8;
     if (racket_width > 0)
     {
         this->position.x += -width * 0.5 - racket_width * 1.5;
@@ -33,8 +33,29 @@ Gates::Gates(DirectX::XMFLOAT4 position, float racket_width) : position(position
     };
     for (int i = 0; i < 8; i++)
     {
-        points[i] = _points[i];
+        vertices[i] = _points[i];
     }
+
+    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+    IALayoutInputElements[0] =
+        D3D11_INPUT_ELEMENT_DESC{
+            "POSITION",
+            0,
+            DXGI_FORMAT_R32G32B32_FLOAT,
+            0,
+            0,
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0 };
+
+    IALayoutInputElements[1] =
+        D3D11_INPUT_ELEMENT_DESC{
+            "COLOR",
+            0,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            0,
+            D3D11_APPEND_ALIGNED_ELEMENT,
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0 };
 
     shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
@@ -59,7 +80,7 @@ Gates::Gates(DirectX::XMFLOAT4 position, float racket_width) : position(position
 //    DirectX::XMFLOAT4(position.x, position.y + height, position.z + 0.0f, position.w + 0.0f),  DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 //  };
 //  points = (DirectX::XMFLOAT4*)malloc(8 * sizeof(DirectX::XMFLOAT4));
-//  pointsNum = 8;
+//  verticesNum = 8;
 //
 //  for (int i = 0; i < 8; i++)
 //  {
