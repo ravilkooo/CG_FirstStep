@@ -47,7 +47,7 @@ void SolarSystemGame::Initialize()
     renderer = Renderer(&displayWindow);
 
     focusedBody = moon;
-    renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius*5);
+    renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius);
 
     for (auto node : scene.nodes)
     {
@@ -144,25 +144,31 @@ void SolarSystemGame::Update(float deltaTime)
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_1))
     {
         focusedBody = cosmicBodies[0];
-        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius * 5);
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius);
         //renderer.camera.SwitchProjection();
     }
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_2))
     {
         focusedBody = cosmicBodies[1];
-        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius * 5);
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius);
         //renderer.camera.SwitchProjection();
     }
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_3))
     {
         focusedBody = cosmicBodies[2];
-        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius * 5);
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius);
         //renderer.camera.SwitchProjection();
     }
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_4))
     {
         focusedBody = cosmicBodies[3];
-        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius * 5);
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius);
+        //renderer.camera.SwitchProjection();
+    }
+    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::SPACE))
+    {
+        focusedBody = nullptr;
+        renderer.camera.SwitchToFPSMode();
         //renderer.camera.SwitchProjection();
     }
     else

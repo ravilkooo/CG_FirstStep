@@ -203,18 +203,18 @@ void Camera::RotatePitch(float angle)
 
 void Camera::SwitchToOrbitalMode(Vector3 orbitalTarget)
 {
-    SwitchToOrbitalMode(orbitalTarget, Vector3(0.0f, 1.0f, 0.0f), 0.0f);
+    SwitchToOrbitalMode(orbitalTarget, Vector3(0.0f, 1.0f, 0.0f), 1.0f);
 }
 
 void Camera::SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis)
 {
-    SwitchToOrbitalMode(orbitalTarget, rotAxis, 0.0f);
+    SwitchToOrbitalMode(orbitalTarget, rotAxis, 1.0f);
 }
-void Camera::SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis, float orbitalDistance)
+void Camera::SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis, float referenceLen)
 {
     orbitalAngleSpeed = 0.0f;
     isOrbitalMode = true;
-    this->orbitalDistance = orbitalDistance;
+    this->orbitalDistance = 2.0f * referenceLen / tanf(fov * 0.5);
     orbitalYaw = 0.0f;
     orbitalPitch = 0.0f;
     orbitalTarget = orbitalTarget;

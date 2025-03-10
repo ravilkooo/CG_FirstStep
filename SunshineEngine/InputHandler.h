@@ -11,6 +11,7 @@ class InputHandler
     friend class DisplayWindow;
 public:
     enum class KeyCode : UINT {
+        SPACE = 0x20u,
         D_1 = 0x31u,
         D_2 = 0x32u,
         D_3 = 0x33u,
