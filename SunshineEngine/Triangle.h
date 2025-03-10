@@ -13,6 +13,8 @@ public:
     Triangle(Vertex* vertices);
 
     void Update(float deltaTime);
+
+    Vector3 GetCenterLocation() override;
 };
 
 #endif // TRIANGLE_H

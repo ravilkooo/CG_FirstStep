@@ -20,7 +20,7 @@ CosmicBody::CosmicBody(float radius, float rotationSpeed,
         CreateSimpleCubeMesh(radius, radius, radius, col, &vertices, &verticesNum, &indices, &indicesNum);
         break;
     case CosmicBody::PLANET_TYPE::SPHERE:
-        CreateSimpleSphereMesh(radius, 20, 10, col, &vertices, &verticesNum, &indices, &indicesNum);
+        CreateSimpleSphereMesh(radius, 10, 4, col, &vertices, &verticesNum, &indices, &indicesNum);
         break;
     case CosmicBody::PLANET_TYPE::GEOSPHERE:
         CreateSimpleGeosphereMesh(radius, col, &vertices, &verticesNum, &indices, &indicesNum);
@@ -70,32 +70,27 @@ void CosmicBody::Update(float deltaTime)
     }
 
     // Обновление матрицы преобразования
-    XMMATRIX rotationXMat = XMMatrixRotationX(rotationAngle);
+    //XMMATRIX rotationXMat = XMMatrixRotationX(rotationAngle);
     XMMATRIX rotationYMat = XMMatrixRotationY(rotationAngle);
     XMMATRIX translationMat = XMMatrixTranslation(position.x, position.y, position.z);
-    cb.wvpMat = rotationXMat * rotationYMat * translationMat;
+    cb.wvpMat = rotationYMat * translationMat;
     //cb.wvpMat = translationMat;
 
-    // Обновление угла орбиты
+    // Вращение вокруг другого тела, обновление угла орбиты
     if (attractedTo)
     {
         orbitAngle += orbitSpeed * deltaTime;
+
         auto _attractredTransform = GetAttractedToTransform();
-        for (size_t i = 0; i < 4; i++)
-            for (size_t j = 0; j < 4; j++)
-                std::cout << _attractredTransform.m[i][j] << (j == 3 ? "\n" : " ");
 
         cb.wvpMat = cb.wvpMat * (XMMATRIX) _attractredTransform;
-        /*if (attractedTo->attractedTo) {
-            cb.wvpMat = cb.wvpMat * attractedTo->attractedTo->cb.wvpMat;
-        }*/
     }
 
-    /*for (size_t i = 0; i < 8; i++)
-    {
-        std::cout << points[2*i].x << points[2 * i].y << points[2 * i].z << "; ";
-    }
-    std::cout << "\n";*/
+    Matrix viewMat = camera->GetViewMatrix();
+    Matrix projMat = camera->GetProjectionMatrix();
+
+
+    cb.wvpMat *= viewMat * projMat;
 }
 
 void CosmicBody::SetOrbitSpeed(float speed)
@@ -112,12 +107,10 @@ Matrix CosmicBody::GetAttractedToTransform() {
     Matrix res = Matrix::Identity;
     if (attractedTo)
     {
-        //std::cout << "-";
         Matrix toOrbit = Matrix::CreateTranslation(Vector3(orbitRadius, 0.0f, 0.0f));
 
         Quaternion q_orbitRot = Quaternion::CreateFromAxisAngle(Vector3(0.0f, 1.0f, 0.0f), orbitAngle);
         Matrix m_orbitRot = Matrix::CreateFromQuaternion(q_orbitRot);
-        //Matrix m_orbitRot = Matrix::CreateRotationY(orbitAngle);
 
         Matrix toAttractedCenter = Matrix::CreateTranslation(attractedTo->GetCenterLocation());
 
@@ -128,14 +121,10 @@ Matrix CosmicBody::GetAttractedToTransform() {
 
 Vector3 CosmicBody::GetCenterLocation()
 {
-    /*XMVECTOR center = XMVectorSet(position.x,
-        position.y,
-        position.z, 1.0f);*/
     Vector3 center = Vector3(position);
     if (attractedTo)
     {
         center = Vector3::Transform(center, GetAttractedToTransform());
-        //center = XMVectorAdd(center, _to_attracted);
     }
     return center;
 }

@@ -31,18 +31,18 @@ public:
     void SetRotationSpeed(float speed);
     
     Matrix GetAttractedToTransform();
-    Vector3 GetCenterLocation();
+    Vector3 GetCenterLocation() override;
 
+    float rotationSpeed;  // Скорость вращения вокруг своей оси
 private:
     float radius;
-    float rotationSpeed;  // Скорость вращения вокруг своей оси
     float orbitSpeed;     // Скорость вращения вокруг другого тела
     float orbitRadius;
     CosmicBody* attractedTo;  // Тело, вокруг которого вращается
     float orbitAngle;     // Текущий угол орбиты
-    float rotationAngle;
-    
-    // Текущий угол вращения
+    float rotationAngle; // Текущий угол вращения
+    float eyeTime = 0.0f;
+   
 };
 
 #endif // COSMICBODY_H

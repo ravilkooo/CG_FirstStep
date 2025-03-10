@@ -27,7 +27,7 @@ PS_IN VSMain(VS_IN input)
 
 float4 PSMain(PS_IN input) : SV_Target
 {
-    float4 col = input.col * (1 - input.pos.z); //sqrt
+    float4 col = input.col; // * min((1 - input.pos.z)/0.1, 1); //sqrt
     return col;
 }
 

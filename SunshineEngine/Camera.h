@@ -2,6 +2,11 @@
 #define CAMERA_H
 
 #include <DirectXMath.h>
+#include <SimpleMath.h>
+
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
+
 
 class Camera
 {
@@ -9,19 +14,19 @@ public:
     Camera();
     ~Camera();
 
-    void SetPosition(DirectX::XMFLOAT3 position);
-    void SetTarget(DirectX::XMFLOAT3 target);
-    void SetUp(DirectX::XMFLOAT3 up);
+    void SetPosition(Vector3 position);
+    void SetTarget(Vector3 target);
+    void SetUp(Vector3 up);
 
     void SetFOV(float fov);
     void SetAspectRatio(float aspectRatio);
     void SetNearZ(float nearZ);
     void SetFarZ(float farZ);
 
-    void Update(float deltaTime);
+    void Update(float deltaTime, const Vector3 targetPos);
 
-    DirectX::XMMATRIX GetViewMatrix() const;
-    DirectX::XMMATRIX GetProjectionMatrix() const;
+    XMMATRIX GetViewMatrix() const;
+    XMMATRIX GetProjectionMatrix() const;
 
     void MoveForward(float speed);
     void MoveBackward(float speed);
@@ -33,24 +38,37 @@ public:
     void RotateYaw(float angle);
     void RotatePitch(float angle);
 
-    void SwitchToOrbitalMode(DirectX::XMFLOAT3 target);
+    void SwitchToOrbitalMode(Vector3 orbitalTarget);
+    void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis);
+    void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis, float orbitalSpeed);
+    
     void SwitchToFPSMode();
 
+    void SwitchProjection();
+
 private:
-    DirectX::XMFLOAT3 position;
-    DirectX::XMFLOAT3 target;
-    DirectX::XMFLOAT3 up;
+    Vector3 position;
+    Vector3 target;
+    Vector3 up;
 
     float fov;
     float aspectRatio;
     float nearZ;
     float farZ;
 
+    float orthZ;
+
     bool isOrbitalMode;
-    DirectX::XMFLOAT3 orbitalTarget;
+    Vector3 orbitalTarget;
+    float defaultOrbitalDistance;
     float orbitalDistance;
     float orbitalYaw;
     float orbitalPitch;
+
+    float orbitalAngleSpeed;
+    Vector3 orbitalAxis;
+
+    bool isPerspective = true;
 };
 
 #endif // CAMERA_H

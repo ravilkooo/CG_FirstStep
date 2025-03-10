@@ -143,22 +143,22 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
 
     UINT _offsetVertexIdx = 0;
     // top vertex
-    (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), col };
+    (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, radius, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) };
     // other vertices
     for (UINT i = 1; i <= 2 * elevationCount + 1; ++i)
     {
         for (UINT j = 0; j < sliceCount; ++j) {
             (*vertices)[_offsetVertexIdx++] =
             { DirectX::XMFLOAT3(
-                sinf(elevationStep * i) * cosf(sliceStep * j),
-                sinf(elevationStep * i) * sinf(sliceStep * j),
-                cosf(elevationStep * i)
+                radius * sinf(elevationStep * i) * cosf(sliceStep * j),
+                radius * cosf(elevationStep * i),
+                radius * sinf(elevationStep * i) * sinf(sliceStep * j)
             ), col };
         }
         std::cout << (*vertices)[_offsetVertexIdx - 1].pos.z << ";\n";
     }
     // bottom vertex
-    (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), col };
+    (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, -radius, 0.0f), col };
 
 
     *indicesNum = 6 * sliceCount + 2 * 6 * elevationCount * sliceCount;
@@ -169,22 +169,19 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
 
     for (UINT j = 0; j < sliceCount - 1; ++j) {
         (*indices)[indexIndex++] = 0;
-        (*indices)[indexIndex++] = j + 1;
         (*indices)[indexIndex++] = j + 2;
+        (*indices)[indexIndex++] = j + 1;
     }
     
     (*indices)[indexIndex++] = 0;
-    (*indices)[indexIndex++] = sliceCount;
     (*indices)[indexIndex++] = 1;
-    
-
-
+    (*indices)[indexIndex++] = sliceCount;
 
 
     for (UINT i = 0; i < 2 * elevationCount; ++i) {
         UINT startIndex = 1 + i * sliceCount;
         UINT nextStartIndex = startIndex + sliceCount;
-        for (UINT j = 0; j < sliceCount; ++j) {
+        for (UINT j = 0; j < sliceCount - 1; ++j) {
             
             (*indices)[indexIndex++] = startIndex + j;
             (*indices)[indexIndex++] = startIndex + j + 1;
@@ -194,6 +191,14 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
             (*indices)[indexIndex++] = nextStartIndex + j + 1;
             (*indices)[indexIndex++] = nextStartIndex + j;
         }
+
+        (*indices)[indexIndex++] = startIndex + sliceCount - 1;
+        (*indices)[indexIndex++] = startIndex;
+        (*indices)[indexIndex++] = nextStartIndex + sliceCount - 1;
+
+        (*indices)[indexIndex++] = startIndex;
+        (*indices)[indexIndex++] = nextStartIndex;
+        (*indices)[indexIndex++] = nextStartIndex + sliceCount - 1;
     }
     
     
@@ -201,20 +206,13 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
     UINT startIndex = 1 + 2 * elevationCount * sliceCount;
     for (UINT j = 0; j < sliceCount-1; ++j) {
         (*indices)[indexIndex++] = bottomIndex;
-        (*indices)[indexIndex++] = startIndex + j + 1;
         (*indices)[indexIndex++] = startIndex + j;
+        (*indices)[indexIndex++] = startIndex + j + 1;
     }
 
     (*indices)[indexIndex++] = bottomIndex;
-    (*indices)[indexIndex++] = startIndex;
     (*indices)[indexIndex++] = startIndex + sliceCount - 1;
-
-    for (size_t i = 0; i < _offsetVertexIdx + sliceCount * (elevationCount - 1); i++)
-    {
-        DirectX::XMVECTOR _n = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&(*vertices)[i].pos));
-        DirectX::XMVECTOR _p = DirectX::XMVectorScale(_n, radius);
-        DirectX::XMStoreFloat3(&((*vertices)[i].pos), _p);
-    }
+    (*indices)[indexIndex++] = startIndex;
 
     return;
 }

@@ -3,9 +3,10 @@
 
 #include <d3d11.h>
 #include <directxmath.h>
+#include <SimpleMath.h>
 #include "ShaderManager.h"
 #include "ResourceManager.h"
-
+#include "Camera.h"
 
 struct Vertex {
     DirectX::XMFLOAT3 pos;
@@ -26,6 +27,8 @@ public:
     void InitBuffers(ResourceManager resourceManager);
 
     void LoadAndCompileShader(ShaderManager shaderManager);
+
+    virtual Vector3 GetCenterLocation() = 0;
 
     Vertex* vertices;
     UINT verticesNum;
@@ -60,6 +63,8 @@ public:
     void SetViewMatrix(const DirectX::XMMATRIX& viewMatrix);
     void SetProjectionMatrix(const DirectX::XMMATRIX& projectionMatrix);
 
+
+    Camera* camera;
 
 protected:
     // Позиция, поворот, масштаб и другие свойства

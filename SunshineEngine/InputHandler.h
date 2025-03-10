@@ -11,7 +11,9 @@ class InputHandler
     friend class DisplayWindow;
 public:
     enum class KeyCode : UINT {
-        LEFT = 37u, UP = 38u, RIGHT = 39u, DOWN = 40u
+        D_1 = 0x31u,
+        LEFT = 37u, UP = 38u, RIGHT = 39u, DOWN = 40u,
+        E = 0x45u, Q = 0x51u,
     };
 
     InputHandler();

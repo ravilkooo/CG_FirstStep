@@ -103,9 +103,11 @@ bool Renderer::Initialize(DisplayWindow* displayWin)
 
 	shaderManager = ShaderManager(GetDevice());
 
-	pipelineState.SetRasterizerState(D3D11_CULL_NONE, D3D11_FILL_WIREFRAME); // D3D11_CULL_BACK, D3D11_FILL_SOLID
+	pipelineState.SetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID); // D3D11_CULL_NONE, D3D11_CULL_BACK, D3D11_FILL_SOLID, D3D11_FILL_WIREFRAME
 
 	inputAssembler = InputAssembler(GetDevice(), GetDeviceContext());
+
+	camera = Camera();
 
     return true;
 }

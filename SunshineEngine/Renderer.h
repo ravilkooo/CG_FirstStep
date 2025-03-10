@@ -14,6 +14,8 @@
 #include "DisplayWindow.h"
 #include "PipelineState.h"
 
+#include "Camera.h"
+
 #include <chrono>
 
 class Renderer
@@ -31,6 +33,8 @@ public:
 
     ShaderManager shaderManager;
     ResourceManager resourceManager;
+
+    Camera camera;
 private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
     ID3D11Texture2D* pDepthStencil;
@@ -56,7 +60,6 @@ private:
     float totalTime;
 
     //ID3D11InputLayout* layout;
-
 };
 
 #endif // RENDERER_H

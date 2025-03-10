@@ -19,11 +19,11 @@ void SolarSystemGame::Initialize()
     hInstance = GetModuleHandle(nullptr);
 
     timer = GameTimer();
-
+        
     scene = Scene();
 
     // Создание планет и лун
-    CosmicBody* sun = new CosmicBody(0.3f, 1.0f, DirectX::XMFLOAT3(0.0f, 0.3f, 0.5f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE);
+    CosmicBody* sun = new CosmicBody(0.3f, 0.5f, DirectX::XMFLOAT3(0.0f, 0.3f, 0.5f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE);
     CosmicBody* earth = new CosmicBody(0.1f, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE, sun, 0.5f, 1.0f);
     CosmicBody* moon = new CosmicBody(0.05f, 0.6f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::CUBE, earth, 0.1f, 2.0f);
 
@@ -47,14 +47,16 @@ void SolarSystemGame::Initialize()
 
     renderer = Renderer(&displayWindow);
 
+    focusedBody = moon;
+    renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), -2*focusedBody->rotationSpeed);
+
     for (auto node : scene.nodes)
     {
         node->LoadAndCompileShader(renderer.shaderManager);
         node->InitBuffers(renderer.resourceManager);
+        node->camera = &(renderer.camera);
         //std::cout << "f1\n";
     }
-
-
     // Инициализация камеры
     //camera.SetPosition(DirectX::XMFLOAT3(0.0f, 10.0f, -20.0f));
     //camera.SetTarget(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
@@ -113,16 +115,51 @@ void SolarSystemGame::Update(float deltaTime)
     if (inputHandler->IsKeyDown(InputHandler::KeyCode::UP))
     {
         //std::cout << "MoveUp\n";
+        renderer.camera.MoveUp(deltaTime);
     }
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::DOWN))
     {
         //std::cout << "MoveDown\n";
+        renderer.camera.MoveDown(deltaTime);
+    }
+    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::RIGHT))
+    {
+        //std::cout << "MoveUp\n";
+        renderer.camera.MoveRight(deltaTime);
+    }
+    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::LEFT))
+    {
+        //std::cout << "MoveDown\n";
+        renderer.camera.MoveLeft(deltaTime);
+    }
+    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::Q))
+    {
+        //std::cout << "MoveUp\n";
+        renderer.camera.MoveForward(deltaTime);
+    }
+    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::E))
+    {
+        //std::cout << "MoveDown\n";
+        renderer.camera.MoveBackward(deltaTime);
+    }
+    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_1))
+    {
+        renderer.camera.SwitchProjection();
     }
     else
     {
 
     }
+    if (focusedBody) {
+        /*std::cout << "(" << focusedBody->GetCenterLocation().x << ", "
+            << focusedBody->GetCenterLocation().y << ", "
+            << focusedBody->GetCenterLocation().z << ")\n";*/
 
+        renderer.camera.Update(deltaTime, focusedBody->GetCenterLocation());
+
+        //renderer.camera.SwitchToOrbitalMode(scene.nodes[scene.nodes.size() - 3]->GetCenterLocation());
+    }
+    //renderer.camera.Update(deltaTime);
     // Обновление состояния игры
     physEngine->Update(deltaTime);
 }

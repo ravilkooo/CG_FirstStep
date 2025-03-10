@@ -13,6 +13,8 @@ public:
 	Quad(DirectX::XMFLOAT4 position, float height);
 	Quad(DirectX::XMFLOAT4 position, float height, float width);
     void Update(float deltaTime);
+
+	Vector3 GetCenterLocation() override;
 };
 
 
