@@ -62,16 +62,24 @@ void Camera::SetFarZ(float farZ)
     this->farZ = farZ;
 }
 
-void Camera::Update(float deltaTime, const Vector3 targetPos = Vector3(0.0f, 0.0f, 0.0f))
+void Camera::Update(float deltaTime, const Matrix targetTransform = Matrix::Identity)
 {
     if (isOrbitalMode)
     {
-        orbitalYaw += orbitalAngleSpeed * deltaTime;
-        orbitalTarget = targetPos;
-        target = targetPos;
-        position.x = orbitalTarget.x + orbitalDistance * cosf(orbitalPitch) * cosf(orbitalYaw);
-        position.y = orbitalTarget.y + orbitalDistance * sinf(orbitalPitch);
-        position.z = orbitalTarget.z + orbitalDistance * cosf(orbitalPitch) * sinf(orbitalYaw);
+        //orbitalYaw += orbitalAngleSpeed * deltaTime;
+
+        position.x = orbitalDistance * cosf(orbitalPitch) * cosf(orbitalYaw);
+        position.y = orbitalDistance * sinf(orbitalPitch);
+        position.z = orbitalDistance * cosf(orbitalPitch) * sinf(orbitalYaw);
+
+        position = Vector3::Transform(position, targetTransform);
+
+        orbitalTarget = Vector3::Transform(Vector3::Zero, targetTransform);
+
+        up = Vector3::Transform(orbitalAxis, targetTransform) - orbitalTarget;
+        
+        target = orbitalTarget;
+        
 
         // Обновление позиции камеры в орбитальном режиме
         
@@ -211,7 +219,8 @@ void Camera::SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis, float o
     orbitalPitch = 0.0f;
     orbitalTarget = orbitalTarget;
     target = orbitalTarget;
-    up = rotAxis;
+    orbitalAxis = rotAxis;
+    up = orbitalAxis;
     orbitalDistance = XMVectorGetX(XMVector3Length(XMVectorSubtract(XMLoadFloat3(&position), XMLoadFloat3(&target))));
 }
 

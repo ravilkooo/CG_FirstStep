@@ -48,7 +48,7 @@ void SolarSystemGame::Initialize()
     renderer = Renderer(&displayWindow);
 
     focusedBody = moon;
-    renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), -2*focusedBody->rotationSpeed);
+    renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f));
 
     for (auto node : scene.nodes)
     {
@@ -144,7 +144,27 @@ void SolarSystemGame::Update(float deltaTime)
     }
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_1))
     {
-        renderer.camera.SwitchProjection();
+        focusedBody = cosmicBodies[0];
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f));
+        //renderer.camera.SwitchProjection();
+    }
+    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_2))
+    {
+        focusedBody = cosmicBodies[1];
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f));
+        //renderer.camera.SwitchProjection();
+    }
+    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_3))
+    {
+        focusedBody = cosmicBodies[2];
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f));
+        //renderer.camera.SwitchProjection();
+    }
+    else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_4))
+    {
+        focusedBody = cosmicBodies[3];
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f));
+        //renderer.camera.SwitchProjection();
     }
     else
     {
@@ -155,7 +175,7 @@ void SolarSystemGame::Update(float deltaTime)
             << focusedBody->GetCenterLocation().y << ", "
             << focusedBody->GetCenterLocation().z << ")\n";*/
 
-        renderer.camera.Update(deltaTime, focusedBody->GetCenterLocation());
+        renderer.camera.Update(deltaTime, focusedBody->cb.worldMat);
 
         //renderer.camera.SwitchToOrbitalMode(scene.nodes[scene.nodes.size() - 3]->GetCenterLocation());
     }

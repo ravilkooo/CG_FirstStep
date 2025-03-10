@@ -73,7 +73,7 @@ void CosmicBody::Update(float deltaTime)
     //XMMATRIX rotationXMat = XMMatrixRotationX(rotationAngle);
     XMMATRIX rotationYMat = XMMatrixRotationY(rotationAngle);
     XMMATRIX translationMat = XMMatrixTranslation(position.x, position.y, position.z);
-    cb.wvpMat = rotationYMat * translationMat;
+    cb.worldMat = rotationYMat * translationMat;
     //cb.wvpMat = translationMat;
 
     // Вращение вокруг другого тела, обновление угла орбиты
@@ -83,14 +83,14 @@ void CosmicBody::Update(float deltaTime)
 
         auto _attractredTransform = GetAttractedToTransform();
 
-        cb.wvpMat = cb.wvpMat * (XMMATRIX) _attractredTransform;
+        cb.worldMat = cb.worldMat * (XMMATRIX) _attractredTransform;
     }
 
     Matrix viewMat = camera->GetViewMatrix();
     Matrix projMat = camera->GetProjectionMatrix();
 
 
-    cb.wvpMat *= viewMat * projMat;
+    cb.wvpMat = cb.worldMat * (XMMATRIX) (viewMat * projMat);
 }
 
 void CosmicBody::SetOrbitSpeed(float speed)

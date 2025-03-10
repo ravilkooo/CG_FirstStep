@@ -12,6 +12,11 @@ class InputHandler
 public:
     enum class KeyCode : UINT {
         D_1 = 0x31u,
+        D_2 = 0x32u,
+        D_3 = 0x33u,
+        D_4 = 0x34u,
+        D_5 = 0x35u,
+        D_6 = 0x36u,
         LEFT = 37u, UP = 38u, RIGHT = 39u, DOWN = 40u,
         E = 0x45u, Q = 0x51u,
     };

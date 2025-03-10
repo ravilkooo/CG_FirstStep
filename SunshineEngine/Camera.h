@@ -23,7 +23,7 @@ public:
     void SetNearZ(float nearZ);
     void SetFarZ(float farZ);
 
-    void Update(float deltaTime, const Vector3 targetPos);
+    void Update(float deltaTime, const Matrix targetTransform);
 
     XMMATRIX GetViewMatrix() const;
     XMMATRIX GetProjectionMatrix() const;

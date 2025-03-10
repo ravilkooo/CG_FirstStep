@@ -54,6 +54,7 @@ public:
 
     struct ConstantBuffer
     {
+        DirectX::XMMATRIX worldMat = DirectX::XMMatrixIdentity();     // (world)
         DirectX::XMMATRIX wvpMat = DirectX::XMMatrixIdentity();     // Комбинированная матрица (world * view * proj)
     };
 
