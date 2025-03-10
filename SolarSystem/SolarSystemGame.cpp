@@ -26,7 +26,6 @@ void SolarSystemGame::Initialize()
     CosmicBody* sun = new CosmicBody(0.3f, 0.5f, DirectX::XMFLOAT3(0.0f, 0.3f, 0.5f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE);
     CosmicBody* earth = new CosmicBody(0.1f, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE, sun, 0.5f, 1.0f);
     CosmicBody* moon = new CosmicBody(0.05f, 0.6f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::CUBE, earth, 0.1f, 2.0f);
-
     CosmicBody* mars = new CosmicBody(0.05f, 0.7f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::GEOSPHERE, sun, 0.3f, 0.5f);
 
     cosmicBodies.push_back(sun);
@@ -48,7 +47,7 @@ void SolarSystemGame::Initialize()
     renderer = Renderer(&displayWindow);
 
     focusedBody = moon;
-    renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f));
+    renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius*5);
 
     for (auto node : scene.nodes)
     {
@@ -145,25 +144,25 @@ void SolarSystemGame::Update(float deltaTime)
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_1))
     {
         focusedBody = cosmicBodies[0];
-        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f));
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius * 5);
         //renderer.camera.SwitchProjection();
     }
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_2))
     {
         focusedBody = cosmicBodies[1];
-        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f));
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius * 5);
         //renderer.camera.SwitchProjection();
     }
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_3))
     {
         focusedBody = cosmicBodies[2];
-        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f));
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius * 5);
         //renderer.camera.SwitchProjection();
     }
     else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_4))
     {
         focusedBody = cosmicBodies[3];
-        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f));
+        renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), Vector3(0.0f, 1.0f, 0.0f), focusedBody->radius * 5);
         //renderer.camera.SwitchProjection();
     }
     else

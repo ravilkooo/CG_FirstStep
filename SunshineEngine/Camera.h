@@ -40,7 +40,7 @@ public:
 
     void SwitchToOrbitalMode(Vector3 orbitalTarget);
     void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis);
-    void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis, float orbitalSpeed);
+    void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis, float orbitalDistance);
     
     void SwitchToFPSMode();
 

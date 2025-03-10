@@ -143,7 +143,7 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
 
     UINT _offsetVertexIdx = 0;
     // top vertex
-    (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, radius, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) };
+    (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, radius, 0.0f), col };
     // other vertices
     for (UINT i = 1; i <= 2 * elevationCount + 1; ++i)
     {

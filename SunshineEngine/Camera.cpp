@@ -210,18 +210,18 @@ void Camera::SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis)
 {
     SwitchToOrbitalMode(orbitalTarget, rotAxis, 0.0f);
 }
-void Camera::SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis, float orbitalSpeed)
+void Camera::SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis, float orbitalDistance)
 {
-    orbitalAngleSpeed = orbitalSpeed;
+    orbitalAngleSpeed = 0.0f;
     isOrbitalMode = true;
-    orbitalDistance = defaultOrbitalDistance;
+    this->orbitalDistance = orbitalDistance;
     orbitalYaw = 0.0f;
     orbitalPitch = 0.0f;
     orbitalTarget = orbitalTarget;
     target = orbitalTarget;
     orbitalAxis = rotAxis;
     up = orbitalAxis;
-    orbitalDistance = XMVectorGetX(XMVector3Length(XMVectorSubtract(XMLoadFloat3(&position), XMLoadFloat3(&target))));
+    //orbitalDistance = XMVectorGetX(XMVector3Length(XMVectorSubtract(XMLoadFloat3(&position), XMLoadFloat3(&target))));
 }
 
 void Camera::SwitchToFPSMode()

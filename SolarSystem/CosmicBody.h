@@ -34,8 +34,8 @@ public:
     Vector3 GetCenterLocation() override;
 
     float rotationSpeed;  // Скорость вращения вокруг своей оси
-private:
     float radius;
+private:
     float orbitSpeed;     // Скорость вращения вокруг другого тела
     float orbitRadius;
     CosmicBody* attractedTo;  // Тело, вокруг которого вращается

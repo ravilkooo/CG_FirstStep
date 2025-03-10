@@ -17,13 +17,43 @@ CosmicBody::CosmicBody(float radius, float rotationSpeed,
     switch (planet_type)
     {
     case CosmicBody::PLANET_TYPE::CUBE:
+    {
         CreateSimpleCubeMesh(radius, radius, radius, col, &vertices, &verticesNum, &indices, &indicesNum);
+
+        auto col_2 = XMFLOAT4(0.5f + 0.5f * col.x, 0.5f + 0.5f * col.y, 0.5f + 0.5f * col.z, 1.0f);
+        vertices[0].color = col_2;
+        vertices[2].color = col_2;
+        vertices[5].color = col_2;
+        vertices[7].color = col_2;
+    }
         break;
+
     case CosmicBody::PLANET_TYPE::SPHERE:
-        CreateSimpleSphereMesh(radius, 10, 4, col, &vertices, &verticesNum, &indices, &indicesNum);
+    {
+
+        UINT sliceCount = 10;
+        UINT elevationCount = 5;
+        CreateSimpleSphereMesh(radius, sliceCount, elevationCount, col, &vertices, &verticesNum, &indices, &indicesNum);
+        auto col_2 = XMFLOAT4(0.5f + 0.5f * col.x, 0.5f + 0.5f * col.y, 0.5f + 0.5f * col.z, 1.0f);
+        for (size_t i = 0; i < elevationCount * 2 + 1; i += 2)
+        {
+            for (size_t j = 0; j < sliceCount; j++)
+            {
+                vertices[1 + i * sliceCount + j].color = col_2;
+            }
+        }
+    }
         break;
     case CosmicBody::PLANET_TYPE::GEOSPHERE:
+    {
         CreateSimpleGeosphereMesh(radius, col, &vertices, &verticesNum, &indices, &indicesNum);
+
+        auto col_2 = XMFLOAT4(0.5f + 0.5f * col.x, 0.5f + 0.5f * col.y, 0.5f + 0.5f * col.z, 1.0f);
+        for (size_t i = 0; i < verticesNum; i += 2)
+        {
+            vertices[i].color = col_2;
+        }
+    }
         break;
     default:
         break;
