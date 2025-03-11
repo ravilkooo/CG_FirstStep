@@ -12,7 +12,7 @@ public:
     
     ~SolarSystemPhysics();
 
-    void Update(float deltaTime);
+    void Update(float deltaTime) override;
 
     Scene* scene;
 };

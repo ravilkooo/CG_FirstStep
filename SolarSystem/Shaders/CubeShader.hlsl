@@ -12,7 +12,6 @@ struct PS_IN
 
 cbuffer CBuf
 {
-    row_major float4x4 worldMat;
     row_major float4x4 wvpMat;
 };
 

@@ -39,8 +39,8 @@ public:
     void RotatePitch(float angle);
 
     void SwitchToOrbitalMode(Vector3 orbitalTarget);
-    void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis);
-    void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis, float referenceLen);
+    void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 spinAxis);
+    void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 spinAxis, float referenceLen);
     
     void SwitchToFPSMode();
 
@@ -66,7 +66,7 @@ private:
     float orbitalPitch;
 
     float orbitalAngleSpeed;
-    Vector3 orbitalAxis;
+    Vector3 spinAxis;
 
     bool isPerspective = true;
 };

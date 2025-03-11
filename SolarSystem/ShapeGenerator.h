@@ -19,7 +19,7 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
 	Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum);
 
 void CreateRingMesh(float radius, float thickness, float width,
-	UINT sliceCount,	DirectX::XMFLOAT4 col,
+	UINT sliceCount, DirectX::XMFLOAT4 col,
 	Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum);
 
 #endif

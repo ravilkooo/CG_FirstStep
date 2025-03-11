@@ -10,6 +10,11 @@ class InputHandler
 
     friend class DisplayWindow;
 public:
+
+    enum class KEY_STATE {
+        NONE, CLICKED, PRESSED
+    };
+
     enum class KeyCode : UINT {
         SPACE = 0x20u,
         D_1 = 0x31u,
@@ -32,16 +37,21 @@ public:
         R = 0x52u,
         S = 0x53u,
         W = 0x57u,
+
+        COMMA = 0xBCu,
+        PERIOD = 0xBEu,
     };
 
     InputHandler();
 
     void Update();
-    void UpdateKeyState(UINT vKey, bool isPressed);
+
+    void UpdateKeyState(UINT vKey, bool keyState);
     bool IsKeyDown(KeyCode vKey);
-        
+    bool IsKeyPressed(KeyCode vKey);
+    bool IsKeyClicked(KeyCode vKey);
 private:
-    bool keys[256];
+     KEY_STATE keys[256];
 };
 
 #endif // INPUTHANDLER_H

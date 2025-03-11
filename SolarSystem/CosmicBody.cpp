@@ -7,12 +7,6 @@ CosmicBody::CosmicBody(float radius, float rotationSpeed,
     : radius(radius), rotationSpeed(rotationSpeed), position(position), rotationAngle(0.0f),
     attractedTo(attractedTo), orbitRadius(orbitRadius), orbitSpeed(orbitSpeed), orbitAngle(0.0f)
 {
-    float w2 = 0.5f * radius;
-    float h2 = 0.5f * radius;
-    float d2 = 0.5f * radius;
-    
-    verticesNum = 8;
-    indicesNum = 36;
 
     switch (planet_type)
     {
@@ -113,9 +107,9 @@ void CosmicBody::Update(float deltaTime)
 
     // Обновление матрицы преобразования
     //XMMATRIX rotationXMat = XMMatrixRotationX(rotationAngle);
-    XMMATRIX rotationYMat = XMMatrixRotationY(rotationAngle);
+    XMMATRIX spinRotationMat = Matrix::CreateFromAxisAngle(spinAxis, rotationAngle);
     XMMATRIX translationMat = XMMatrixTranslation(position.x, position.y, position.z);
-    cb.worldMat = rotationYMat * translationMat;
+    worldMat = spinRotationMat * translationMat;
     //cb.wvpMat = translationMat;
 
     // Вращение вокруг другого тела, обновление угла орбиты
@@ -125,14 +119,14 @@ void CosmicBody::Update(float deltaTime)
 
         auto _attractredTransform = GetAttractedToTransform();
 
-        cb.worldMat = cb.worldMat * (XMMATRIX) _attractredTransform;
+        worldMat = worldMat * (XMMATRIX) _attractredTransform;
     }
 
     Matrix viewMat = camera->GetViewMatrix();
     Matrix projMat = camera->GetProjectionMatrix();
 
 
-    cb.wvpMat = cb.worldMat * (XMMATRIX) (viewMat * projMat);
+    cb.wvpMat = worldMat * (XMMATRIX) (viewMat * projMat);
 }
 
 void CosmicBody::SetOrbitSpeed(float speed)

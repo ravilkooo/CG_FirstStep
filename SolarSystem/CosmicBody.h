@@ -37,7 +37,9 @@ public:
     float radius;
     float rotationAngle; // Текущий угол вращения
     float orbitAngle;     // Текущий угол орбиты
-    Vector3 orbitAxis = Vector3(0.0f, 1.0f, 0.0f);
+    Vector3 spinAxis = Vector3(0.0f, 1.0f, 0.0f);
+    Vector3 orbitalAxis = Vector3(0.0f, 1.0f, 0.0f);
+
 private:
     float orbitSpeed;     // Скорость вращения вокруг другого тела
     float orbitRadius;
