@@ -13,11 +13,11 @@ public:
     SolarSystemGame();
     ~SolarSystemGame();
 
-    void Run();
+    void Run() override;
 
-    void Initialize();
-    void Update(float deltaTime);
-    void Render();
+    void Initialize() override;
+    void Update(float deltaTime) override;
+    void Render() override;
 
     InputHandler* inputHandler;
 

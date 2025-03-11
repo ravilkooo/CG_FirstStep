@@ -6,7 +6,7 @@
 #include <SceneNode.h>
 #include <DirectXMath.h>
 #include "SimpleMath.h"
-#include "ShapeGenerator.h"
+#include <ShapeGenerator.h>
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -18,7 +18,6 @@ public:
         CUBE = 0, SPHERE = 1, GEOSPHERE = 2, RING = 3,
     };
 
-    XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
     CosmicBody(float radius, float rotationSpeed,
         XMFLOAT3 position, XMFLOAT4 col, PLANET_TYPE planet_type,
@@ -32,6 +31,8 @@ public:
     
     Matrix GetAttractedToTransform();
     Vector3 GetCenterLocation() override;
+
+    XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
     float rotationSpeed;  // Скорость вращения вокруг своей оси
     float radius;

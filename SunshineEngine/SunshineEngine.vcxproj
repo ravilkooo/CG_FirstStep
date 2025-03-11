@@ -145,8 +145,6 @@
     <ClInclude Include="InputAssembler.h" />
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="old_DisplayWin32.h" />
-    <ClInclude Include="old_Game.h" />
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="PipelineState.h" />
     <ClInclude Include="Quad.h" />
@@ -155,6 +153,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ShapeGenerator.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Triangle.h" />
   </ItemGroup>
@@ -169,7 +168,6 @@
     <ClCompile Include="InputAssembler.cpp" />
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="old_Game.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="PipelineState.cpp" />
     <ClCompile Include="Quad.cpp" />
@@ -178,6 +176,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="ShapeGenerator.cpp" />
     <ClCompile Include="TestFramework.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Triangle.cpp" />
