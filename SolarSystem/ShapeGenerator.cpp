@@ -155,7 +155,6 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
                 radius * sinf(elevationStep * i) * sinf(sliceStep * j)
             ), col };
         }
-        std::cout << (*vertices)[_offsetVertexIdx - 1].pos.z << ";\n";
     }
     // bottom vertex
     (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, -radius, 0.0f), col };
@@ -213,6 +212,123 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
     (*indices)[indexIndex++] = bottomIndex;
     (*indices)[indexIndex++] = startIndex + sliceCount - 1;
     (*indices)[indexIndex++] = startIndex;
+
+    return;
+}
+
+void CreateRingMesh(float radius, float thickness, float width,
+    UINT sliceCount,
+    DirectX::XMFLOAT4 col,
+    Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum)
+{
+    sliceCount = max(sliceCount, 4);
+    thickness = max(0.0001, thickness);
+
+    *verticesNum = 4 * sliceCount;
+    *vertices = (Vertex*)malloc(*verticesNum * sizeof(Vertex));
+
+    float sliceStep = DirectX::XM_2PI / sliceCount;
+
+    UINT _offsetVertexIdx = 0;
+    // top vertices
+    
+    {
+        float half_thickness = 0.5 * thickness;
+
+        for (UINT j = 0; j < sliceCount; ++j) {
+            (*vertices)[_offsetVertexIdx++] =
+            { DirectX::XMFLOAT3(
+                radius * cosf(sliceStep * j),
+                half_thickness,
+                radius *  sinf(sliceStep * j)
+            ), col };
+        }
+
+        float outer_radius = radius + width;
+
+        for (UINT j = 0; j < sliceCount; ++j) {
+            (*vertices)[_offsetVertexIdx++] =
+            { DirectX::XMFLOAT3(
+                outer_radius * cosf(sliceStep * j),
+                half_thickness,
+                outer_radius * sinf(sliceStep * j)
+            ), col };
+        }
+
+        for (UINT j = 0; j < sliceCount; ++j) {
+            (*vertices)[_offsetVertexIdx++] =
+            { DirectX::XMFLOAT3(
+                outer_radius * cosf(sliceStep * j),
+                -half_thickness,
+                outer_radius * sinf(sliceStep * j)
+            ), col };
+        }
+
+        for (UINT j = 0; j < sliceCount; ++j) {
+            (*vertices)[_offsetVertexIdx++] =
+            { DirectX::XMFLOAT3(
+                radius * cosf(sliceStep * j),
+                -half_thickness,
+                radius * sinf(sliceStep * j)
+            ), col };
+        }
+
+    }
+
+
+    *indicesNum = 6 * 4 * sliceCount;
+    //std::cout << *indicesNum << " << \n";
+    *indices = (int*)malloc(*indicesNum * sizeof(int));
+
+    UINT indexIndex = 0;
+    for (UINT i = 0; i < 3; i++)
+    {
+        UINT startIndex = i * sliceCount;
+        UINT nextStartIndex = startIndex + sliceCount;
+        for (UINT j = 0; j < sliceCount - 1; ++j) {
+
+            (*indices)[indexIndex++] = startIndex + j;
+            (*indices)[indexIndex++] = startIndex + j + 1;
+            (*indices)[indexIndex++] = nextStartIndex + j;
+
+            (*indices)[indexIndex++] = startIndex + j + 1;
+            (*indices)[indexIndex++] = nextStartIndex + j + 1;
+            (*indices)[indexIndex++] = nextStartIndex + j;
+        }
+
+        (*indices)[indexIndex++] = startIndex + sliceCount - 1;
+        (*indices)[indexIndex++] = startIndex;
+        (*indices)[indexIndex++] = nextStartIndex + sliceCount - 1;
+
+        (*indices)[indexIndex++] = startIndex;
+        (*indices)[indexIndex++] = nextStartIndex;
+        (*indices)[indexIndex++] = nextStartIndex + sliceCount - 1;
+
+    }
+
+    {
+        UINT startIndex = 3 * sliceCount;
+        UINT nextStartIndex = 0;
+        for (UINT j = 0; j < sliceCount - 1; ++j) {
+
+            (*indices)[indexIndex++] = startIndex + j;
+            (*indices)[indexIndex++] = startIndex + j + 1;
+            (*indices)[indexIndex++] = nextStartIndex + j;
+
+            (*indices)[indexIndex++] = startIndex + j + 1;
+            (*indices)[indexIndex++] = nextStartIndex + j + 1;
+            (*indices)[indexIndex++] = nextStartIndex + j;
+        }
+
+        (*indices)[indexIndex++] = startIndex + sliceCount - 1;
+        (*indices)[indexIndex++] = startIndex;
+        (*indices)[indexIndex++] = nextStartIndex + sliceCount - 1;
+
+        (*indices)[indexIndex++] = startIndex;
+        (*indices)[indexIndex++] = nextStartIndex;
+        (*indices)[indexIndex++] = nextStartIndex + sliceCount - 1;
+
+    }
 
     return;
 }

@@ -15,7 +15,7 @@ class CosmicBody : public SceneNode
 {
 public:
     enum class PLANET_TYPE {
-        CUBE = 0, SPHERE = 1, GEOSPHERE = 2,
+        CUBE = 0, SPHERE = 1, GEOSPHERE = 2, RING = 3,
     };
 
     XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -35,12 +35,13 @@ public:
 
     float rotationSpeed;  // Скорость вращения вокруг своей оси
     float radius;
+    float rotationAngle; // Текущий угол вращения
+    float orbitAngle;     // Текущий угол орбиты
+    Vector3 orbitAxis = Vector3(0.0f, 1.0f, 0.0f);
 private:
     float orbitSpeed;     // Скорость вращения вокруг другого тела
     float orbitRadius;
     CosmicBody* attractedTo;  // Тело, вокруг которого вращается
-    float orbitAngle;     // Текущий угол орбиты
-    float rotationAngle; // Текущий угол вращения
     float eyeTime = 0.0f;
    
 };

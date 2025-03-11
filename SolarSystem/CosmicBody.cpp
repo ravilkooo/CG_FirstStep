@@ -1,11 +1,11 @@
 #include "CosmicBody.h"
 
 CosmicBody::CosmicBody(float radius, float rotationSpeed,
-    XMFLOAT3 position, XMFLOAT4 col, PLANET_TYPE planet_type,
+    XMFLOAT3 position,
+    XMFLOAT4 col, PLANET_TYPE planet_type,
     CosmicBody* attractedTo, float orbitRadius, float orbitSpeed)
-    : radius(radius), rotationSpeed(rotationSpeed), position(position),
-    orbitAngle(0.0f), rotationAngle(0.0f),
-    attractedTo(attractedTo), orbitRadius(orbitRadius), orbitSpeed(orbitSpeed)
+    : radius(radius), rotationSpeed(rotationSpeed), position(position), rotationAngle(0.0f),
+    attractedTo(attractedTo), orbitRadius(orbitRadius), orbitSpeed(orbitSpeed), orbitAngle(0.0f)
 {
     float w2 = 0.5f * radius;
     float h2 = 0.5f * radius;
@@ -55,6 +55,18 @@ CosmicBody::CosmicBody(float radius, float rotationSpeed,
         }
     }
         break;
+    case CosmicBody::PLANET_TYPE::RING:
+    {
+        UINT sliceCount = 10;
+
+        CreateRingMesh(radius, 0.0001, radius*0.1f, sliceCount, col, &vertices, &verticesNum, &indices, &indicesNum);
+        auto col_2 = XMFLOAT4(0.5f + 0.5f * col.x, 0.5f + 0.5f * col.y, 0.5f + 0.5f * col.z, 1.0f);
+        for (size_t i = 0; i < sliceCount; i ++)
+        {
+            vertices[i].color = col_2;
+            vertices[i + sliceCount].color = col_2;
+        }
+    }
     default:
         break;
     }
@@ -140,7 +152,10 @@ Matrix CosmicBody::GetAttractedToTransform() {
         Matrix toOrbit = Matrix::CreateTranslation(Vector3(orbitRadius, 0.0f, 0.0f));
 
         Quaternion q_orbitRot = Quaternion::CreateFromAxisAngle(Vector3(0.0f, 1.0f, 0.0f), orbitAngle);
+        //Quaternion q_orbitRot = Quaternion::CreateFromAxisAngle(orbitAxis, orbitAngle);
         Matrix m_orbitRot = Matrix::CreateFromQuaternion(q_orbitRot);
+
+        //Matrix m_orbitOffset = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll());
 
         Matrix toAttractedCenter = Matrix::CreateTranslation(attractedTo->GetCenterLocation());
 

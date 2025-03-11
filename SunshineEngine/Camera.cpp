@@ -139,7 +139,7 @@ void Camera::MoveBackward(float speed)
 void Camera::MoveLeft(float speed)
 {
     if (isOrbitalMode) {
-        orbitalYaw += speed;
+        orbitalYaw -= speed;
     }
     else {
         XMVECTOR right = XMVector3Cross(
@@ -164,7 +164,7 @@ void Camera::MoveRight(float speed)
 void Camera::MoveUp(float speed)
 {
     if (isOrbitalMode) {
-        orbitalPitch = min(orbitalPitch + speed, XM_PIDIV4 - 0.01f);
+        orbitalPitch = max(-XM_PIDIV2 + 0.01f, min(orbitalPitch + speed, XM_PIDIV2 - 0.01f));
     }
     else {
         position.y += speed;
@@ -185,7 +185,9 @@ void Camera::RotateYaw(float angle)
     }
     else
     {
-        // Поворот камеры в FPS-режиме
+        Vector3 look_dir = Vector3::Transform(target - position,
+            Matrix::CreateFromQuaternion(Quaternion::CreateFromAxisAngle(up, angle)));
+        target = position + look_dir;
     }
 }
 
@@ -197,7 +199,11 @@ void Camera::RotatePitch(float angle)
     }
     else
     {
-        // Поворот камеры в FPS-режиме
+        Vector3 look_dir = target - position;
+        Vector3 _axis = up.Cross(look_dir);
+        look_dir = Vector3::Transform(look_dir,
+            Matrix::CreateFromQuaternion(Quaternion::CreateFromAxisAngle(_axis, angle)));
+        target = position + look_dir;
     }
 }
 
@@ -212,11 +218,11 @@ void Camera::SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis)
 }
 void Camera::SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 rotAxis, float referenceLen)
 {
-    orbitalAngleSpeed = 0.0f;
     isOrbitalMode = true;
+    orbitalAngleSpeed = 0.0f;
     this->orbitalDistance = 2.0f * referenceLen / tanf(fov * 0.5);
     orbitalYaw = 0.0f;
-    orbitalPitch = 0.0f;
+    orbitalPitch = XM_PIDIV4;
     orbitalTarget = orbitalTarget;
     target = orbitalTarget;
     orbitalAxis = rotAxis;

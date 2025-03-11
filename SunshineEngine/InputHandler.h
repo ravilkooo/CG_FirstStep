@@ -18,8 +18,20 @@ public:
         D_4 = 0x34u,
         D_5 = 0x35u,
         D_6 = 0x36u,
-        LEFT = 37u, UP = 38u, RIGHT = 39u, DOWN = 40u,
-        E = 0x45u, Q = 0x51u,
+
+        LEFT = 0x25u,
+        UP = 0x26u,
+        RIGHT = 0x27u,
+        DOWN = 0x28u,
+
+        A = 0x41u,
+        B = 0x42u,
+        D = 0x44u,
+        E = 0x45u,
+        Q = 0x51u,
+        R = 0x52u,
+        S = 0x53u,
+        W = 0x57u,
     };
 
     InputHandler();

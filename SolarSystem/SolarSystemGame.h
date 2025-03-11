@@ -25,6 +25,7 @@ private:
     //Camera camera;
     std::vector<CosmicBody*> cosmicBodies;
     CosmicBody* focusedBody = nullptr;
+    UINT focusedBodyIdx = 0;
 };
 
 
