@@ -8,6 +8,9 @@
 
 DirectX::XMVECTOR NormalizeHomogeneousVector(DirectX::XMVECTOR vec);
 
+void CreateRandomHeightPlane(float width, float depth, UINT widthSegments, UINT depthSegments, float maxHeight, DirectX::XMFLOAT4 col,
+	Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum);
+
 void CreateSimpleCubeMesh(float width, float height, float depth, DirectX::XMFLOAT4 col,
 	Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum);
 

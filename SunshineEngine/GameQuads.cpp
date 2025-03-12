@@ -70,7 +70,7 @@ void GameQuads::Initialize()
 
     physEngine =  new PhysicsEngine(&scene);
 
-    displayWindow = DisplayWindow(applicationName, hInstance, 800, 800);
+    displayWindow = DisplayWindow(applicationName, hInstance, winWidth, winHeight);
 
 
     renderer = Renderer(&displayWindow);

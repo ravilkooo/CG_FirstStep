@@ -146,11 +146,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CollectibleObject.cpp" />
+    <ClCompile Include="Floor.cpp" />
     <ClCompile Include="KatamariGame.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="StickyBall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CollectibleObject.h" />
+    <ClInclude Include="Floor.h" />
     <ClInclude Include="KatamariGame.h" />
     <ClInclude Include="StickyBall.h" />
   </ItemGroup>

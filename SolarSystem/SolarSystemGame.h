@@ -24,6 +24,9 @@ public:
     float pressTime = 0.1f;
     float buttonTimer = 10.0f;
 
+    UINT winWidth = 800;
+    UINT winHeight = 800;
+
 private:
     //Camera camera;
     std::vector<CosmicBody*> cosmicBodies;

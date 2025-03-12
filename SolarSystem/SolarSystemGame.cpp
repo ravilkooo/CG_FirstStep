@@ -132,10 +132,11 @@ void SolarSystemGame::Initialize()
 
 	physEngine = new SolarSystemPhysics(&scene);
 
-	displayWindow = DisplayWindow(applicationName, hInstance, 800, 800);
+	displayWindow = DisplayWindow(applicationName, hInstance, winWidth, winHeight);
 	inputHandler = displayWindow.GetInputHandler();
 
 	renderer = Renderer(&displayWindow);
+	renderer.camera = Camera(winWidth * 1.0f / winHeight);
 
 	focusedBody = moon;
 	//renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);

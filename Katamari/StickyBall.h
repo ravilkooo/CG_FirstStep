@@ -17,22 +17,28 @@ public:
     void SlowDown(float deltaTime);
 
     Vector3 GetMoveDir();
+    void UpdateScale();
 
-    float radius = 1.0f;
+    void Grow(float deltaTime);
+
     float scale = 1.0f;
+    float radius = 1.0f;
+    float radiusGrow = 0.0f;
+    float radiusSlow = 0.3f;
 
     float velocity = 0.0f;
-    float max_velocity = 10.0f;
+    float maxVelocity = 10.0f;
     float acceleration = 1.0f;
 
-    float spin_speed = 0.0f;
+    float spinSpeed = 0.0f;
+    float currentSpin = 0.0f;
 
-    float rotation_speed = 0.0f;
-    float max_rotation_speed = 1.0f;
-    float curr_rotation = 0.0f;
-    float max_rotation = XM_PIDIV4;
-    float rot_acceleration = 0.5f;
+    float currentSpeed = 0.0f;
 
+    float rotationSpeed = 0.5f;
+    float currentRotation = 0.0f;
+
+    //Vector3 forwardDirection = (0.0f, 0.0f, 1.0f);
     XMFLOAT3 position = XMFLOAT3(0.0f, radius, 0.0f);
 };
 

@@ -24,12 +24,24 @@
     <ClCompile Include="StickyBall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Floor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CollectibleObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KatamariGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StickyBall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Floor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CollectibleObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

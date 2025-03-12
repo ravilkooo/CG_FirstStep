@@ -11,7 +11,13 @@ using namespace DirectX::SimpleMath;
 class Camera
 {
 public:
+    enum class CAMERA_MODE
+    {
+        FPS, ORBITAL, FOLLOW
+    };
+
     Camera();
+    Camera(float aspectRatio);
     ~Camera();
 
     void SetPosition(Vector3 position);
@@ -24,6 +30,8 @@ public:
     void SetFarZ(float farZ);
 
     void Update(float deltaTime, const Matrix targetTransform);
+    void Update(float deltaTime, const Matrix targetTransform, Vector3 direction);
+    void Update(float deltaTime, const Matrix targetTransform, Vector3 direction, float referenceLen);
 
     XMMATRIX GetViewMatrix() const;
     XMMATRIX GetProjectionMatrix() const;
@@ -38,11 +46,13 @@ public:
     void RotateYaw(float angle);
     void RotatePitch(float angle);
 
+    void SwitchToFPSMode();
+    
+    void SwitchToFollowMode(Vector3 followTarget, Vector3 direction, float referenceLen);
+
     void SwitchToOrbitalMode(Vector3 orbitalTarget);
     void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 spinAxis);
     void SwitchToOrbitalMode(Vector3 orbitalTarget, Vector3 spinAxis, float referenceLen);
-    
-    void SwitchToFPSMode();
 
     void SwitchProjection();
 
@@ -51,6 +61,8 @@ private:
     Vector3 target;
     Vector3 up;
 
+    bool isPerspective = true;
+
     float fov;
     float aspectRatio;
     float nearZ;
@@ -58,17 +70,23 @@ private:
 
     float orthZ;
 
-    bool isOrbitalMode;
+    float referenceLen;
+
+    CAMERA_MODE cameraMode = CAMERA_MODE::FPS;
+
+    // for ORBITAL camera mode
     Vector3 orbitalTarget;
     float defaultOrbitalDistance;
     float orbitalDistance;
     float orbitalYaw;
     float orbitalPitch;
-
     float orbitalAngleSpeed;
     Vector3 spinAxis;
 
-    bool isPerspective = true;
+    // for FOLLOW camera mode
+    float followPitch;
+
+
 };
 
 #endif // CAMERA_H

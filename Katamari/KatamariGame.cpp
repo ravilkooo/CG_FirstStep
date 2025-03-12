@@ -11,8 +11,11 @@ KatamariGame::~KatamariGame()
 
 void KatamariGame::Initialize()
 {
-	applicationName = L"SolarSystem";
+	applicationName = L"KatamariGame";
 	hInstance = GetModuleHandle(nullptr);
+
+	winWidth = 1000;
+	winHeight = 800;
 
 	timer = GameTimer();
 
@@ -24,13 +27,16 @@ void KatamariGame::Initialize()
 		scene.AddNode(body);
 	}*/
 
+	scene.AddNode(&ball);
+	scene.AddNode(&floor);
 
 	physEngine = new PhysicsEngine(&scene);
 
-	displayWindow = DisplayWindow(applicationName, hInstance, 800, 800);
+	displayWindow = DisplayWindow(applicationName, hInstance, winWidth, winHeight);
 	inputHandler = displayWindow.GetInputHandler();
 
 	renderer = Renderer(&displayWindow);
+	renderer.camera = Camera(winWidth * 1.0f / winHeight);
 
 	for (auto node : scene.nodes)
 	{
@@ -39,8 +45,9 @@ void KatamariGame::Initialize()
 		node->camera = &(renderer.camera);
 		//std::cout << "f1\n";
 	}
+	SpawnCollectibles();
 
-	//renderer.camera.SwitchToOrbitalMode(ball.GetCenterLocation(), Vector3(0.0f ), focusedBody->radius);
+	renderer.camera.SwitchToFollowMode(ball.position, ball.GetMoveDir(), ball.radius);
 }
 
 void KatamariGame::Run()
@@ -87,11 +94,65 @@ void KatamariGame::Run()
 
 void KatamariGame::Update(float deltaTime)
 {
+	// Получаем InputHandler из DisplayWindow
+	inputHandler = displayWindow.GetInputHandler();
+
+	if (inputHandler->IsKeyDown(InputHandler::KeyCode::W))
+	{
+		ball.PushForward(deltaTime);
+	}
+	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::S))
+	{
+		
+	}
+	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::A))
+	{
+		ball.AddTurn(-1.0f, deltaTime);
+	}
+	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D))
+	{
+		ball.AddTurn(1.0f, deltaTime);
+	}
+	else {
+	}
+	ball.SlowDown(deltaTime);
 	physEngine->Update(deltaTime);
+
+	renderer.camera.Update(deltaTime, ball.worldMat, ball.GetMoveDir(), ball.radius);
+
+	// Проверка коллизий
+	for (auto& obj : collectibles)
+	{
+		if (obj.CheckCollision(ball))
+		{
+			obj.AttachToBall(&ball);
+			ball.Grow(obj.radius / deltaTime);
+		}
+	}
+
 }
 
 void KatamariGame::Render()
 {
 	// Отрисовка сцены
 	renderer.RenderScene(scene);
+}
+
+void KatamariGame::SpawnCollectibles()
+{
+	// Генерация объектов
+	for (int i = 0; i < 10; ++i)
+	{
+		float x = (rand() % 20) - 10.0f;
+		float z = (rand() % 20) - 10.0f;
+		collectibles.emplace_back(0.3f, DirectX::XMFLOAT3(x, 0.3f, z));
+	}
+
+	for (auto& obj : collectibles)
+	{
+		scene.AddNode(&obj);
+		obj.LoadAndCompileShader(renderer.shaderManager);
+		obj.InitBuffers(renderer.resourceManager);
+		obj.camera = &(renderer.camera);
+	}
 }

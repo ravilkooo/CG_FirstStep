@@ -1,5 +1,6 @@
 #include "ShapeGenerator.h"
 #include <iostream>
+#include <random> // Для генерации случайных чисел
 
 DirectX::XMVECTOR NormalizeHomogeneousVector(DirectX::XMVECTOR vec) {
     // Получаем компонент w
@@ -10,6 +11,69 @@ DirectX::XMVECTOR NormalizeHomogeneousVector(DirectX::XMVECTOR vec) {
     DirectX::XMVECTOR normalized = DirectX::XMVector3Normalize(cartesian);
 
     return DirectX::XMVectorSetW(normalized, 1.0f);
+}
+
+
+void CreateRandomHeightPlane(float width, float depth, UINT widthSegments, UINT depthSegments, float maxHeight, DirectX::XMFLOAT4 col,
+    Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
+
+    // Минимальное количество сегментов
+    widthSegments = max(widthSegments, 1);
+    depthSegments = max(depthSegments, 1);
+
+    // Количество вершин
+    *verticesNum = (widthSegments + 1) * (depthSegments + 1);
+    *vertices = (Vertex*)calloc(*verticesNum, sizeof(Vertex));
+
+    // Количество индексов (по два треугольника на каждый квадрат)
+    *indicesNum = widthSegments * depthSegments * 6;
+    *indices = (int*)calloc(*indicesNum, sizeof(int));
+
+    // Шаг между вершинами
+    float widthStep = width / widthSegments;
+    float depthStep = depth / depthSegments;
+
+    // Генератор случайных чисел
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(-maxHeight, maxHeight);
+
+    // Генерация вершин
+    for (UINT i = 0; i <= depthSegments; ++i) {
+        for (UINT j = 0; j <= widthSegments; ++j) {
+            float x = -width / 2.0f + j * widthStep; // Центрируем плоскость по X
+            float z = -depth / 2.0f + i * depthStep; // Центрируем плоскость по Z
+            float y = dis(gen); // Случайное отклонение по Y
+
+            (*vertices)[i * (widthSegments + 1) + j] = {
+                DirectX::XMFLOAT3(x, y, z),
+                ( (i+j) % 2 ? col : XMFLOAT4(1.0f - col.x, 1.0f - col.y, 1.0f - col.z, 1.0f)) 
+            };
+        }
+    }
+
+    // Генерация индексов
+    UINT index = 0;
+    for (UINT i = 0; i < depthSegments; ++i) {
+        for (UINT j = 0; j < widthSegments; ++j) {
+            UINT topLeft = i * (widthSegments + 1) + j;
+            UINT topRight = topLeft + 1;
+            UINT bottomLeft = (i + 1) * (widthSegments + 1) + j;
+            UINT bottomRight = bottomLeft + 1;
+
+            // Первый треугольник
+            (*indices)[index++] = topLeft;
+            (*indices)[index++] = bottomLeft;
+            (*indices)[index++] = topRight;
+
+            // Второй треугольник
+            (*indices)[index++] = topRight;
+            (*indices)[index++] = bottomLeft;
+            (*indices)[index++] = bottomRight;
+        }
+    }
+
+    return;
 }
 
 void CreateSimpleCubeMesh(float width, float height, float depth, DirectX::XMFLOAT4 col,

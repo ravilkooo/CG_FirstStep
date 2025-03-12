@@ -30,6 +30,9 @@ public:
 
     HINSTANCE hInstance;
     LPCWSTR applicationName;
+
+    int winWidth = 800;
+    int winHeight = 800;
 };
 
 #endif // GAME_H
