@@ -13,8 +13,6 @@ public:
     KatamariGame();
     ~KatamariGame();
 
-    void Initialize() override;
-
     void Run() override;
     void Update(float deltaTime) override;
     void Render() override;
@@ -27,6 +25,8 @@ public:
     StickyBall ball;
     Floor floor;
 
+    void HandleKeyDown(Keys key);
+    void HandleMouseMove(const InputDevice::MouseMoveEventArgs& args);
 };
 
 #endif

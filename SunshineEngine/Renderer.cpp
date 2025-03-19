@@ -6,16 +6,6 @@ Renderer::Renderer() : device(nullptr), context(nullptr)
 
 Renderer::Renderer(DisplayWindow* displayWin)
 {
-	Initialize(displayWin);
-}
-
-Renderer::~Renderer()
-{
-
-}
-
-bool Renderer::Initialize(DisplayWindow* displayWin)
-{
 	PrevTime = std::chrono::steady_clock::now();
 	totalTime = 0;
 
@@ -109,9 +99,16 @@ bool Renderer::Initialize(DisplayWindow* displayWin)
 
 	camera = Camera();
 
-    return true;
+    return;
 }
 
+
+Renderer::~Renderer()
+{
+
+}
+
+template <class T>
 void Renderer::RenderScene(const Scene& scene)
 {
 	auto	curTime = std::chrono::steady_clock::now();
@@ -134,26 +131,31 @@ void Renderer::RenderScene(const Scene& scene)
 	viewport.MaxDepth = 1.0f;
 	context->RSSetViewports(1, &viewport);
 
-	for (SceneNode* node : scene.nodes) {
-
-
-		// Input layout handler
-
-		// Описываем какие элементы будут на входе
-
-		inputAssembler.CreateInputLayout(node->IALayoutInputElements, node->vsBlob);
-
-		inputAssembler.SetInputLayout();
-		//inputAssembler.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		node->Draw(context, renderTargetView, pDSV);
+	for (SceneNode<T>* node : scene.nodes) {
+		DrawNode(node);
 	}
 
-	// зачем эта строчка? 
-	//context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
-
-	// 15. At the End of While (!isExitRequested): Present the Result
 	swapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+}
+
+template <class T>
+void Renderer::DrawNode(SceneNode<T>* node)
+{
+	inputAssembler.CreateInputLayout(node->IALayoutInputElements, node->vsBlob);
+	inputAssembler.SetInputLayout();
+	node->Draw(context, renderTargetView, pDSV);
+
+	/*
+	if (node->GetChildren().size() == 0) {
+		// Draw this node
+	}
+	else {
+		for (SceneNode* childNode : node->GetChildren())
+		{
+			childNode->Draw(context, renderTargetView, pDSV);
+		}
+	}
+	*/
 }
 
 ID3D11Device* Renderer::GetDevice()

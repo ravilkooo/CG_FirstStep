@@ -5,12 +5,13 @@
 
 #include <directxmath.h>
 #include <d3d11.h>
+#include "CommonVertex.h"
 
-class Triangle : public SceneNode
+class Triangle : public SceneNode<CommonVertex>
 {
 public:
     Triangle();
-    Triangle(Vertex* vertices);
+    Triangle(CommonVertex* vertices);
 
     void Update(float deltaTime);
 

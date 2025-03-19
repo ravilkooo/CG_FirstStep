@@ -36,11 +36,11 @@ Floor::Floor()
 
 void Floor::Update(float deltaTime)
 {
-	Matrix viewMat = camera->GetViewMatrix();
-	Matrix projMat = camera->GetProjectionMatrix();
+	//Matrix viewMat = camera->GetViewMatrix();
+	//Matrix projMat = camera->GetProjectionMatrix();
 
 
-	cb.wvpMat = worldMat * (XMMATRIX)(viewMat * projMat);
+	//cb.wvpMat = worldMat * (XMMATRIX)(viewMat * projMat);
 }
 
 Vector3 Floor::GetCenterLocation()

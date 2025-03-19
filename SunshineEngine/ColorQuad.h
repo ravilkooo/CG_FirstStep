@@ -2,8 +2,9 @@
 #define COLORQUAD_H
 
 #include "SceneNode.h"
+#include "CommonVertex.h"
 
-class ColorQuad : public SceneNode
+class ColorQuad : public SceneNode<CommonVertex>
 {
 
 };

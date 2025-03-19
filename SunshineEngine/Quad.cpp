@@ -12,13 +12,13 @@ Quad::Quad()
 	}
 
 
-	Vertex _points[4] = {
-		DirectX::XMFLOAT3(0.25f, 0.25f, 0.25f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT3(-0.25f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT3(0.25f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT3(-0.25f, 0.25f, 0.25f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+	CommonVertex _points[4] = {
+		CommonVertex(DirectX::XMFLOAT3(0.25f, 0.25f, 0.25f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(-0.25f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(0.25f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(-0.25f, 0.25f, 0.25f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)),
 	};
-	vertices = (Vertex*)malloc(4 * sizeof(Vertex));
+	vertices = (CommonVertex*)malloc(4 * sizeof(CommonVertex));
 	verticesNum = 4;
 	
 	for (int i = 0; i < 8; i++)
@@ -61,13 +61,13 @@ Quad::Quad(DirectX::XMFLOAT4 position, float width)
 	}
 
 	width = width > 0 ? width: 0.01;
-	Vertex _points[8] = {
-		DirectX::XMFLOAT3(position.x + width, position.y + width, position.z + 0.0),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT3(position.x, position.y, position.z + 0.0),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT3(position.x + width,position.y, position.z + 0.0),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT3(position.x, position.y + width, position.z + 0.0),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+	CommonVertex _points[8] = {
+		CommonVertex(DirectX::XMFLOAT3(position.x + width, position.y + width, position.z + 0.0),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(position.x, position.y, position.z + 0.0),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(position.x + width,position.y, position.z + 0.0),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(position.x, position.y + width, position.z + 0.0),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)),
 	};
-	vertices = (Vertex*)malloc(4 * sizeof(Vertex));
+	vertices = (CommonVertex*)malloc(4 * sizeof(CommonVertex));
 	verticesNum = 4;
 
 	for (int i = 0; i < 8; i++)
@@ -112,13 +112,13 @@ Quad::Quad(DirectX::XMFLOAT4 position, float width, float height)
 
 	width = width > 0 ? width : 0.01;
 	height = height > 0 ? height : 0.01;
-	Vertex _points[8] = {
-		DirectX::XMFLOAT3(position.x + width, position.y + height, position.z + 0.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT3(position.x, position.y, position.z + 0.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT3(position.x + width, position.y, position.z + 0.0f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT3(position.x, position.y + height, position.z + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+	CommonVertex _points[8] = {
+		CommonVertex(DirectX::XMFLOAT3(position.x + width, position.y + height, position.z + 0.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(position.x, position.y, position.z + 0.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(position.x + width, position.y, position.z + 0.0f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(position.x, position.y + height, position.z + 0.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)),
 	};
-	vertices = (Vertex*)malloc(4 * sizeof(Vertex));
+	vertices = (CommonVertex*)malloc(4 * sizeof(CommonVertex));
 	verticesNum = 4;
 
 	for (int i = 0; i < 8; i++)

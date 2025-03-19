@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <iostream>
 
+// My custom class
 class InputHandler
 {
 

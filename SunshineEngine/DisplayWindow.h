@@ -4,31 +4,39 @@
 #include <windows.h>
 #include <iostream>
 #include "InputHandler.h"
+#include "InputDevice.h"
 
 class DisplayWindow
 {
+	friend class Game;
+
 public:
 	int screenWidth = 800;
 	int screenHeight = 800;
 	HWND hWnd;
 
 	DisplayWindow();
-	DisplayWindow(LPCWSTR applicationName, HINSTANCE hInstance, int screenWidth, int screenHeight);
-
-	void Initialize(LPCWSTR applicationName, HINSTANCE hInstance, int screenWidth, int screenHeight);
+	DisplayWindow(Game* inGame, LPCWSTR applicationName, HINSTANCE hInstance, int screenWidth, int screenHeight);
 
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
+	
+	// My custom method
+	// static LRESULT CALLBACK WndProc_RawInput(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
 
-	static LRESULT CALLBACK WndProc_RawInput(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
+	// My custom method
+	// static void HandleRawInput(HRAWINPUT hRawInput, InputHandler* inputHandler);
 
-	static void HandleRawInput(HRAWINPUT hRawInput, InputHandler* inputHandler);
-
-	void RegisterRawInput(HWND hWnd);
-
-	InputHandler* GetInputHandler() { return inputHandler; }
+	// My custom method
+	// void RegisterRawInput(HWND hWnd);
+	
+	// My custom method
+	// InputHandler* GetInputHandler() { return inputHandler; }
 
 private:
-	InputHandler* inputHandler; // Не статический член класса
+	// My custom
+	// InputHandler* inputHandler; // Не статический член класса
+
+	// void Initialize(LPCWSTR applicationName, HINSTANCE hInstance, int screenWidth, int screenHeight);
 };
 
 #endif // DISPLAY_WIN_H

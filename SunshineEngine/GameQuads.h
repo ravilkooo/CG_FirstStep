@@ -5,8 +5,9 @@
 
 #include "Quad.h"
 #include "Triangle.h"
+#include "CommonVertex.h"
 
-class GameQuads : public Game
+class GameQuads : public Game<CommonVertex>
 {
 public:
     GameQuads();
@@ -14,7 +15,6 @@ public:
 
     void Run();
 
-    void Initialize();
     void Update(float deltaTime);
     void Render();
 };

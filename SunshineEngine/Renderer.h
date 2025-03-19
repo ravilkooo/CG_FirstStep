@@ -2,10 +2,10 @@
 #define RENDERER_H
 
 #include "ShaderManager.h"
-#include "TextureManager.h"
 #include "Scene.h"
 #include "ResourceManager.h"
 #include "InputAssembler.h"
+// #include "TextureManager.h"
 
 #include <d3d11.h>
 #include <wrl.h>
@@ -16,17 +16,24 @@
 
 #include "Camera.h"
 
+#include "Texture.h"
+#include "Sampler.h"
+
 #include <chrono>
 
 class Renderer
 {
 public:
     Renderer();
+    template <class T>
     Renderer(DisplayWindow* displayWin);
     ~Renderer();
 
-    bool Initialize(DisplayWindow* displayWin);
-    void RenderScene(const Scene& scene);
+    template <class T>
+    void RenderScene(const Scene<T>& scene);
+
+    template <class T>
+    void DrawNode(SceneNode<T>* node);
 
     ID3D11Device* GetDevice();
     ID3D11DeviceContext* GetDeviceContext();
@@ -40,7 +47,6 @@ private:
     ID3D11Texture2D* pDepthStencil;
     ID3D11DepthStencilView* pDSV;
 
-    TextureManager textureManager;
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
@@ -59,6 +65,7 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> PrevTime;
     float totalTime;
 
+    // TextureManager textureManager;
     //ID3D11InputLayout* layout;
 };
 

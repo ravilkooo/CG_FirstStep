@@ -1,6 +1,5 @@
-// CollectibleObject.cpp
 #include "CollectibleObject.h"
-#include "ShapeGenerator.h"
+
 
 CollectibleObject::CollectibleObject(float radius, const DirectX::XMFLOAT3& position)
     : radius(radius), initialPosition(position)
@@ -34,6 +33,99 @@ CollectibleObject::CollectibleObject(float radius, const DirectX::XMFLOAT3& posi
     shaderFilePath = L"./Shaders/CubeShader.hlsl";
 }
 
+CollectibleObject::CollectibleObject(const std::string& modelsFolder, const DirectX::XMFLOAT3& position)
+{
+    LoadRandomModel(modelsFolder);
+    /*worldMat = XMMatrixScaling(0.5f, 0.5f, 0.5f) *
+        XMMatrixTranslation(
+            rand() % 20 - 10.0f,
+            radius,
+            rand() % 20 - 10.0f
+        );*/
+
+
+    appliedScale = radius / modelRadius;
+    initialPosition = position;
+    initialPosition.y = radius;
+    std::cout << initialPosition.x << " "  << initialPosition.y << " " << initialPosition.z << "\n";
+    
+    worldMat = Matrix::CreateScale(appliedScale) * Matrix::CreateTranslation(initialPosition);
+
+    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+    IALayoutInputElements[0] =
+        D3D11_INPUT_ELEMENT_DESC{
+            "POSITION",
+            0,
+            DXGI_FORMAT_R32G32B32_FLOAT,
+            0,
+            0,
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0 };
+
+    IALayoutInputElements[1] =
+        D3D11_INPUT_ELEMENT_DESC{
+            "COLOR",
+            0,
+            DXGI_FORMAT_R32G32B32A32_FLOAT,
+            0,
+            D3D11_APPEND_ALIGNED_ELEMENT,
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0 };
+
+    shaderFilePath = L"./Shaders/CubeShader.hlsl";
+
+    if (verticesNum == 1260) {
+
+        shaderFilePath = L"./Shaders/PlaneShader.hlsl";
+    }
+    //hasTexture = true;
+}
+
+void CollectibleObject::LoadRandomModel(const std::string& folder)
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    auto models = GetModelList(folder);
+    if (models.empty()) return;
+
+    std::uniform_int_distribution<> distr(0, models.size() - 1);
+    auto chosen_model = models[distr(gen)];
+    ModelLoader::LoadModel(chosen_model, this);
+    
+    // ModelLoader::LoadModel("models\\suzanne.obj", this);
+
+    // Рассчет bounding radius
+    float maxDistance = 0.0f;
+    for (int i = 0; i < this->verticesNum; i++)
+    {
+        XMFLOAT3 pos = this->vertices[i].pos;
+        float dist = sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+        maxDistance = max(maxDistance, dist);
+    }
+    modelRadius = maxDistance;
+    std::cout << modelRadius << "\n";
+    if (chosen_model == "models\\plane.obj") {
+        std::cout << verticesNum << "\n";
+        this->hasTexture = true;
+    }
+}
+
+std::vector<std::string> CollectibleObject::GetModelList(const std::string& modelsFolder)
+{
+    std::vector<std::string> models;
+    for (const auto& entry : std::filesystem::directory_iterator(modelsFolder))
+    {
+        if (entry.is_regular_file() &&
+            (entry.path().extension() == ".fbx" ||
+                entry.path().extension() == ".obj"))
+        {
+            models.push_back(entry.path().string());
+        }
+    }
+    return models;
+}
+
 Vector3 CollectibleObject::GetCenterLocation()
 {
     return Vector3(initialPosition);
@@ -64,12 +156,6 @@ void CollectibleObject::Update(float deltaTime)
         worldMat = attachTransform * Matrix::CreateScale(1 / attachedBall->radius) * attachedBall->worldMat;
     }
     else {
-        worldMat = Matrix::CreateTranslation(initialPosition);
+        worldMat = Matrix::CreateScale(appliedScale) * Matrix::CreateTranslation(initialPosition);
     }
-
-    Matrix viewMat = camera->GetViewMatrix();
-    Matrix projMat = camera->GetProjectionMatrix();
-
-
-    cb.wvpMat = worldMat * (XMMATRIX)(viewMat * projMat);
 }

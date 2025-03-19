@@ -76,11 +76,12 @@ private:
 
     // for ORBITAL camera mode
     Vector3 orbitalTarget;
-    float defaultOrbitalDistance;
+    float minOrbitalDistance;
     float orbitalDistance;
     float orbitalYaw;
     float orbitalPitch;
     float orbitalAngleSpeed;
+    //float orbitalAngleSpeed;
     Vector3 spinAxis;
 
     // for FOLLOW camera mode

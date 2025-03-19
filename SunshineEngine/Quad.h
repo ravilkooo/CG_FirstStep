@@ -5,8 +5,9 @@
 
 #include <directxmath.h>
 #include <d3d11.h>
+#include "CommonVertex.h"
 
-class Quad : public SceneNode
+class Quad : public SceneNode<CommonVertex>
 {
 public:
 	Quad();

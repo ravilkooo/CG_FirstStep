@@ -1,0 +1,43 @@
+Texture2D DiffuseMap : register(t0);
+SamplerState Sampler : register(s0);
+
+
+
+struct VS_IN
+{
+    float3 pos : POSITION0;
+    float4 col : COLOR0;
+};
+
+struct PS_IN
+{
+    float4 pos : SV_POSITION;
+    float4 col : COLOR;
+};
+
+cbuffer CBuf
+{
+    row_major float4x4 wvpMat;
+};
+
+PS_IN VSMain(VS_IN input)
+{
+    PS_IN output = (PS_IN) 0;
+	
+    output.pos = mul(float4(input.pos, 1.0), wvpMat);
+    output.col = input.col;
+    // output.tex = input.tex.xy;
+	
+    return output;
+}
+
+float4 PSMain(PS_IN input) : SV_Target
+{
+    // float4 col = input.col;
+    // float4 col = DiffuseMap.Sample(Sampler, input.tex.xy);
+    //if (input.pos.x > 400)
+    //    col = float4(0.0f, 1.0f, 0.0f, 1.0f);
+    // return col;
+    float3 pixelColor = DiffuseMap.Sample(Sampler, float2(0, 0));
+    return float4(pixelColor, 1);
+}

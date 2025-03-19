@@ -15,7 +15,7 @@ DirectX::XMVECTOR NormalizeHomogeneousVector(DirectX::XMVECTOR vec) {
 
 
 void CreateRandomHeightPlane(float width, float depth, UINT widthSegments, UINT depthSegments, float maxHeight, DirectX::XMFLOAT4 col,
-    Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
+    CommonVertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
 
     // Минимальное количество сегментов
     widthSegments = max(widthSegments, 1);
@@ -23,7 +23,7 @@ void CreateRandomHeightPlane(float width, float depth, UINT widthSegments, UINT 
 
     // Количество вершин
     *verticesNum = (widthSegments + 1) * (depthSegments + 1);
-    *vertices = (Vertex*)calloc(*verticesNum, sizeof(Vertex));
+    *vertices = (CommonVertex*)calloc(*verticesNum, sizeof(CommonVertex));
 
     // Количество индексов (по два треугольника на каждый квадрат)
     *indicesNum = widthSegments * depthSegments * 6;
@@ -77,7 +77,7 @@ void CreateRandomHeightPlane(float width, float depth, UINT widthSegments, UINT 
 }
 
 void CreateSimpleCubeMesh(float width, float height, float depth, DirectX::XMFLOAT4 col,
-    Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
+    CommonVertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
     float w2 = 0.5f * width;
     float h2 = 0.5f * height;
     float d2 = 0.5f * depth;
@@ -85,7 +85,7 @@ void CreateSimpleCubeMesh(float width, float height, float depth, DirectX::XMFLO
     //DirectX::XMFLOAT4 col_1 = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
     //DirectX::XMFLOAT4 col_2 = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
-    *vertices = (Vertex*)calloc(8, sizeof(Vertex));
+    *vertices = (CommonVertex*)calloc(8, sizeof(CommonVertex));
     *verticesNum = 8;
 
     (*vertices)[0] = { DirectX::XMFLOAT3(-w2, -h2, -d2), col };
@@ -136,7 +136,7 @@ void CreateSimpleCubeMesh(float width, float height, float depth, DirectX::XMFLO
 }
 
 void CreateSimpleGeosphereMesh(float radius, DirectX::XMFLOAT4 col,
-    Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
+    CommonVertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
     
 
     //numSubdivisions = MathHelper::Min(numSubdivisions, 5u);
@@ -161,7 +161,7 @@ void CreateSimpleGeosphereMesh(float radius, DirectX::XMFLOAT4 col,
     };
     
 
-    *vertices = (Vertex*)calloc(12, sizeof(Vertex));
+    *vertices = (CommonVertex*)calloc(12, sizeof(CommonVertex));
     *verticesNum = 12;
     for (size_t i = 0; i < 12; i++) {
         (*vertices)[i] = { pos[i], col };
@@ -193,26 +193,26 @@ void CreateSimpleGeosphereMesh(float radius, DirectX::XMFLOAT4 col,
 
 void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
     DirectX::XMFLOAT4 col,
-    Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
+    CommonVertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum) {
 
     sliceCount = max(sliceCount, 4);
     elevationCount = max(elevationCount, 1);
 
     *verticesNum = 2 + (2 * elevationCount + 1) * sliceCount;
-    *vertices = (Vertex*)malloc(*verticesNum * sizeof(Vertex));
+    *vertices = (CommonVertex*)malloc(*verticesNum * sizeof(CommonVertex));
 
     float sliceStep = DirectX::XM_2PI / sliceCount;
     float elevationStep = DirectX::XM_PIDIV2 / (elevationCount + 1);
 
 
-    UINT _offsetVertexIdx = 0;
+    UINT _offsetCommonVertexIdx = 0;
     // top vertex
-    (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, radius, 0.0f), col };
+    (*vertices)[_offsetCommonVertexIdx++] = { DirectX::XMFLOAT3(0.0f, radius, 0.0f), col };
     // other vertices
     for (UINT i = 1; i <= 2 * elevationCount + 1; ++i)
     {
         for (UINT j = 0; j < sliceCount; ++j) {
-            (*vertices)[_offsetVertexIdx++] =
+            (*vertices)[_offsetCommonVertexIdx++] =
             { DirectX::XMFLOAT3(
                 radius * sinf(elevationStep * i) * cosf(sliceStep * j),
                 radius * cosf(elevationStep * i),
@@ -221,7 +221,7 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
         }
     }
     // bottom vertex
-    (*vertices)[_offsetVertexIdx++] = { DirectX::XMFLOAT3(0.0f, -radius, 0.0f), col };
+    (*vertices)[_offsetCommonVertexIdx++] = { DirectX::XMFLOAT3(0.0f, -radius, 0.0f), col };
 
 
     *indicesNum = 6 * sliceCount + 2 * 6 * elevationCount * sliceCount;
@@ -265,7 +265,7 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
     }
     
     
-    UINT bottomIndex = _offsetVertexIdx - 1;
+    UINT bottomIndex = _offsetCommonVertexIdx - 1;
     UINT startIndex = 1 + 2 * elevationCount * sliceCount;
     for (UINT j = 0; j < sliceCount-1; ++j) {
         (*indices)[indexIndex++] = bottomIndex;
@@ -283,24 +283,24 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
 void CreateRingMesh(float radius, float thickness, float width,
     UINT sliceCount,
     DirectX::XMFLOAT4 col,
-    Vertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum)
+    CommonVertex** vertices, UINT* verticesNum, int** indices, UINT* indicesNum)
 {
     sliceCount = max(sliceCount, 4);
     thickness = max(0.0001, thickness);
 
     *verticesNum = 4 * sliceCount;
-    *vertices = (Vertex*)malloc(*verticesNum * sizeof(Vertex));
+    *vertices = (CommonVertex*)malloc(*verticesNum * sizeof(CommonVertex));
 
     float sliceStep = DirectX::XM_2PI / sliceCount;
 
-    UINT _offsetVertexIdx = 0;
+    UINT _offsetCommonVertexIdx = 0;
     // top vertices
     
     {
         float half_thickness = 0.5 * thickness;
 
         for (UINT j = 0; j < sliceCount; ++j) {
-            (*vertices)[_offsetVertexIdx++] =
+            (*vertices)[_offsetCommonVertexIdx++] =
             { DirectX::XMFLOAT3(
                 radius * cosf(sliceStep * j),
                 half_thickness,
@@ -311,7 +311,7 @@ void CreateRingMesh(float radius, float thickness, float width,
         float outer_radius = radius + width;
 
         for (UINT j = 0; j < sliceCount; ++j) {
-            (*vertices)[_offsetVertexIdx++] =
+            (*vertices)[_offsetCommonVertexIdx++] =
             { DirectX::XMFLOAT3(
                 outer_radius * cosf(sliceStep * j),
                 half_thickness,
@@ -320,7 +320,7 @@ void CreateRingMesh(float radius, float thickness, float width,
         }
 
         for (UINT j = 0; j < sliceCount; ++j) {
-            (*vertices)[_offsetVertexIdx++] =
+            (*vertices)[_offsetCommonVertexIdx++] =
             { DirectX::XMFLOAT3(
                 outer_radius * cosf(sliceStep * j),
                 -half_thickness,
@@ -329,7 +329,7 @@ void CreateRingMesh(float radius, float thickness, float width,
         }
 
         for (UINT j = 0; j < sliceCount; ++j) {
-            (*vertices)[_offsetVertexIdx++] =
+            (*vertices)[_offsetCommonVertexIdx++] =
             { DirectX::XMFLOAT3(
                 radius * cosf(sliceStep * j),
                 -half_thickness,

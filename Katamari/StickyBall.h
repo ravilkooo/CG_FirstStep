@@ -28,7 +28,7 @@ public:
 
     float velocity = 0.0f;
     float maxVelocity = 10.0f;
-    float acceleration = 1.0f;
+    float acceleration = 10.0f;
 
     float spinSpeed = 0.0f;
     float currentSpin = 0.0f;

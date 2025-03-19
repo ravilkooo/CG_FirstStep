@@ -1,23 +1,37 @@
 #include "SceneNode.h"
 
-SceneNode::SceneNode()
+template <class T>
+SceneNode<T>::SceneNode()
 {
 }
 
-SceneNode::~SceneNode()
+template <class T>
+SceneNode<T>::~SceneNode()
 {
 }
 
 
-void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
+template <class T>
+void SceneNode<T>::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 	ID3D11RenderTargetView* renderTargetView,
 	ID3D11DepthStencilView* pDSV)
 {
 	context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	UINT strides[] = { VertexStride() };
+	UINT offsets[] = { 0 };
+
+	for (int i = 0; i < textures.size(); i++)
+	{
+		if (textures[i].GetType() == aiTextureType_DIFFUSE) {
+			//std::cout << "hasTexture_aiTextureType_DIFFUSE\n";
+			context->PSSetShaderResources(0, 1, textures[i].GetTextureResourceViewAddress());
+			break;
+		}
+	}
+
     context->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-    UINT strides[] = { sizeof(Vertex) };
-    UINT offsets[] = { 0 };
     context->IASetVertexBuffers(0, 1, &(pVertexBuffer), strides, offsets);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -26,8 +40,8 @@ void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 	context->Unmap(pConstantBuffer, 0);
     context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 
+	context->PSSetShader(pixelShader, nullptr, 0);
     context->VSSetShader(vertexShader, nullptr, 0);
-    context->PSSetShader(pixelShader, nullptr, 0);
 
     context->OMSetRenderTargets(1, &renderTargetView, pDSV);
 
@@ -36,12 +50,13 @@ void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 }
 
 
-void SceneNode::InitBuffers(ResourceManager resourceManager)
+template <class T>
+void SceneNode<T>::InitBuffers(ResourceManager resourceManager)
 {
 	// 7. Create Vertex and Index Buffers
 
 	// Create pVertexBuffer
-	pVertexBuffer = resourceManager.CreateVertexBuffer(vertices, sizeof(Vertex) * verticesNum);
+	pVertexBuffer = resourceManager.CreateVertexBuffer(vertices, sizeof(T) * verticesNum);
 
 	// Create Set of indices
 
@@ -53,7 +68,8 @@ void SceneNode::InitBuffers(ResourceManager resourceManager)
 
 }
 
-void SceneNode::LoadAndCompileShader(ShaderManager shaderManager)
+template <class T>
+void SceneNode<T>::LoadAndCompileShader(ShaderManager shaderManager)
 {
 	if (!shaderManager.LoadVertexShader(shaderFilePath, &vertexShader, &vsBlob))
 		std::cout << "Ujas!\n";
@@ -61,20 +77,41 @@ void SceneNode::LoadAndCompileShader(ShaderManager shaderManager)
 		std::cout << "Ujas!\n";
 }
 
-void SceneNode::SetWorldMatrix(const DirectX::XMMATRIX& worldMatrix)
+template <class T>
+void SceneNode<T>::SetWorldMatrix(const DirectX::XMMATRIX& worldMatrix)
 {
 	worldMat = worldMatrix;
 	cb.wvpMat = worldMat * viewMat * projMat;
 }
 
-void SceneNode::SetViewMatrix(const DirectX::XMMATRIX& viewMatrix)
+template <class T>
+void SceneNode<T>::SetViewMatrix(const DirectX::XMMATRIX& viewMatrix)
 {
 	viewMat = viewMatrix;
 	cb.wvpMat = worldMat * viewMat * projMat;
 }
 
-void SceneNode::SetProjectionMatrix(const DirectX::XMMATRIX& projectionMatrix)
+template <class T>
+void SceneNode<T>::SetProjectionMatrix(const DirectX::XMMATRIX& projectionMatrix)
 {
 	projMat = projectionMatrix;
 	cb.wvpMat = worldMat * viewMat * projMat;
+}
+
+template <class T>
+void SceneNode<T>::InitTextures(std::vector<Texture>& textures)
+{
+	this->textures = textures;
+}
+
+template <class T>
+const UINT SceneNode<T>::VertexStride() const
+{
+	return this->vertexStride;
+}
+
+template <class T>
+const UINT* SceneNode<T>::VertexStridePtr() const
+{
+	return &this->vertexStride;
 }

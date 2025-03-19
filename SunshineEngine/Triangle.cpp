@@ -12,12 +12,12 @@ Triangle::Triangle()
 	}
 
 
-	Vertex _points[6] = {
-		DirectX::XMFLOAT3(0.75f, 0.25f, 0.25f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
-		DirectX::XMFLOAT3(0.25f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT3(0.75f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)
+	CommonVertex _points[6] = {
+		CommonVertex(DirectX::XMFLOAT3(0.75f, 0.25f, 0.25f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(0.25f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)),
+		CommonVertex(DirectX::XMFLOAT3(0.75f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f))
 	};
-	vertices = (Vertex*)malloc(3 * sizeof(Vertex));
+	vertices = (CommonVertex*)malloc(3 * sizeof(CommonVertex));
 	verticesNum = 3;
 
 	for (int i = 0; i < 6; i++)
@@ -49,7 +49,7 @@ Triangle::Triangle()
 	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
-Triangle::Triangle(Vertex* vertices)
+Triangle::Triangle(CommonVertex* vertices)
 {
 	int _ind[3] = { 0, 1, 2 };
 	indices = (int*)malloc(3 * sizeof(int));
@@ -59,7 +59,7 @@ Triangle::Triangle(Vertex* vertices)
 		indices[i] = _ind[i];
 	}
 
-	this->vertices = (Vertex*)malloc(3 * sizeof(Vertex));
+	this->vertices = (CommonVertex*)malloc(3 * sizeof(CommonVertex));
 	verticesNum = 3;
 
 	for (int i = 0; i < 6; i++)

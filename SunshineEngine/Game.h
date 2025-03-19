@@ -8,7 +8,6 @@
 #include "Renderer.h"
 #include "DisplayWindow.h"
 
-
 class Game
 {
 public:
@@ -17,15 +16,19 @@ public:
 
     virtual void Run() = 0;
 
-    virtual void Initialize() = 0;
     virtual void Update(float deltaTime) = 0;
     virtual void Render() = 0;
 
+
     GameTimer timer;
-    //InputHandler inputHandler;
-    Scene scene;
-    PhysicsEngine* physEngine;
+
+    template<class VertexType>
+    Scene<VertexType> scene;
+
+    template<class VertexType>
+    PhysicsEngine<VertexType>* physEngine;
     Renderer renderer;
+
     DisplayWindow displayWindow;
 
     HINSTANCE hInstance;
@@ -33,6 +36,8 @@ public:
 
     int winWidth = 800;
     int winHeight = 800;
+
+    float deltaTime = 0.0f;
 };
 
 #endif // GAME_H

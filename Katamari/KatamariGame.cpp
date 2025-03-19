@@ -1,15 +1,10 @@
 #include "KatamariGame.h"
 
+// временно
+#include "DDSTextureLoader.h"
+#include <StringHelper.h>
+
 KatamariGame::KatamariGame()
-{
-	Initialize();
-}
-
-KatamariGame::~KatamariGame()
-{
-}
-
-void KatamariGame::Initialize()
 {
 	applicationName = L"KatamariGame";
 	hInstance = GetModuleHandle(nullptr);
@@ -32,22 +27,51 @@ void KatamariGame::Initialize()
 
 	physEngine = new PhysicsEngine(&scene);
 
-	displayWindow = DisplayWindow(applicationName, hInstance, winWidth, winHeight);
-	inputHandler = displayWindow.GetInputHandler();
+	displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
+	// inputHandler = displayWindow.GetInputHandler();
 
 	renderer = Renderer(&displayWindow);
 	renderer.camera = Camera(winWidth * 1.0f / winHeight);
+	SpawnCollectibles();
 
 	for (auto node : scene.nodes)
 	{
 		node->LoadAndCompileShader(renderer.shaderManager);
 		node->InitBuffers(renderer.resourceManager);
+
+		if (node->hasTexture) {
+			//std::cout << "hasTexture\n";
+			node->textures.push_back(Texture(renderer.GetDevice(), SE_Colors::UnhandledTextureColor, aiTextureType_DIFFUSE));
+			/*
+			node->texture = new Texture(renderer.GetDevice());
+
+			HRESULT hr = CreateDDSTextureFromFile( renderer.GetDevice(),
+				StringHelper::StringToWide("models\\Textures\\plane_Diffuse.dds").c_str(),
+				&(node->texture->pTexture),
+				&(node->texture->pTextureView));
+			if (FAILED(hr))
+			{
+				std::cout << "FAILED TEXTURE LOAD: " << "models\\Textures\\plane_Diffuse.dds" << "\n";
+			}
+
+			node->texture->Bind(renderer.GetDeviceContext());
+			node->textureSampler = new Sampler(renderer.GetDevice());
+			node->textureSampler->Bind(renderer.GetDeviceContext());
+			*/
+		}
+
 		node->camera = &(renderer.camera);
 		//std::cout << "f1\n";
 	}
-	SpawnCollectibles();
 
 	renderer.camera.SwitchToFollowMode(ball.position, ball.GetMoveDir(), ball.radius);
+
+	InputDevice::getInstance().OnKeyPressed.AddRaw(this, &KatamariGame::HandleKeyDown);
+	InputDevice::getInstance().MouseMove.AddRaw(this, &KatamariGame::HandleMouseMove);
+}
+
+KatamariGame::~KatamariGame()
+{
 }
 
 void KatamariGame::Run()
@@ -69,7 +93,7 @@ void KatamariGame::Run()
 			isExitRequested = true;
 		}
 		timer.Tick();
-		float deltaTime = timer.GetDeltaTime();
+		deltaTime = timer.GetDeltaTime();
 		totalTime += deltaTime;
 		frameCount++;
 
@@ -94,31 +118,9 @@ void KatamariGame::Run()
 
 void KatamariGame::Update(float deltaTime)
 {
-	// Получаем InputHandler из DisplayWindow
-	inputHandler = displayWindow.GetInputHandler();
-
-	if (inputHandler->IsKeyDown(InputHandler::KeyCode::W))
-	{
-		ball.PushForward(deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::S))
-	{
-		
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::A))
-	{
-		ball.AddTurn(-1.0f, deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D))
-	{
-		ball.AddTurn(1.0f, deltaTime);
-	}
-	else {
-	}
 	ball.SlowDown(deltaTime);
 	physEngine->Update(deltaTime);
 
-	renderer.camera.Update(deltaTime, ball.worldMat, ball.GetMoveDir(), ball.radius);
 
 	// Проверка коллизий
 	for (auto& obj : collectibles)
@@ -128,6 +130,14 @@ void KatamariGame::Update(float deltaTime)
 			obj.AttachToBall(&ball);
 			ball.Grow(obj.radius / deltaTime);
 		}
+	}
+	renderer.camera.Update(deltaTime, ball.worldMat, ball.GetMoveDir(), ball.radius);
+
+	Matrix vpMat = renderer.camera.GetViewMatrix() * renderer.camera.GetProjectionMatrix();
+
+	for (auto node : scene.nodes)
+	{
+		node->cb.wvpMat = node->worldMat * (XMMATRIX)vpMat;
 	}
 
 }
@@ -145,7 +155,8 @@ void KatamariGame::SpawnCollectibles()
 	{
 		float x = (rand() % 20) - 10.0f;
 		float z = (rand() % 20) - 10.0f;
-		collectibles.emplace_back(0.3f, DirectX::XMFLOAT3(x, 0.3f, z));
+		//collectibles.emplace_back(0.3f, DirectX::XMFLOAT3(x, 0.3f, z));
+		collectibles.emplace_back("models\\", DirectX::XMFLOAT3(x, 0.3f, z));
 	}
 
 	for (auto& obj : collectibles)
@@ -155,4 +166,31 @@ void KatamariGame::SpawnCollectibles()
 		obj.InitBuffers(renderer.resourceManager);
 		obj.camera = &(renderer.camera);
 	}
+}
+
+
+void KatamariGame::HandleKeyDown(Keys key) {
+	if (key == Keys::W)
+	{
+		ball.PushForward(deltaTime);
+	}
+	if (key == Keys::S)
+	{
+
+	}
+	if (key == Keys::A)
+	{
+		ball.AddTurn(-1.0f, deltaTime);
+	}
+	if (key == Keys::D)
+	{
+		ball.AddTurn(1.0f, deltaTime);
+	}
+}
+
+
+void KatamariGame::HandleMouseMove(const InputDevice::MouseMoveEventArgs& args)
+{
+	ball.AddTurn(args.Offset.x * 0.1, deltaTime);
+	//renderer.camera.RotatePitch(-deltaTime * args.Offset.y * 0.1);
 }

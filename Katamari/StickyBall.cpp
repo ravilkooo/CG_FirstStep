@@ -97,11 +97,10 @@ void StickyBall::Update(float deltaTime)
 	worldMat = Matrix::CreateScale(radius) * spinTransform * rotTransform * Matrix::CreateTranslation(position);
 
 
-	Matrix viewMat = camera->GetViewMatrix();
-	Matrix projMat = camera->GetProjectionMatrix();
+	//Matrix viewMat = camera->GetViewMatrix();
+	//Matrix projMat = camera->GetProjectionMatrix();
 
-
-	cb.wvpMat = worldMat * (XMMATRIX)(viewMat * projMat);
+	//cb.wvpMat = worldMat * (XMMATRIX)(viewMat * projMat);
 }
 
 void StickyBall::UpdateScale()
@@ -111,7 +110,7 @@ void StickyBall::UpdateScale()
              Matrix::CreateTranslation(position);
 }
 
-void StickyBall::Grow(float deltaTime)
+void StickyBall::Grow(float volume)
 {
-	radiusGrow = 0.5f;
+	radiusGrow = 0.5f / sqrt(radius);
 }

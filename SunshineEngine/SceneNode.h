@@ -7,12 +7,10 @@
 #include "ShaderManager.h"
 #include "ResourceManager.h"
 #include "Camera.h"
+#include "Texture.h"
+#include "Sampler.h"
 
-struct Vertex {
-    DirectX::XMFLOAT3 pos;
-    DirectX::XMFLOAT4 color;
-};
-
+template<class T>
 class SceneNode
 {
 public:
@@ -30,7 +28,7 @@ public:
 
     virtual Vector3 GetCenterLocation() = 0;
 
-    Vertex* vertices;
+    T* vertices;
     UINT verticesNum;
 
     int* indices;
@@ -63,12 +61,27 @@ public:
     void SetViewMatrix(const DirectX::XMMATRIX& viewMatrix);
     void SetProjectionMatrix(const DirectX::XMMATRIX& projectionMatrix);
 
+    void InitTextures(std::vector<Texture>& textures);
 
     Camera* camera;
 
+    bool hasTexture = false;
+    std::vector<Texture> textures;
+    Sampler* textureSampler;
+
+    // void AddChild(SceneNode* child) { children.push_back(child); }
+    // const std::vector<SceneNode*>& GetChildren() const { return children; }
+
+    const UINT VertexStride() const;
+    const UINT* VertexStridePtr() const;
+
 protected:
-    // Позиция, поворот, масштаб и другие свойства
+    // std::vector<SceneNode*> children;
+    // SceneNode* parentNode;
     DirectX::XMMATRIX localMatrix = DirectX::XMMatrixIdentity();
+
+private:
+    UINT vertexStride = sizeof(T);
 };
 
 #endif // SCENENODE_H

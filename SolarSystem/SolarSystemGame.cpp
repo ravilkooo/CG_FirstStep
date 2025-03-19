@@ -1,20 +1,7 @@
 #include "SolarSystemGame.h"
 
-
-
 SolarSystemGame::SolarSystemGame()
 {
-	Initialize();
-}
-
-SolarSystemGame::~SolarSystemGame()
-{
-}
-
-
-void SolarSystemGame::Initialize()
-{
-
 	applicationName = L"SolarSystem";
 	hInstance = GetModuleHandle(nullptr);
 
@@ -52,8 +39,8 @@ void SolarSystemGame::Initialize()
 	cosmicBodies.push_back(sun);
 
 	accum_dist += planet_gap + merc_rad;
-	CosmicBody* mercury = new CosmicBody(merc_rad, 0.9f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.6f, 0.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::GEOSPHERE,
-		sun, accum_dist, 0.5f);
+	CosmicBody* mercury = new CosmicBody(merc_rad, 1.9f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.6f, 0.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::GEOSPHERE,
+		sun, accum_dist, 10.5f);
 	cosmicBodies.push_back(mercury);
 
 	accum_dist += merc_rad + planet_gap + venus_rad;
@@ -132,14 +119,13 @@ void SolarSystemGame::Initialize()
 
 	physEngine = new SolarSystemPhysics(&scene);
 
-	displayWindow = DisplayWindow(applicationName, hInstance, winWidth, winHeight);
-	inputHandler = displayWindow.GetInputHandler();
+	displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
+	// inputHandler = displayWindow.GetInputHandler();
 
 	renderer = Renderer(&displayWindow);
 	renderer.camera = Camera(winWidth * 1.0f / winHeight);
 
 	focusedBody = moon;
-	//renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
 
 	for (auto node : scene.nodes)
 	{
@@ -148,10 +134,9 @@ void SolarSystemGame::Initialize()
 		node->camera = &(renderer.camera);
 		//std::cout << "f1\n";
 	}
-	// Инициализация камеры
-	//camera.SetPosition(DirectX::XMFLOAT3(0.0f, 10.0f, -20.0f));
-	//camera.SetTarget(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-	//camera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+
+	InputDevice::getInstance().OnKeyPressed.AddRaw(this, &SolarSystemGame::HandleKeyDown);
+	InputDevice::getInstance().MouseMove.AddRaw(this, &SolarSystemGame::HandleMouseMove);
 }
 
 
@@ -174,7 +159,7 @@ void SolarSystemGame::Run()
 			isExitRequested = true;
 		}
 		timer.Tick();
-		float deltaTime = timer.GetDeltaTime();
+		deltaTime = timer.GetDeltaTime();
 		totalTime += deltaTime;
 		frameCount++;
 
@@ -199,131 +184,22 @@ void SolarSystemGame::Run()
 
 void SolarSystemGame::Update(float deltaTime)
 {
+	// My custom
 	// Получаем InputHandler из DisplayWindow
-	inputHandler = displayWindow.GetInputHandler();
+	// inputHandler = displayWindow.GetInputHandler();
 
-	// Управление ракеткой игрока
-	if (inputHandler->IsKeyDown(InputHandler::KeyCode::UP))
-	{
-		//std::cout << "MoveUp\n";
-		renderer.camera.MoveUp(deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::DOWN))
-	{
-		//std::cout << "MoveDown\n";
-		renderer.camera.MoveDown(deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::RIGHT))
-	{
-		//std::cout << "MoveUp\n";
-		renderer.camera.MoveRight(deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::LEFT))
-	{
-		//std::cout << "MoveDown\n";
-		renderer.camera.MoveLeft(deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::Q))
-	{
-		//std::cout << "MoveUp\n";
-		renderer.camera.MoveForward(deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::E))
-	{
-		//std::cout << "MoveDown\n";
-		renderer.camera.MoveBackward(deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::W))
-	{
-		renderer.camera.RotatePitch(-deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::S))
-	{
-		renderer.camera.RotatePitch(deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::A))
-	{
-		renderer.camera.RotateYaw(-deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D))
-	{
-		renderer.camera.RotateYaw(deltaTime);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_1))
-	{
-		focusedBody = cosmicBodies[0];
-		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_2))
-	{
-		focusedBody = cosmicBodies[1];
-		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_3))
-	{
-		focusedBody = cosmicBodies[2];
-		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
-	}
-	else if (inputHandler->IsKeyDown(InputHandler::KeyCode::D_4))
-	{
-		focusedBody = cosmicBodies[3];
-		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
-	}
-	else if (inputHandler->IsKeyClicked(InputHandler::KeyCode::COMMA))
-	{
-		if (buttonTimer > pressTime)
-		{
-			buttonTimer = 0.0f;
-			focusedBodyIdx = (focusedBodyIdx - 1 + cosmicBodies.size()) % cosmicBodies.size();
-			focusedBody = cosmicBodies[focusedBodyIdx];
-			renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
-		}
-	}
-	else if (inputHandler->IsKeyClicked(InputHandler::KeyCode::PERIOD))
-	{
-		if (buttonTimer > pressTime)
-		{
-			buttonTimer = 0.0f;
-			focusedBodyIdx = (focusedBodyIdx + 1) % cosmicBodies.size();
-			focusedBody = cosmicBodies[focusedBodyIdx];
-			renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
-		}
-	}
-	else if (inputHandler->IsKeyClicked(InputHandler::KeyCode::B))
-	{
-		if (buttonTimer > pressTime)
-		{
-			buttonTimer = 0.0f;
-			renderer.camera.SwitchProjection();
-		}
-	}
-	else if (inputHandler->IsKeyClicked(InputHandler::KeyCode::SPACE))
-	{
-		if (buttonTimer > pressTime)
-		{
-			buttonTimer = 0.0f;
-			focusedBody = nullptr;
-			renderer.camera.SwitchToFPSMode();
-			//renderer.camera.SwitchProjection();
-		}
-	}
-	else
-	{
-
-	}
-	buttonTimer += deltaTime;
-	//renderer.camera.Update(deltaTime);
-	// Обновление состояния игры
 	physEngine->Update(deltaTime);
 
 	if (focusedBody) {
-		/*std::cout << "(" << focusedBody->GetCenterLocation().x << ", "
-			<< focusedBody->GetCenterLocation().y << ", "
-			<< focusedBody->GetCenterLocation().z << ")\n";*/
 
 		renderer.camera.Update(deltaTime, focusedBody->worldMat);
+	}
 
-		//renderer.camera.SwitchToOrbitalMode(scene.nodes[scene.nodes.size() - 3]->GetCenterLocation());
+	Matrix vpMat = renderer.camera.GetViewMatrix() * renderer.camera.GetProjectionMatrix();
+
+	for (auto node : scene.nodes)
+	{
+		node->cb.wvpMat = node->worldMat * (XMMATRIX)vpMat;
 	}
 }
 
@@ -331,4 +207,106 @@ void SolarSystemGame::Render()
 {
 	// Отрисовка сцены
 	renderer.RenderScene(scene);
+}
+
+
+SolarSystemGame::~SolarSystemGame()
+{
+}
+
+void SolarSystemGame::HandleKeyDown(Keys key) {
+	if (key == Keys::Up)
+	{
+		//std::cout << "MoveUp\n";
+		renderer.camera.MoveUp(deltaTime);
+	}
+	if (key == Keys::Down)
+	{
+		//std::cout << "MoveDown\n";
+		renderer.camera.MoveDown(deltaTime);
+	}
+	if (key == Keys::Right)
+	{
+		//std::cout << "MoveUp\n";
+		renderer.camera.MoveRight(deltaTime);
+	}
+	if (key == Keys::Left)
+	{
+		//std::cout << "MoveDown\n";
+		renderer.camera.MoveLeft(deltaTime);
+	}
+	if (key == Keys::E)
+	{
+		//std::cout << "MoveUp\n";
+		renderer.camera.MoveForward(deltaTime);
+	}
+	if (key == Keys::Q)
+	{
+		//std::cout << "MoveDown\n";
+		renderer.camera.MoveBackward(deltaTime);
+	}
+	if (key == Keys::W)
+	{
+		renderer.camera.RotatePitch(deltaTime);
+	}
+	if (key == Keys::S)
+	{
+		renderer.camera.RotatePitch(-deltaTime);
+	}
+	if (key == Keys::A)
+	{
+		renderer.camera.RotateYaw(-deltaTime);
+	}
+	if (key == Keys::D)
+	{
+		renderer.camera.RotateYaw(deltaTime);
+	}
+	if (key == Keys::D1)
+	{
+		focusedBody = cosmicBodies[0];
+		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
+	}
+	if (key == Keys::D2)
+	{
+		focusedBody = cosmicBodies[1];
+		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
+	}
+	if (key == Keys::D3)
+	{
+		focusedBody = cosmicBodies[2];
+		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
+	}
+	if (key == Keys::D4)
+	{
+		focusedBody = cosmicBodies[3];
+		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
+	}
+	if (key == Keys::OemComma)
+	{
+		focusedBodyIdx = (focusedBodyIdx - 1 + cosmicBodies.size()) % cosmicBodies.size();
+		focusedBody = cosmicBodies[focusedBodyIdx];
+		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
+	}
+	if (key == Keys::OemPeriod)
+	{
+		focusedBodyIdx = (focusedBodyIdx + 1) % cosmicBodies.size();
+		focusedBody = cosmicBodies[focusedBodyIdx];
+		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
+	}
+	if (key == Keys::B)
+	{
+		renderer.camera.SwitchProjection();
+	}
+	if (key == Keys::Space)
+	{
+		focusedBody = nullptr;
+		renderer.camera.SwitchToFPSMode();
+	}
+
+}
+
+void SolarSystemGame::HandleMouseMove(const InputDevice::MouseMoveEventArgs& args)
+{
+	renderer.camera.RotateYaw(deltaTime * args.Offset.x * 0.1);
+	renderer.camera.RotatePitch(-deltaTime * args.Offset.y * 0.1);
 }

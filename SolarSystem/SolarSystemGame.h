@@ -15,14 +15,8 @@ public:
 
     void Run() override;
 
-    void Initialize() override;
     void Update(float deltaTime) override;
     void Render() override;
-
-    InputHandler* inputHandler;
-
-    float pressTime = 0.1f;
-    float buttonTimer = 10.0f;
 
     UINT winWidth = 800;
     UINT winHeight = 800;
@@ -32,6 +26,9 @@ private:
     std::vector<CosmicBody*> cosmicBodies;
     CosmicBody* focusedBody = nullptr;
     UINT focusedBodyIdx = 0;
+
+    void HandleKeyDown(Keys key);
+    void HandleMouseMove(const InputDevice::MouseMoveEventArgs& args);
 };
 
 

@@ -14,10 +14,12 @@
 #pragma comment(lib, "dxguid.lib")
 
 #include "SolarSystemGame.h"
+#include "GravitationGame.h"
 
 int main()
 {
-	SolarSystemGame game = SolarSystemGame();
+	GravitationGame game = GravitationGame();
+	//SolarSystemGame game = SolarSystemGame();
 	game.Run();
 
 	return 0;

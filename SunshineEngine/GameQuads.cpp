@@ -1,14 +1,36 @@
 #include "GameQuads.h"
+#include "CommonVertex.h"
 
 
 GameQuads::GameQuads()
 {
-    Initialize();
+    applicationName = L"SunShine_0";
+    hInstance = GetModuleHandle(nullptr);
+    //inputHandler = InputHandler();
+
+    timer = GameTimer();
+
+    scene = Scene<CommonVertex>();
+
+    scene.AddNode(new Quad());
+    scene.AddNode(new Quad(DirectX::XMFLOAT4(-1., -1., 0, 1), 0.3));
+    scene.AddNode(new Quad(DirectX::XMFLOAT4(0., 0.5, 0, 1), 1.2, 0.4));
+    scene.AddNode(new Triangle());
+
+    physEngine =  new PhysicsEngine<CommonVertex>(&scene);
+
+    displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
+
+    renderer = Renderer(&displayWindow);
+
+    for (auto node : scene.nodes)
+    {
+        node->LoadAndCompileShader(renderer.shaderManager);
+        node->InitBuffers(renderer.resourceManager);
+        std::cout << "f1\n";
+    }
 }
 
-GameQuads::~GameQuads()
-{
-}
 
 void GameQuads::Run()
 {
@@ -52,38 +74,6 @@ void GameQuads::Run()
     }
 }
 
-void GameQuads::Initialize()
-{
-
-    applicationName = L"SunShine_0";
-    hInstance = GetModuleHandle(nullptr);
-    //inputHandler = InputHandler();
-
-    timer = GameTimer();
-
-    scene = Scene();
-
-    scene.AddNode(new Quad());
-    scene.AddNode(new Quad(DirectX::XMFLOAT4(-1., -1., 0, 1), 0.3));
-    scene.AddNode(new Quad(DirectX::XMFLOAT4(0., 0.5, 0, 1), 1.2, 0.4));
-    scene.AddNode(new Triangle());
-
-    physEngine =  new PhysicsEngine(&scene);
-
-    displayWindow = DisplayWindow(applicationName, hInstance, winWidth, winHeight);
-
-
-    renderer = Renderer(&displayWindow);
-
-
-    for (auto node : scene.nodes)
-    {
-        node->LoadAndCompileShader(renderer.shaderManager);
-        node->InitBuffers(renderer.resourceManager);
-        std::cout << "f1\n";
-    }
-}
-
 void GameQuads::Update(float deltaTime)
 {
     physEngine->Update(deltaTime);
@@ -93,5 +83,11 @@ void GameQuads::Update(float deltaTime)
 void GameQuads::Render()
 {
     // Отрисовка сцены
-    renderer.RenderScene(scene);
+    renderer.RenderScene<CommonVertex>(scene);
+}
+
+
+
+GameQuads::~GameQuads()
+{
 }

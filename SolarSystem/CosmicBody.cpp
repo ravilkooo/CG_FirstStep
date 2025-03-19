@@ -5,7 +5,7 @@ CosmicBody::CosmicBody(float radius, float rotationSpeed,
     XMFLOAT4 col, PLANET_TYPE planet_type,
     CosmicBody* attractedTo, float orbitRadius, float orbitSpeed)
     : radius(radius), rotationSpeed(rotationSpeed), position(position), rotationAngle(0.0f),
-    attractedTo(attractedTo), orbitRadius(orbitRadius), orbitSpeed(orbitSpeed), orbitAngle(0.0f)
+    attractedTo(attractedTo), orbitRadius(orbitRadius), orbitSpeed(orbitSpeed), orbitAngle(0.0f), orbitalAxis(0.0f, 1.0f, 0.0f)
 {
 
     switch (planet_type)
@@ -122,11 +122,12 @@ void CosmicBody::Update(float deltaTime)
         worldMat = worldMat * (XMMATRIX) _attractredTransform;
     }
 
-    Matrix viewMat = camera->GetViewMatrix();
+    /*Matrix viewMat = camera->GetViewMatrix();
     Matrix projMat = camera->GetProjectionMatrix();
 
 
-    cb.wvpMat = worldMat * (XMMATRIX) (viewMat * projMat);
+    cb.wvpMat = worldMat * (XMMATRIX) (viewMat * projMat);*/
+
 }
 
 void CosmicBody::SetOrbitSpeed(float speed)
