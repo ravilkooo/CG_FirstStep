@@ -1,18 +1,15 @@
 #include "SceneNode.h"
 
-template <class T>
-SceneNode<T>::SceneNode()
+SceneNode::SceneNode()
 {
 }
 
-template <class T>
-SceneNode<T>::~SceneNode()
+SceneNode::~SceneNode()
 {
 }
 
 
-template <class T>
-void SceneNode<T>::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
+void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 	ID3D11RenderTargetView* renderTargetView,
 	ID3D11DepthStencilView* pDSV)
 {
@@ -50,13 +47,12 @@ void SceneNode<T>::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 }
 
 
-template <class T>
-void SceneNode<T>::InitBuffers(ResourceManager resourceManager)
+void SceneNode::InitBuffers(ResourceManager resourceManager)
 {
 	// 7. Create Vertex and Index Buffers
 
 	// Create pVertexBuffer
-	pVertexBuffer = resourceManager.CreateVertexBuffer(vertices, sizeof(T) * verticesNum);
+	pVertexBuffer = resourceManager.CreateVertexBuffer(vertices, sizeof(CommonVertex) * verticesNum);
 
 	// Create Set of indices
 
@@ -68,8 +64,7 @@ void SceneNode<T>::InitBuffers(ResourceManager resourceManager)
 
 }
 
-template <class T>
-void SceneNode<T>::LoadAndCompileShader(ShaderManager shaderManager)
+void SceneNode::LoadAndCompileShader(ShaderManager shaderManager)
 {
 	if (!shaderManager.LoadVertexShader(shaderFilePath, &vertexShader, &vsBlob))
 		std::cout << "Ujas!\n";
@@ -77,41 +72,35 @@ void SceneNode<T>::LoadAndCompileShader(ShaderManager shaderManager)
 		std::cout << "Ujas!\n";
 }
 
-template <class T>
-void SceneNode<T>::SetWorldMatrix(const DirectX::XMMATRIX& worldMatrix)
+void SceneNode::SetWorldMatrix(const DirectX::XMMATRIX& worldMatrix)
 {
 	worldMat = worldMatrix;
 	cb.wvpMat = worldMat * viewMat * projMat;
 }
 
-template <class T>
-void SceneNode<T>::SetViewMatrix(const DirectX::XMMATRIX& viewMatrix)
+void SceneNode::SetViewMatrix(const DirectX::XMMATRIX& viewMatrix)
 {
 	viewMat = viewMatrix;
 	cb.wvpMat = worldMat * viewMat * projMat;
 }
 
-template <class T>
-void SceneNode<T>::SetProjectionMatrix(const DirectX::XMMATRIX& projectionMatrix)
+void SceneNode::SetProjectionMatrix(const DirectX::XMMATRIX& projectionMatrix)
 {
 	projMat = projectionMatrix;
 	cb.wvpMat = worldMat * viewMat * projMat;
 }
 
-template <class T>
-void SceneNode<T>::InitTextures(std::vector<Texture>& textures)
+void SceneNode::InitTextures(std::vector<Texture>& textures)
 {
 	this->textures = textures;
 }
 
-template <class T>
-const UINT SceneNode<T>::VertexStride() const
+const UINT SceneNode::VertexStride() const
 {
 	return this->vertexStride;
 }
 
-template <class T>
-const UINT* SceneNode<T>::VertexStridePtr() const
+const UINT* SceneNode::VertexStridePtr() const
 {
 	return &this->vertexStride;
 }

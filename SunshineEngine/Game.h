@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include "DisplayWindow.h"
 
+
 class Game
 {
 public:
@@ -21,12 +22,8 @@ public:
 
 
     GameTimer timer;
-
-    template<class VertexType>
-    Scene<VertexType> scene;
-
-    template<class VertexType>
-    PhysicsEngine<VertexType>* physEngine;
+    Scene scene;
+    PhysicsEngine* physEngine;
     Renderer renderer;
 
     DisplayWindow displayWindow;

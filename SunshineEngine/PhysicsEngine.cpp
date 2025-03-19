@@ -1,22 +1,18 @@
 #include "PhysicsEngine.h"
 
-template<class VertexType>
-PhysicsEngine<VertexType>::PhysicsEngine()
+PhysicsEngine::PhysicsEngine()
 {
 }
 
-template<class VertexType>
-PhysicsEngine<VertexType>::PhysicsEngine(Scene<VertexType>* scene) : scene(scene)
+PhysicsEngine::PhysicsEngine(Scene* scene) : scene(scene)
 {
 }
 
-template<class VertexType>
-PhysicsEngine<VertexType>::~PhysicsEngine()
+PhysicsEngine::~PhysicsEngine()
 {
 }
 
-template<class VertexType>
-void PhysicsEngine<VertexType>::Update(float deltaTime)
+void PhysicsEngine::Update(float deltaTime)
 {
     for (auto node : scene->nodes)
     {

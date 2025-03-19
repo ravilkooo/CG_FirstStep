@@ -1,5 +1,4 @@
 #include "GameQuads.h"
-#include "CommonVertex.h"
 
 
 GameQuads::GameQuads()
@@ -10,18 +9,20 @@ GameQuads::GameQuads()
 
     timer = GameTimer();
 
-    scene = Scene<CommonVertex>();
+    scene = Scene();
 
     scene.AddNode(new Quad());
     scene.AddNode(new Quad(DirectX::XMFLOAT4(-1., -1., 0, 1), 0.3));
     scene.AddNode(new Quad(DirectX::XMFLOAT4(0., 0.5, 0, 1), 1.2, 0.4));
     scene.AddNode(new Triangle());
 
-    physEngine =  new PhysicsEngine<CommonVertex>(&scene);
+    physEngine =  new PhysicsEngine(&scene);
 
     displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
 
+
     renderer = Renderer(&displayWindow);
+
 
     for (auto node : scene.nodes)
     {
@@ -83,7 +84,7 @@ void GameQuads::Update(float deltaTime)
 void GameQuads::Render()
 {
     // Отрисовка сцены
-    renderer.RenderScene<CommonVertex>(scene);
+    renderer.RenderScene(scene);
 }
 
 

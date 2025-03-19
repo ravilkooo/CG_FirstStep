@@ -1,8 +1,7 @@
 // Model.cpp
 #include "ModelLoader.h"
 
-template <class T>
-void ModelLoader::LoadModel(const std::string& path, SceneNode<T>* rootNode)
+void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode)
 {
 	Assimp::Importer importer;
 	const aiScene* pModel = importer.ReadFile(path,
@@ -27,7 +26,7 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode<T>* rootNode)
 		rootNode->indicesNum += pModel->mMeshes[i]->mNumFaces * 3;
 	}
 
-	rootNode->vertices = (T*)calloc(rootNode->verticesNum, sizeof(T));
+	rootNode->vertices = (CommonVertex*)calloc(rootNode->verticesNum, sizeof(CommonVertex));
 	rootNode->indices = (int*)calloc(rootNode->indicesNum, sizeof(int));
 
 	size_t vertexIdx = 0;
@@ -43,10 +42,11 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode<T>* rootNode)
 		// Обработка вершин
 		for (unsigned i = 0; i < pMesh->mNumVertices; i++)
 		{
-			(rootNode->vertices)[vertexIdx++] = new T(
+			(rootNode->vertices)[vertexIdx++] = {
+				XMFLOAT3(
 				pMesh->mVertices[i].x,
 				pMesh->mVertices[i].y,
-				pMesh->mVertices[i].z);
+				pMesh->mVertices[i].z), XMFLOAT4(0, 0, 0, 1) };
 		}
 		// Обработка индексов
 		for (unsigned i = 0; i < pMesh->mNumFaces; i++)
@@ -54,12 +54,12 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode<T>* rootNode)
 			aiFace face = pMesh->mFaces[i];
 			assert(face.mNumIndices == 3);
 			
-			// auto col = XMFLOAT4(distr(gen), distr(gen), distr(gen), 1);
+			auto col = XMFLOAT4(distr(gen), distr(gen), distr(gen), 1);
 
 			for (unsigned j = 0; j < face.mNumIndices; j++) {
 				(rootNode->indices)[indexIdx++] = face.mIndices[j];
 				
-				//(rootNode->vertices)[face.mIndices[j]].color = col;
+				(rootNode->vertices)[face.mIndices[j]].color = col;
 
 			}
 		}

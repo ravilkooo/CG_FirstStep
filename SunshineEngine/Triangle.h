@@ -7,7 +7,7 @@
 #include <d3d11.h>
 #include "CommonVertex.h"
 
-class Triangle : public SceneNode<CommonVertex>
+class Triangle : public SceneNode
 {
 public:
     Triangle();

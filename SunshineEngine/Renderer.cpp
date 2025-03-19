@@ -108,7 +108,7 @@ Renderer::~Renderer()
 
 }
 
-template <class T>
+
 void Renderer::RenderScene(const Scene& scene)
 {
 	auto	curTime = std::chrono::steady_clock::now();
@@ -131,15 +131,14 @@ void Renderer::RenderScene(const Scene& scene)
 	viewport.MaxDepth = 1.0f;
 	context->RSSetViewports(1, &viewport);
 
-	for (SceneNode<T>* node : scene.nodes) {
+	for (SceneNode* node : scene.nodes) {
 		DrawNode(node);
 	}
 
 	swapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
 }
 
-template <class T>
-void Renderer::DrawNode(SceneNode<T>* node)
+void Renderer::DrawNode(SceneNode* node)
 {
 	inputAssembler.CreateInputLayout(node->IALayoutInputElements, node->vsBlob);
 	inputAssembler.SetInputLayout();

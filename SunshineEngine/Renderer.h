@@ -25,15 +25,12 @@ class Renderer
 {
 public:
     Renderer();
-    template <class T>
     Renderer(DisplayWindow* displayWin);
     ~Renderer();
 
-    template <class T>
-    void RenderScene(const Scene<T>& scene);
+    void RenderScene(const Scene& scene);
 
-    template <class T>
-    void DrawNode(SceneNode<T>* node);
+    void DrawNode(SceneNode* node);
 
     ID3D11Device* GetDevice();
     ID3D11DeviceContext* GetDeviceContext();

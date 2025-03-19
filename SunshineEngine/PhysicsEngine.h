@@ -4,19 +4,16 @@
 #include <vector>
 #include "Scene.h"
 
-
-template<class VertexType>
 class PhysicsEngine
 {
 public:
     PhysicsEngine();
-
-    PhysicsEngine(Scene<VertexType>* scene);
+    PhysicsEngine(Scene* scene);
     ~PhysicsEngine();
     
     virtual void Update(float deltaTime);
 
-    Scene<VertexType>* scene;
+    Scene* scene;
 };
 
 #endif // PHYSICSENGINE_H

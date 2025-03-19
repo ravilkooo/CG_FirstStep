@@ -1,12 +1,10 @@
 #include "Scene.h"
 
-template <class T>
-Scene<T>::Scene()
+Scene::Scene()
 {
 }
 
-template <class T>
-Scene<T>::~Scene()
+Scene::~Scene()
 {
     for (auto node : nodes)
     {
@@ -14,20 +12,17 @@ Scene<T>::~Scene()
     }
 }
 
-template <class T>
-void Scene<T>::AddNode(SceneNode<T>* node)
+void Scene::AddNode(SceneNode* node)
 {
     nodes.push_back(node);
 }
 
-template <class T>
-void Scene<T>::RemoveNode(SceneNode<T>* node)
+void Scene::RemoveNode(SceneNode* node)
 {
     nodes.erase(std::remove(nodes.begin(), nodes.end(), node), nodes.end());
 }
 
-template <class T>
-void Scene<T>::Update(float deltaTime)
+void Scene::Update(float deltaTime)
 {
     for (auto node : nodes)
     {
@@ -35,8 +30,7 @@ void Scene<T>::Update(float deltaTime)
     }
 }
 
-template <class T>
-void Scene<T>::Draw()
+void Scene::Draw()
 {
     for (auto node : nodes)
     {

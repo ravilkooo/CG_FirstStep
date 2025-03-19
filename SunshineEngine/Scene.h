@@ -4,21 +4,18 @@
 #include <vector>
 #include "SceneNode.h"
 
-template<class T>
 class Scene
 {
 public:
     Scene();
     ~Scene();
-    
-    void AddNode(SceneNode<T>* node);
 
-    void RemoveNode(SceneNode<T>* node);
-
+    void AddNode(SceneNode* node);
+    void RemoveNode(SceneNode* node);
     void Update(float deltaTime);
     void Draw();
 
-    static std::vector<SceneNode<T>*> nodes;
+    std::vector<SceneNode*> nodes;
 private:
 };
 

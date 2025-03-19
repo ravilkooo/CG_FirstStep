@@ -9,8 +9,8 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "Sampler.h"
+#include "CommonVertex.h"
 
-template<class T>
 class SceneNode
 {
 public:
@@ -28,7 +28,7 @@ public:
 
     virtual Vector3 GetCenterLocation() = 0;
 
-    T* vertices;
+    CommonVertex* vertices;
     UINT verticesNum;
 
     int* indices;
@@ -81,7 +81,7 @@ protected:
     DirectX::XMMATRIX localMatrix = DirectX::XMMatrixIdentity();
 
 private:
-    UINT vertexStride = sizeof(T);
+    UINT vertexStride = sizeof(CommonVertex);
 };
 
 #endif // SCENENODE_H

@@ -5,9 +5,8 @@
 
 #include "Quad.h"
 #include "Triangle.h"
-#include "CommonVertex.h"
 
-class GameQuads : public Game<CommonVertex>
+class GameQuads : public Game
 {
 public:
     GameQuads();

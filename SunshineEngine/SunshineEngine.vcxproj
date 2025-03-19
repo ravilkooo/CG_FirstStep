@@ -173,7 +173,6 @@
     <ClInclude Include="CollisionDetector.h" />
     <ClInclude Include="CommonVertex.h" />
     <ClInclude Include="SE_Color.h" />
-    <ClInclude Include="ColorQuad.h" />
     <ClInclude Include="Delegates.h" />
     <ClInclude Include="DisplayWindow.h" />
     <ClInclude Include="Game.h" />
@@ -203,7 +202,6 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
     <ClCompile Include="SE_Color.cpp" />
-    <ClCompile Include="ColorQuad.cpp" />
     <ClCompile Include="Delegates.cpp" />
     <ClCompile Include="DisplayWindow.cpp" />
     <ClCompile Include="Game.cpp" />
