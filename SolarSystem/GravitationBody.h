@@ -12,15 +12,19 @@ using namespace DirectX::SimpleMath;
 class GravitationBody : public SceneNode
 {
 public:
-    static constexpr float g_const = 6.67430e-11 * 1e20;
-    static constexpr float maxVelocity = 1.0f;
+    static constexpr float g_const = 6.67430e-11 * 1e6;
+    static constexpr float maxVelocity = 4.0f;
     float mass = 1.0f;
+
+    bool prevBounce = false;
+    bool currBounce = false;
 
     Vector3 position = Vector3::Zero;
     Vector3 velocity = Vector3::Zero;
     Vector3 acceleration = Vector3::Zero;
 
-    Vector3 CalcForceBetween_noMass(GravitationBody other);
+    Vector3 CalcGravForceBetween_noOwnMass(GravitationBody other);
+    Vector3 CalcBounceForceBetween_noOwnMass(GravitationBody other, float deltaTime);
 
     enum class PLANET_TYPE {
         CUBE = 0, SPHERE = 1, GEOSPHERE = 2, RING = 3,

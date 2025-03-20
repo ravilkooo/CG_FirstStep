@@ -3,13 +3,27 @@
 
 
 
-Vector3 GravitationBody::CalcForceBetween_noMass(GravitationBody other)
+Vector3 GravitationBody::CalcGravForceBetween_noOwnMass(GravitationBody other)
 {
-    float _dist = Vector3::Distance(other.position, position);
-    if (_dist > (radius + other.radius))
-        return g_const * (other.position - position) / pow(Vector3::Distance(other.position, position), 3);
-    else
+    return g_const * (other.position - position) / pow(Vector3::Distance(other.position, position), 3);
+
+}
+
+Vector3 GravitationBody::CalcBounceForceBetween_noOwnMass(GravitationBody other, float deltaTime)
+{
+    Vector3 r12 = (other.position - position);
+    r12.Normalize();
+    float v1_proj = r12.Dot(velocity);
+    float v2_proj = r12.Dot(other.velocity);
+    if (v2_proj - v1_proj > 0) {
         return Vector3::Zero;
+    }
+    float v1_proj_new = ((mass - other.mass) * v1_proj + 2 * other.mass * v2_proj) / ((mass + other.mass));
+    float v2_proj_new = ((other.mass - mass) * v2_proj + 2 * mass * v1_proj) / ((mass + other.mass));
+    Vector3 dv1 = -r12 * v1_proj + r12 * v1_proj_new;
+    //Vector3 dv2 = - r12 * v2_proj + r12 * v2_proj_new;
+    std::cout << v1_proj << "\t" << v1_proj_new << "\n";
+    return dv1 / deltaTime;
 }
 
 GravitationBody::GravitationBody(float radius, float spinSpeed,
@@ -117,6 +131,7 @@ void GravitationBody::Update(float deltaTime)
     if (velLen > maxVelocity) {
         velocity *= maxVelocity / velLen;
     }
+    currBounce = false;
     position += velocity * deltaTime;
 
 
