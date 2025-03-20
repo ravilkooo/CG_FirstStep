@@ -199,7 +199,7 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
     sliceCount = max(sliceCount, 4);
     elevationCount = max(elevationCount, 1);
 
-    *verticesNum = 2 + (2 * elevationCount + 1) * sliceCount;
+    *verticesNum = 2 + (2 * elevationCount + 1) * (sliceCount + 1);
     *vertices = (CommonVertex*)malloc(*verticesNum * sizeof(CommonVertex));
 
     float sliceStep = DirectX::XM_2PI / sliceCount;
@@ -212,26 +212,26 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
     // other vertices
     for (UINT i = 1; i <= 2 * elevationCount + 1; ++i)
     {
-        for (UINT j = 0; j < sliceCount; ++j) {
+        for (UINT j = 0; j <= sliceCount; ++j) {
             (*vertices)[_offsetCommonVertexIdx++] =
             { DirectX::XMFLOAT3(
                 radius * sinf(elevationStep * i) * cosf(sliceStep * j),
                 radius * cosf(elevationStep * i),
                 radius * sinf(elevationStep * i) * sinf(sliceStep * j)
-            ), col, XMFLOAT2( j * 1.0f / (sliceCount - 1), (i * 1.0f) / (2 * elevationCount+2)), };
+            ), col, XMFLOAT2( j * 1.0f / sliceCount , (i * 1.0f) / (2 * elevationCount+2)), };
         }
     }
     // bottom vertex
     (*vertices)[_offsetCommonVertexIdx++] = { DirectX::XMFLOAT3(0.0f, -radius, 0.0f), col, XMFLOAT2(1, 1) };
 
 
-    *indicesNum = 6 * sliceCount + 2 * 6 * elevationCount * sliceCount;
+    *indicesNum = 6 * (sliceCount + 1) + 2 * 6 * elevationCount * (sliceCount + 1);
     //std::cout << *indicesNum << " << \n";
     *indices = (int*)malloc(*indicesNum * sizeof(int));
 
     UINT indexIndex = 0;
 
-    for (UINT j = 0; j < sliceCount - 1; ++j) {
+    for (UINT j = 0; j < sliceCount; ++j) {
         (*indices)[indexIndex++] = 0;
         (*indices)[indexIndex++] = j + 2;
         (*indices)[indexIndex++] = j + 1;
@@ -243,9 +243,9 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
 
 
     for (UINT i = 0; i < 2 * elevationCount; ++i) {
-        UINT startIndex = 1 + i * sliceCount;
-        UINT nextStartIndex = startIndex + sliceCount;
-        for (UINT j = 0; j < sliceCount - 1; ++j) {
+        UINT startIndex = 1 + i * (sliceCount + 1);
+        UINT nextStartIndex = startIndex + (sliceCount + 1);
+        for (UINT j = 0; j < sliceCount; ++j) {
             
             (*indices)[indexIndex++] = startIndex + j;
             (*indices)[indexIndex++] = startIndex + j + 1;
@@ -256,26 +256,26 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
             (*indices)[indexIndex++] = nextStartIndex + j;
         }
 
-        (*indices)[indexIndex++] = startIndex + sliceCount - 1;
+        (*indices)[indexIndex++] = startIndex + sliceCount;
         (*indices)[indexIndex++] = startIndex;
-        (*indices)[indexIndex++] = nextStartIndex + sliceCount - 1;
+        (*indices)[indexIndex++] = nextStartIndex + sliceCount;
 
         (*indices)[indexIndex++] = startIndex;
         (*indices)[indexIndex++] = nextStartIndex;
-        (*indices)[indexIndex++] = nextStartIndex + sliceCount - 1;
+        (*indices)[indexIndex++] = nextStartIndex + sliceCount;
     }
     
     
     UINT bottomIndex = _offsetCommonVertexIdx - 1;
-    UINT startIndex = 1 + 2 * elevationCount * sliceCount;
-    for (UINT j = 0; j < sliceCount-1; ++j) {
+    UINT startIndex = 1 + 2 * elevationCount * (sliceCount + 1);
+    for (UINT j = 0; j < sliceCount; ++j) {
         (*indices)[indexIndex++] = bottomIndex;
         (*indices)[indexIndex++] = startIndex + j;
         (*indices)[indexIndex++] = startIndex + j + 1;
     }
 
     (*indices)[indexIndex++] = bottomIndex;
-    (*indices)[indexIndex++] = startIndex + sliceCount - 1;
+    (*indices)[indexIndex++] = startIndex + sliceCount;
     (*indices)[indexIndex++] = startIndex;
 
     return;
