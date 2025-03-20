@@ -205,6 +205,44 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, const std::string& mo
         hasTexture = true;
     }
 
+    else if (verticesNum == 12512) {
+        numInputElements = 3;
+        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+        IALayoutInputElements[0] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "POSITION",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                0,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        IALayoutInputElements[1] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "COLOR",
+                0,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT, // 12,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        IALayoutInputElements[2] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "TEXCOORD",
+                0,
+                DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT, // 28,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        shaderFilePath = L"./Shaders/ImportShader.hlsl";
+        this->textures.push_back(Texture(device, "models\\Textures\\gamepad_Diffuse.dds", aiTextureType_DIFFUSE));
+        hasTexture = true;
+        }
+
     std::cout << sizeof(CommonVertex) << "\n";
 
 }
@@ -234,7 +272,7 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
     }
     modelRadius = maxDistance;
 
-    std::cout << chosen_model << " :: " << verticesNum << " :: " << StringHelper::GetDirectoryFromPath(chosen_model) << "\n";
+    std::cout << chosen_model << " :: " << verticesNum << " :: " << StringHelper::GetFileNameWithoutExtension(chosen_model) << "\n";
 
 
     if (chosen_model == "models\\plane.obj") {

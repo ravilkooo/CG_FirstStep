@@ -1,5 +1,9 @@
 Texture2D DiffuseMap : register(t0);
-SamplerState Sampler : register(s0);
+SamplerState Sampler : register(s0)
+{
+    AddressU = BORDER;
+    AddressV = BORDER;
+};
 
 struct VS_IN
 {

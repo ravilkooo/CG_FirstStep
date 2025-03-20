@@ -6,8 +6,8 @@ StickyBall::StickyBall()
 StickyBall::StickyBall(ID3D11Device* device)
 {
 	this->device = device;
-	UINT sliceCount = 10;
-	UINT elevationCount = 5;
+	UINT sliceCount = 15;
+	UINT elevationCount = 8;
 	XMFLOAT4 col(0.9f, 0.0f, 0.0f, 1.0f);
 	CreateSimpleSphereMesh(1.0f, sliceCount, elevationCount, col, &vertices, &verticesNum, &indices, &indicesNum);
 	for (size_t i = 0; i < verticesNum; i++)
