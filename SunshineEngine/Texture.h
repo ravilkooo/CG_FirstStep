@@ -4,6 +4,8 @@
 #include "SE_Color.h"
 #include <assimp/material.h>
 #include <iostream>
+#include "StringHelper.h"
+#include <DDSTextureLoader.h>
 
 
 using namespace DirectX;
@@ -14,7 +16,9 @@ enum class TextureStorageType
 	Invalid,
 	None,
 	EmbeddedIndexCompressed,
+	EmbeddedIndexNonCompressed,
 	EmbeddedCompressed,
+	EmbeddedNonCompressed,
 	Disk
 };
 
@@ -24,6 +28,7 @@ class Texture
 public:
 	Texture(ID3D11Device* device, const SE_Color & color, aiTextureType type);
 	Texture(ID3D11Device* device, const SE_Color * colorData, UINT width, UINT height, aiTextureType type);
+	Texture(ID3D11Device* device, const std::string& filePath, aiTextureType type);
 	aiTextureType GetType();
 
 	ID3D11ShaderResourceView* GetTextureResourceView();

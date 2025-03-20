@@ -26,7 +26,9 @@ Ball::Ball()
 		vertices[i] = _points[i];
 	}
 
-	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	numInputElements = 2;
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 	IALayoutInputElements[0] =
 		D3D11_INPUT_ELEMENT_DESC{
 			"POSITION",
@@ -79,7 +81,9 @@ Ball::Ball(DirectX::XMFLOAT4 position, float width) : position(position), width(
 	//velocity_magn = start_velocity;
 	velocity = { -start_velocity, 0.f, 0.f, 0.f };
 
-	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	numInputElements = 2;
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 	IALayoutInputElements[0] =
 		D3D11_INPUT_ELEMENT_DESC{
 			"POSITION",
@@ -99,6 +103,7 @@ Ball::Ball(DirectX::XMFLOAT4 position, float width) : position(position), width(
 			D3D11_APPEND_ALIGNED_ELEMENT,
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
+
 	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
@@ -120,7 +125,9 @@ Ball::Ball(DirectX::XMFLOAT4* vertices)
 		this->vertices[i] = vertices[i];
 	}
 
-	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	numInputElements = 2;
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 	IALayoutInputElements[0] =
 		D3D11_INPUT_ELEMENT_DESC{
 			"POSITION",

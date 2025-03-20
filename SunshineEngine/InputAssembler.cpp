@@ -13,11 +13,11 @@ InputAssembler::~InputAssembler()
 {
 }
 
-void InputAssembler::CreateInputLayout(D3D11_INPUT_ELEMENT_DESC* inputElements, ID3DBlob* vsBlob)
+void InputAssembler::CreateInputLayout(D3D11_INPUT_ELEMENT_DESC* inputElements, UINT numInputElements, ID3DBlob* vsBlob)
 {
 	device->CreateInputLayout(
 		inputElements,
-		2,
+		numInputElements,
 		vsBlob->GetBufferPointer(),
 		vsBlob->GetBufferSize(),
 		&layout);

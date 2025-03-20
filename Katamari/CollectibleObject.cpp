@@ -9,7 +9,9 @@ CollectibleObject::CollectibleObject(float radius, const DirectX::XMFLOAT3& posi
         &vertices, &verticesNum, &indices, &indicesNum);
     worldMat = Matrix::CreateTranslation(position);
 
-    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+    numInputElements = 2;
+    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+
     IALayoutInputElements[0] =
         D3D11_INPUT_ELEMENT_DESC{
             "POSITION",
@@ -30,11 +32,13 @@ CollectibleObject::CollectibleObject(float radius, const DirectX::XMFLOAT3& posi
             D3D11_INPUT_PER_VERTEX_DATA,
             0 };
 
+
     shaderFilePath = L"./Shaders/CubeShader.hlsl";
 }
 
-CollectibleObject::CollectibleObject(const std::string& modelsFolder, const DirectX::XMFLOAT3& position)
+CollectibleObject::CollectibleObject(ID3D11Device* device, const std::string& modelsFolder, const DirectX::XMFLOAT3& position)
 {
+    this->device = device;
     LoadRandomModel(modelsFolder);
     /*worldMat = XMMatrixScaling(0.5f, 0.5f, 0.5f) *
         XMMatrixTranslation(
@@ -47,11 +51,14 @@ CollectibleObject::CollectibleObject(const std::string& modelsFolder, const Dire
     appliedScale = radius / modelRadius;
     initialPosition = position;
     initialPosition.y = radius;
-    std::cout << initialPosition.x << " "  << initialPosition.y << " " << initialPosition.z << "\n";
+    // std::cout << initialPosition.x << " "  << initialPosition.y << " " << initialPosition.z << "\n";
     
     worldMat = Matrix::CreateScale(appliedScale) * Matrix::CreateTranslation(initialPosition);
 
-    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+    numInputElements = 2;
+
+    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+
     IALayoutInputElements[0] =
         D3D11_INPUT_ELEMENT_DESC{
             "POSITION",
@@ -75,6 +82,41 @@ CollectibleObject::CollectibleObject(const std::string& modelsFolder, const Dire
     shaderFilePath = L"./Shaders/CubeShader.hlsl";
 
     if (verticesNum == 1260) {
+        numInputElements = 3;
+        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+        IALayoutInputElements[0] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "POSITION",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                0,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        IALayoutInputElements[1] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "COLOR",
+                0,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                0,
+                12,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        IALayoutInputElements[2] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "TEXCOORD",
+                0,
+                DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+                0,
+                28,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+        
+
+        std::cout << "input_layout_3\n";
+
 
         shaderFilePath = L"./Shaders/PlaneShader.hlsl";
     }
@@ -90,8 +132,9 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
     if (models.empty()) return;
 
     std::uniform_int_distribution<> distr(0, models.size() - 1);
-    auto chosen_model = models[distr(gen)];
-    ModelLoader::LoadModel(chosen_model, this);
+    //auto chosen_model = models[distr(gen)];
+    auto chosen_model = "models\\plane.obj";
+    ModelLoader::LoadModel(chosen_model, this, ModelLoader::VertexAttrFlags::POSITION | ModelLoader::VertexAttrFlags::TEXTURE);
     
     // ModelLoader::LoadModel("models\\suzanne.obj", this);
 

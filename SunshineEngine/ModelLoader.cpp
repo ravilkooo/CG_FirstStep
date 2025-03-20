@@ -1,8 +1,9 @@
 // Model.cpp
 #include "ModelLoader.h"
 
-void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode)
+void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode, UINT attrFlags)
 {
+	rootNode->directory = StringHelper::GetDirectoryFromPath(path);
 	Assimp::Importer importer;
 	const aiScene* pModel = importer.ReadFile(path,
 		aiProcess_Triangulate);
@@ -20,11 +21,8 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode)
 	rootNode->verticesNum = 0;
 	rootNode->indicesNum = 0;
 
-	for (size_t i = 0; i < meshesNum; i++)
-	{
-		rootNode->verticesNum += pModel->mMeshes[i]->mNumVertices;
-		rootNode->indicesNum += pModel->mMeshes[i]->mNumFaces * 3;
-	}
+	rootNode->verticesNum += pModel->mMeshes[0]->mNumVertices;
+	rootNode->indicesNum += pModel->mMeshes[0]->mNumFaces * 3;
 
 	rootNode->vertices = (CommonVertex*)calloc(rootNode->verticesNum, sizeof(CommonVertex));
 	rootNode->indices = (int*)calloc(rootNode->indicesNum, sizeof(int));
@@ -36,34 +34,52 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode)
 	static std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> distr(0, 1);
 
-	for (size_t meshNum = 0; meshNum < meshesNum; meshNum++)
+	const auto pMesh = pModel->mMeshes[0];
+	
+	if (pMesh->mTextureCoords[0])
 	{
-		const auto pMesh = pModel->mMeshes[meshNum];
-		// Обработка вершин
-		for (unsigned i = 0; i < pMesh->mNumVertices; i++)
-		{
-			(rootNode->vertices)[vertexIdx++] = {
-				XMFLOAT3(
-				pMesh->mVertices[i].x,
-				pMesh->mVertices[i].y,
-				pMesh->mVertices[i].z), XMFLOAT4(0, 0, 0, 1) };
-		}
-		// Обработка индексов
-		for (unsigned i = 0; i < pMesh->mNumFaces; i++)
-		{
-			aiFace face = pMesh->mFaces[i];
-			assert(face.mNumIndices == 3);
-			
-			auto col = XMFLOAT4(distr(gen), distr(gen), distr(gen), 1);
+		std::cout << "aiModel has texture!\n";
+	}
 
-			for (unsigned j = 0; j < face.mNumIndices; j++) {
-				(rootNode->indices)[indexIdx++] = face.mIndices[j];
-				
-				(rootNode->vertices)[face.mIndices[j]].color = col;
+	for (unsigned i = 0; i < pMesh->mNumVertices; i++)
+	{
+		(rootNode->vertices)[vertexIdx++] = {
+			XMFLOAT3(
+			pMesh->mVertices[i].x,
+			pMesh->mVertices[i].y,
+			pMesh->mVertices[i].z) };
 
-			}
+		if (pMesh->mTextureCoords[0] && (attrFlags & VertexAttrFlags::TEXTURE))
+		{
+			//std::cout << "aiModel has texture!\n";
+			(rootNode->vertices)[vertexIdx - 1].texCoord.x = (float)pMesh->mTextureCoords[0][i].x;
+			(rootNode->vertices)[vertexIdx - 1].texCoord.y = (float)pMesh->mTextureCoords[0][i].y;
+			//std::cout << (float)pMesh->mTextureCoords[0][i].x << ", " << (float)pMesh->mTextureCoords[0][i].y << "\n";
 		}
 	}
+	
+	for (unsigned i = 0; i < pMesh->mNumFaces; i++)
+	{
+		aiFace face = pMesh->mFaces[i];
+		assert(face.mNumIndices == 3);
+			
+		auto col = XMFLOAT4(distr(gen), distr(gen), distr(gen), 1);
+
+		for (unsigned j = 0; j < face.mNumIndices; j++) {
+			(rootNode->indices)[indexIdx++] = face.mIndices[j];
+				
+			(rootNode->vertices)[face.mIndices[j]].color = col;
+
+		}
+	}
+	/*
+	if (pMesh->mTextureCoords[0] && (attrFlags & VertexAttrFlags::TEXTURE))
+	{
+		aiMaterial* material = pModel->mMaterials[pMesh->mMaterialIndex];
+		std::vector<Texture> diffuseTextures = rootNode->LoadMaterialTextures(material, aiTextureType::aiTextureType_DIFFUSE, pModel);
+		rootNode->textures.insert(rootNode->textures.end(), diffuseTextures.begin(), diffuseTextures.end());
+	}
+	*/
 	return;
 }
 

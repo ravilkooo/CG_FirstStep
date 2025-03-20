@@ -26,7 +26,9 @@ Racket::Racket()
 		vertices[i] = _vertices[i];
 	}
 
-	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	numInputElements = 2;
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 	IALayoutInputElements[0] =
 		D3D11_INPUT_ELEMENT_DESC{
 			"POSITION",
@@ -90,7 +92,9 @@ Racket::Racket(DirectX::XMFLOAT4 position, float width, float height, DirectX::X
 		vertices[i] = _vertices[i];
 	}
 
-	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	numInputElements = 2;
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 	IALayoutInputElements[0] =
 		D3D11_INPUT_ELEMENT_DESC{
 			"POSITION",

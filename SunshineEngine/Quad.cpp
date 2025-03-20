@@ -13,7 +13,7 @@ Quad::Quad()
 
 
 	CommonVertex _points[4] = {
-		CommonVertex(DirectX::XMFLOAT3(0.25f, 0.25f, 0.25f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)),
+		{ DirectX::XMFLOAT3(0.25f, 0.25f, 0.25f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
 		CommonVertex(DirectX::XMFLOAT3(-0.25f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)),
 		CommonVertex(DirectX::XMFLOAT3(0.25f, -0.25f, 0.25f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)),
 		CommonVertex(DirectX::XMFLOAT3(-0.25f, 0.25f, 0.25f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)),
@@ -26,7 +26,9 @@ Quad::Quad()
 		vertices[i] = _points[i];
 	}
 
-	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	numInputElements = 2;
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 	IALayoutInputElements[0] =
 		D3D11_INPUT_ELEMENT_DESC{
 			"POSITION",
@@ -75,7 +77,9 @@ Quad::Quad(DirectX::XMFLOAT4 position, float width)
 		vertices[i] = _points[i];
 	}
 
-	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	numInputElements = 2;
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 	IALayoutInputElements[0] =
 		D3D11_INPUT_ELEMENT_DESC{
 			"POSITION",
@@ -126,7 +130,9 @@ Quad::Quad(DirectX::XMFLOAT4 position, float width, float height)
 		vertices[i] = _points[i];
 	}
 
-	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+	numInputElements = 2;
+
+	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 	IALayoutInputElements[0] =
 		D3D11_INPUT_ELEMENT_DESC{
 			"POSITION",

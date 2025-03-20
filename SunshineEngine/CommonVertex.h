@@ -14,16 +14,36 @@ public:
     CommonVertex(float x, float y, float z)
         : pos(x, y, z), color(0, 0, 0, 1) {
     }
+    CommonVertex(DirectX::XMFLOAT3 pos)
+        : pos(pos) {
+    }
     CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT4 color)
         : pos(pos), color(color) {
     }
+    CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT4 color, DirectX::XMFLOAT3 normal)
+        : pos(pos), color(color), normal(normal) {
+    }
+    CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT4 color, DirectX::XMFLOAT3 normal, DirectX::XMFLOAT2 texCoord)
+        : pos(pos), color(color), normal(normal), texCoord(texCoord) {
+    }
+    CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 normal)
+        : pos(pos), normal(normal) {
+    }
+    CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 normal, DirectX::XMFLOAT2 texCoord)
+        : pos(pos), normal(normal), texCoord(texCoord) {
+    }
+    CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT2 texCoord)
+        : pos(pos), texCoord(texCoord) {
+    }
     CommonVertex(const CommonVertex& cv)
-        : pos(cv.pos), color(cv.color) {
+        : pos(cv.pos), color(cv.color), normal(cv.normal), texCoord(cv.texCoord) {
     }
 
     CommonVertex& operator=(const CommonVertex& src) {
         this->pos = src.pos;
         this->color = src.color;
+        this->texCoord = src.texCoord;
+        this->normal = src.normal;
         return *this;
     }
     bool operator==(const CommonVertex& rhs) const {
@@ -35,5 +55,7 @@ public:
 
     DirectX::XMFLOAT3 pos = { 0, 0, 0 };
     DirectX::XMFLOAT4 color = { 0, 0, 0, 1 };
+    DirectX::XMFLOAT2 texCoord = { 0, 0 };
+    DirectX::XMFLOAT3 normal = { 0, 0, 0 };
 };
 

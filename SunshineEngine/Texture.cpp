@@ -10,6 +10,34 @@ Texture::Texture(ID3D11Device* device, const SE_Color* colorData, UINT width, UI
 	this->InitializeColorTexture(device, colorData, width, height, type);
 }
 
+Texture::Texture(ID3D11Device* device, const std::string& filePath, aiTextureType type)
+{
+	this->type = type;
+	if (StringHelper::GetFileExtension(filePath) == "dds")
+	{
+		std::cout << "DDS loaded!!! " << filePath << " :: " << StringHelper::GetFileExtension(filePath) << "\n";
+		HRESULT hr = DirectX::CreateDDSTextureFromFile(device, StringHelper::StringToWide(filePath).c_str(), &pTexture, GetTextureResourceViewAddress());
+		if (FAILED(hr))
+		{
+			this->Initialize1x1ColorTexture(device, SE_Colors::UnloadedTextureColor, type);
+		}
+		return;
+	}
+	else
+	{
+		std::cout << "Wrong texture file extension: " << StringHelper::GetFileExtension(filePath) << "\n";
+		this->Initialize1x1ColorTexture(device, SE_Colors::UnloadedTextureColor, type);
+		/*
+		HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringHelper::StringToWide(filePath).c_str(), *pTexture, GetTextureResourceViewAddress());
+		if (FAILED(hr))
+		{
+			this->Initialize1x1ColorTexture(device, Colors::UnloadedTextureColor, type);
+		}
+		return;
+		*/
+	}
+}
+
 aiTextureType Texture::GetType()
 {
 	return this->type;

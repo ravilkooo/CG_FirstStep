@@ -140,7 +140,7 @@ void Renderer::RenderScene(const Scene& scene)
 
 void Renderer::DrawNode(SceneNode* node)
 {
-	inputAssembler.CreateInputLayout(node->IALayoutInputElements, node->vsBlob);
+	inputAssembler.CreateInputLayout(node->IALayoutInputElements, node->numInputElements, node->vsBlob);
 	inputAssembler.SetInputLayout();
 	node->Draw(context, renderTargetView, pDSV);
 

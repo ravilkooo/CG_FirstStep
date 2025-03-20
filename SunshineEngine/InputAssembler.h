@@ -11,9 +11,7 @@ public:
     InputAssembler(ID3D11Device* device, ID3D11DeviceContext* context);
     ~InputAssembler();
 
-    void CreateInputLayout(D3D11_INPUT_ELEMENT_DESC* inputElements, ID3DBlob* 
-    
-    );
+    void CreateInputLayout(D3D11_INPUT_ELEMENT_DESC* inputElements, UINT numInputElements, ID3DBlob* vsBlob);
 
     void SetVertexBuffer(ID3D11Buffer* vertexBuffer, UINT stride, UINT offset);
     void SetIndexBuffer(ID3D11Buffer* indexBuffer);

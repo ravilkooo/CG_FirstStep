@@ -36,12 +36,17 @@ KatamariGame::KatamariGame()
 
 	for (auto node : scene.nodes)
 	{
+		node->device = renderer.GetDevice();
 		node->LoadAndCompileShader(renderer.shaderManager);
 		node->InitBuffers(renderer.resourceManager);
 
 		if (node->hasTexture) {
 			//std::cout << "hasTexture\n";
-			node->textures.push_back(Texture(renderer.GetDevice(), SE_Colors::UnhandledTextureColor, aiTextureType_DIFFUSE));
+
+
+			// node->textures.push_back(Texture(renderer.GetDevice(), SE_Colors::UnloadedTextureColor, aiTextureType_DIFFUSE));
+			 node->textures.push_back(Texture(renderer.GetDevice(), "models\\Textures\\plane_Diffuse.dds", aiTextureType_DIFFUSE));
+			 std::cout << "aaaaaaaaaa " << node->textures.size() << "\n";
 			/*
 			node->texture = new Texture(renderer.GetDevice());
 
@@ -156,7 +161,7 @@ void KatamariGame::SpawnCollectibles()
 		float x = (rand() % 20) - 10.0f;
 		float z = (rand() % 20) - 10.0f;
 		//collectibles.emplace_back(0.3f, DirectX::XMFLOAT3(x, 0.3f, z));
-		collectibles.emplace_back("models\\", DirectX::XMFLOAT3(x, 0.3f, z));
+		collectibles.emplace_back(renderer.GetDevice(), "models\\", DirectX::XMFLOAT3(x, 0.3f, z));
 	}
 
 	for (auto& obj : collectibles)

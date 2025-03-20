@@ -10,6 +10,7 @@
 #include "Texture.h"
 #include "Sampler.h"
 #include "CommonVertex.h"
+#include <assimp/scene.h>
 
 class SceneNode
 {
@@ -35,6 +36,7 @@ public:
     UINT indicesNum;
   
     D3D11_INPUT_ELEMENT_DESC* IALayoutInputElements;
+    UINT numInputElements = 2;
 
     LPCWSTR shaderFilePath;
     ID3D11VertexShader* vertexShader = nullptr;
@@ -74,6 +76,14 @@ public:
 
     const UINT VertexStride() const;
     const UINT* VertexStridePtr() const;
+
+    std::vector<Texture> LoadMaterialTextures(aiMaterial* pMaterial, aiTextureType textureType, const aiScene* pScene);
+    TextureStorageType DetermineTextureStorageType(const aiScene* pScene, aiMaterial* pMat, unsigned int index, aiTextureType textureType);
+
+    ID3D11Device* device;
+
+    std::string directory = "";
+
 
 protected:
     // std::vector<SceneNode*> children;

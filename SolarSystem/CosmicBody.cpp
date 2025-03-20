@@ -68,7 +68,9 @@ CosmicBody::CosmicBody(float radius, float rotationSpeed,
     //CreateSimpleGeosphereMesh(radius, col, &vertices, &verticesNum, &indices, &indicesNum);
     //CreateSimpleSphereMesh(radius, 6, 3, col, &vertices, &verticesNum, &indices, &indicesNum);
 
-    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*) malloc(2 * sizeof(D3D11_INPUT_ELEMENT_DESC));
+    numInputElements = 2;
+
+    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
     IALayoutInputElements[0] =
         D3D11_INPUT_ELEMENT_DESC{
             "POSITION",
