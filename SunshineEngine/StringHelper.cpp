@@ -36,3 +36,13 @@ std::string StringHelper::GetDirectoryFromPath(const std::string& filepath)
 	//If both exists, need to use the greater offset
 	return filepath.substr(0, std::max(off1, off2));
 }
+
+std::string StringHelper::GetFileNameWithoutExtension(const std::string& filename)
+{
+	size_t off = filename.find_last_of('.');
+	if (off == std::string::npos)
+	{
+		return filename; // No extension found, return the whole filename
+	}
+	return filename.substr(0, off);
+}
