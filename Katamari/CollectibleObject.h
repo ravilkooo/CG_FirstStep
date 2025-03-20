@@ -4,6 +4,7 @@
 #include "ModelLoader.h"
 #include <filesystem>
 #include "ShapeGenerator.h"
+#include <StringHelper.h>
 #include <random>
 //#include <assimp/ai_assert.h>
 
@@ -11,7 +12,7 @@ class CollectibleObject : public SceneNode
 {
 public:
     CollectibleObject(ID3D11Device* device, const std::string& modelsFolder, const DirectX::XMFLOAT3& position);
-    CollectibleObject(float radius, const DirectX::XMFLOAT3& position);
+    CollectibleObject(ID3D11Device* device, float radius, const DirectX::XMFLOAT3& position);
 
 
     void Update(float deltaTime) override;

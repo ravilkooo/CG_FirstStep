@@ -1,8 +1,6 @@
 Texture2D DiffuseMap : register(t0);
 SamplerState Sampler : register(s0);
 
-
-
 struct VS_IN
 {
     float3 pos : POSITION0;

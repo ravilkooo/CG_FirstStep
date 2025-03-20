@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 
-class CommonVertex
+struct CommonVertex
 {
 public:
     CommonVertex() {}
@@ -29,6 +29,9 @@ public:
     CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 normal)
         : pos(pos), normal(normal) {
     }
+    CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT4 color, DirectX::XMFLOAT2 texCoord)
+        : pos(pos), color(color), texCoord(texCoord) {
+    }
     CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 normal, DirectX::XMFLOAT2 texCoord)
         : pos(pos), normal(normal), texCoord(texCoord) {
     }
@@ -38,7 +41,7 @@ public:
     CommonVertex(const CommonVertex& cv)
         : pos(cv.pos), color(cv.color), normal(cv.normal), texCoord(cv.texCoord) {
     }
-
+    /*
     CommonVertex& operator=(const CommonVertex& src) {
         this->pos = src.pos;
         this->color = src.color;
@@ -46,13 +49,7 @@ public:
         this->normal = src.normal;
         return *this;
     }
-    bool operator==(const CommonVertex& rhs) const {
-
-    }
-    bool operator!=(const CommonVertex& rhs) const {
-
-    }
-
+    */
     DirectX::XMFLOAT3 pos = { 0, 0, 0 };
     DirectX::XMFLOAT4 color = { 0, 0, 0, 1 };
     DirectX::XMFLOAT2 texCoord = { 0, 0 };

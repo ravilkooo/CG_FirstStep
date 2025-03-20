@@ -2,6 +2,10 @@
 
 StickyBall::StickyBall()
 {
+}
+StickyBall::StickyBall(ID3D11Device* device)
+{
+	this->device = device;
 	UINT sliceCount = 10;
 	UINT elevationCount = 5;
 	XMFLOAT4 col(0.9f, 0.0f, 0.0f, 1.0f);
@@ -21,7 +25,7 @@ StickyBall::StickyBall()
 	}
 	worldMat = Matrix::CreateTranslation(position);
 
-	numInputElements = 2;
+	numInputElements = 3;
 
 	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 	IALayoutInputElements[0] =
@@ -44,7 +48,19 @@ StickyBall::StickyBall()
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/CubeShader.hlsl";
+	IALayoutInputElements[2] =
+		D3D11_INPUT_ELEMENT_DESC{
+			"TEXCOORD",
+			0,
+			DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+			0,
+			D3D11_APPEND_ALIGNED_ELEMENT, // 28,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0 };
+
+	shaderFilePath = L"./Shaders/PlaneShader.hlsl";
+	this->textures.push_back(Texture(device, "models\\Textures\\pixeleye.dds", aiTextureType_DIFFUSE));
+	hasTexture = true;
 }
 
 Vector3 StickyBall::GetCenterLocation()

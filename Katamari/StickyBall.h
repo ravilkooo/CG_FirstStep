@@ -7,6 +7,7 @@ class StickyBall :
 {
 public:
     StickyBall();
+    StickyBall(ID3D11Device* device);
 
     void Update(float deltaTime) override;
     Vector3 GetCenterLocation() override;

@@ -6,9 +6,10 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode, UINT a
 	rootNode->directory = StringHelper::GetDirectoryFromPath(path);
 	Assimp::Importer importer;
 	const aiScene* pModel = importer.ReadFile(path,
-		aiProcess_Triangulate);
+		aiProcess_Triangulate | aiProcess_FlipUVs );
+
 	//	aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
-	// aiProcess_GenNormals | aiProcess_CalcTangentSpace
+	// aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_MakeLeftHanded
 
 	if (!pModel || pModel->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !pModel->mRootNode)
 	{
@@ -47,7 +48,8 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode, UINT a
 			XMFLOAT3(
 			pMesh->mVertices[i].x,
 			pMesh->mVertices[i].y,
-			pMesh->mVertices[i].z) };
+			pMesh->mVertices[i].z
+			) };
 
 		if (pMesh->mTextureCoords[0] && (attrFlags & VertexAttrFlags::TEXTURE))
 		{

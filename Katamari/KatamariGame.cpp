@@ -22,9 +22,6 @@ KatamariGame::KatamariGame()
 		scene.AddNode(body);
 	}*/
 
-	scene.AddNode(&ball);
-	scene.AddNode(&floor);
-
 	physEngine = new PhysicsEngine(&scene);
 
 	displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
@@ -32,6 +29,12 @@ KatamariGame::KatamariGame()
 
 	renderer = Renderer(&displayWindow);
 	renderer.camera = Camera(winWidth * 1.0f / winHeight);
+
+	ball = StickyBall(renderer.GetDevice());
+	floor = Floor(renderer.GetDevice());
+	scene.AddNode(&ball);
+	scene.AddNode(&floor);
+
 	SpawnCollectibles();
 
 	for (auto node : scene.nodes)
@@ -45,8 +48,6 @@ KatamariGame::KatamariGame()
 
 
 			// node->textures.push_back(Texture(renderer.GetDevice(), SE_Colors::UnloadedTextureColor, aiTextureType_DIFFUSE));
-			 node->textures.push_back(Texture(renderer.GetDevice(), "models\\Textures\\plane_Diffuse.dds", aiTextureType_DIFFUSE));
-			 std::cout << "aaaaaaaaaa " << node->textures.size() << "\n";
 			/*
 			node->texture = new Texture(renderer.GetDevice());
 
@@ -155,6 +156,13 @@ void KatamariGame::Render()
 
 void KatamariGame::SpawnCollectibles()
 {
+	for (int i = 0; i < 3; ++i)
+	{
+		float rad = 0.3f;
+		float x = (rand() % 20) - 10.0f;
+		float z = (rand() % 20) - 10.0f;
+		collectibles.emplace_back(renderer.GetDevice(), rad, DirectX::XMFLOAT3(x, rad, z));
+	}
 	// Генерация объектов
 	for (int i = 0; i < 10; ++i)
 	{

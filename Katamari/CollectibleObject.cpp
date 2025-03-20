@@ -1,15 +1,15 @@
 #include "CollectibleObject.h"
 
 
-CollectibleObject::CollectibleObject(float radius, const DirectX::XMFLOAT3& position)
+CollectibleObject::CollectibleObject(ID3D11Device* device, float radius, const DirectX::XMFLOAT3& position)
     : radius(radius), initialPosition(position)
 {
     DirectX::XMFLOAT4 color(0.2f, 0.8f, 0.3f, 1.0f);
-    CreateSimpleCubeMesh(radius * 2, radius * 2, radius * 2, color,
+    CreateSimpleSphereMesh(radius, 20, 10, color,
         &vertices, &verticesNum, &indices, &indicesNum);
     worldMat = Matrix::CreateTranslation(position);
 
-    numInputElements = 2;
+    numInputElements = 3;
     IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 
     IALayoutInputElements[0] =
@@ -31,9 +31,20 @@ CollectibleObject::CollectibleObject(float radius, const DirectX::XMFLOAT3& posi
             D3D11_APPEND_ALIGNED_ELEMENT,
             D3D11_INPUT_PER_VERTEX_DATA,
             0 };
+    IALayoutInputElements[2] =
+        D3D11_INPUT_ELEMENT_DESC{
+            "TEXCOORD",
+            0,
+            DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+            0,
+            D3D11_APPEND_ALIGNED_ELEMENT, // 28,
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0 };
 
 
-    shaderFilePath = L"./Shaders/CubeShader.hlsl";
+    shaderFilePath = L"./Shaders/PlaneShader.hlsl";
+    this->textures.push_back(Texture(device, "models\\Textures\\basketballskin.dds", aiTextureType_DIFFUSE));
+    hasTexture = true;
 }
 
 CollectibleObject::CollectibleObject(ID3D11Device* device, const std::string& modelsFolder, const DirectX::XMFLOAT3& position)
@@ -100,7 +111,7 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, const std::string& mo
                 0,
                 DXGI_FORMAT_R32G32B32A32_FLOAT,
                 0,
-                12,
+                D3D11_APPEND_ALIGNED_ELEMENT, // 12,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0 };
 
@@ -110,17 +121,92 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, const std::string& mo
                 0,
                 DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
                 0,
-                28,
+                D3D11_APPEND_ALIGNED_ELEMENT, // 28,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0 };
         
-
-        std::cout << "input_layout_3\n";
-
-
-        shaderFilePath = L"./Shaders/PlaneShader.hlsl";
+        shaderFilePath = L"./Shaders/ImportShader.hlsl";
+        this->textures.push_back(Texture(device, "models\\Textures\\plane_Diffuse.dds", aiTextureType_DIFFUSE));
+        hasTexture = true;
     }
-    //hasTexture = true;
+
+    else if (verticesNum == 1078) {
+        numInputElements = 3;
+        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+        IALayoutInputElements[0] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "POSITION",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                0,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        IALayoutInputElements[1] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "COLOR",
+                0,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT, // 12,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        IALayoutInputElements[2] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "TEXCOORD",
+                0,
+                DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT, // 28,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        shaderFilePath = L"./Shaders/ImportShader.hlsl";
+        this->textures.push_back(Texture(device, "models\\Textures\\lego_Diffuse.dds", aiTextureType_DIFFUSE));
+        hasTexture = true;
+    }
+    else if (verticesNum == 7322) {
+        numInputElements = 3;
+        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+        IALayoutInputElements[0] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "POSITION",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                0,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        IALayoutInputElements[1] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "COLOR",
+                0,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT, // 12,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        IALayoutInputElements[2] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "TEXCOORD",
+                0,
+                DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT, // 28,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        shaderFilePath = L"./Shaders/ImportShader.hlsl";
+        this->textures.push_back(Texture(device, "models\\Textures\\horse_Diffuse.dds", aiTextureType_DIFFUSE));
+        hasTexture = true;
+    }
+
+    std::cout << sizeof(CommonVertex) << "\n";
+
 }
 
 void CollectibleObject::LoadRandomModel(const std::string& folder)
@@ -132,8 +218,8 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
     if (models.empty()) return;
 
     std::uniform_int_distribution<> distr(0, models.size() - 1);
-    //auto chosen_model = models[distr(gen)];
-    auto chosen_model = "models\\plane.obj";
+    auto chosen_model = models[distr(gen)];
+    //auto chosen_model = "models\\plane.obj";
     ModelLoader::LoadModel(chosen_model, this, ModelLoader::VertexAttrFlags::POSITION | ModelLoader::VertexAttrFlags::TEXTURE);
     
     // ModelLoader::LoadModel("models\\suzanne.obj", this);
@@ -147,9 +233,11 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
         maxDistance = max(maxDistance, dist);
     }
     modelRadius = maxDistance;
-    std::cout << modelRadius << "\n";
+
+    std::cout << chosen_model << " :: " << verticesNum << " :: " << StringHelper::GetDirectoryFromPath(chosen_model) << "\n";
+
+
     if (chosen_model == "models\\plane.obj") {
-        std::cout << verticesNum << "\n";
         this->hasTexture = true;
     }
 }
