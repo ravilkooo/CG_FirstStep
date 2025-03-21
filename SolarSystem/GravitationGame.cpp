@@ -15,7 +15,7 @@ GravitationGame::GravitationGame()
 	float planet_gap = 0.1f;
 	float moon_gap = 0.01f;
 
-	float sun_rad = 0.1f;
+	float sun_rad = 0.3f;
 	float merc_rad = 0.01f;
 	float venus_rad = 0.04f;
 
@@ -37,70 +37,77 @@ GravitationGame::GravitationGame()
 
 	// Создание планет и лун
 	accum_dist = sun_rad;
-	GravitationBody* sun = new GravitationBody(sun_rad, 0.2f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), GravitationBody::PLANET_TYPE::SPHERE, 100.0f);
+	GravitationBody* sun = new GravitationBody(sun_rad, 0.2f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), GravitationBody::PLANET_TYPE::SPHERE, 1.0f);
 	gravBodies.push_back(sun);
 
 	accum_dist += planet_gap + merc_rad;
-	GravitationBody* mercury = new GravitationBody(merc_rad, 1.9f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.6f, 0.0f, 0.0f, 1.0f), GravitationBody::PLANET_TYPE::GEOSPHERE);
+	GravitationBody* mercury = new GravitationBody(merc_rad, 1.9f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT4(0.6f, 0.0f, 0.0f, 1.0f), GravitationBody::PLANET_TYPE::GEOSPHERE);
 	gravBodies.push_back(mercury);
 	gravBodies.back()->position = Vector3::Transform(Vector3(0.0f, 0.0f, accum_dist), GetRandomRotateTransform());
-	//gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, GravitationBody::maxVelocity * 0.5), GetRandomRotateTransform());
 
+	float initVeloxity = 0.01f;
+
+	gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, initVeloxity), GetRandomRotateTransform());
 
 	accum_dist += merc_rad + planet_gap + venus_rad;
-	GravitationBody* venus = new GravitationBody(venus_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.5f, 0.5f, 1.0f), GravitationBody::PLANET_TYPE::CUBE);
+	GravitationBody* venus = new GravitationBody(venus_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT4(1.0f, 0.5f, 0.5f, 1.0f), GravitationBody::PLANET_TYPE::CUBE);
 	gravBodies.push_back(venus);
 	gravBodies.back()->position = Vector3::Transform(Vector3(0.0f, 0.0f, accum_dist), GetRandomRotateTransform());
-	//gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, GravitationBody::maxVelocity * 0.5), GetRandomRotateTransform());
+	gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, initVeloxity), GetRandomRotateTransform());
 
 	accum_dist += venus_rad + planet_gap + (2 * moon_rad + moon_gap + earth_rad);
-	GravitationBody* earth = new GravitationBody(earth_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), GravitationBody::PLANET_TYPE::SPHERE);
+	GravitationBody* earth = new GravitationBody(earth_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), GravitationBody::PLANET_TYPE::SPHERE);
 	gravBodies.push_back(earth);
 	gravBodies.back()->position = Vector3::Transform(Vector3(0.0f, 0.0f, accum_dist), GetRandomRotateTransform());
-	//gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, GravitationBody::maxVelocity * 0.5), GetRandomRotateTransform());
+	gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, initVeloxity), GetRandomRotateTransform());
 
 	accum_dist += (2 * moon_rad + moon_gap + earth_rad) + planet_gap + (2 * fobos_rad + 2 * deimos_rad + 2 * moon_gap + mars_rad);
 
 	//std::cout << mars_rad + moon_gap + fobos_rad << "\n";
 
-	GravitationBody* mars = new GravitationBody(mars_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), GravitationBody::PLANET_TYPE::SPHERE);
+	GravitationBody* mars = new GravitationBody(mars_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), GravitationBody::PLANET_TYPE::SPHERE);
 	gravBodies.push_back(mars);
 	gravBodies.back()->position = Vector3::Transform(Vector3(0.0f, 0.0f, accum_dist), GetRandomRotateTransform());
-	//gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, GravitationBody::maxVelocity * 0.5), GetRandomRotateTransform());
+	gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, initVeloxity), GetRandomRotateTransform());
 
 	accum_dist += (2 * fobos_rad + 2 * deimos_rad + 2 * moon_gap + mars_rad) + moon_gap + merc_rad;
 	
-	gravBodies.push_back(
-		new GravitationBody(merc_rad, 0.9f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.3f, 0.2f, 0.2f, 1.0f), GravitationBody::PLANET_TYPE::CUBE)
+	gravBodies.push_back(new GravitationBody(merc_rad, 0.9f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+			DirectX::XMFLOAT4(0.3f, 0.2f, 0.2f, 1.0f), GravitationBody::PLANET_TYPE::CUBE)
 	);
 	gravBodies.back()->position = Vector3::Transform(Vector3(0.0f, 0.0f, accum_dist), GetRandomRotateTransform());
-	//gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, GravitationBody::maxVelocity * 0.5), GetRandomRotateTransform());
+	gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, initVeloxity), GetRandomRotateTransform());
 	
 	accum_dist += (merc_rad)+planet_gap + (jupiter_rad);
 
-	GravitationBody* jupiter = new GravitationBody(jupiter_rad, 0.3f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.58f, 0.29f, 0.0f, 1.0f), GravitationBody::PLANET_TYPE::SPHERE);
+	GravitationBody* jupiter = new GravitationBody(jupiter_rad, 0.3f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT4(0.58f, 0.29f, 0.0f, 1.0f), GravitationBody::PLANET_TYPE::SPHERE);
 	gravBodies.push_back(jupiter);
 	gravBodies.back()->position = Vector3::Transform(Vector3(0.0f, 0.0f, accum_dist), GetRandomRotateTransform());
-	//gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, GravitationBody::maxVelocity * 0.5), GetRandomRotateTransform());
+	gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, initVeloxity), GetRandomRotateTransform());
 
 	accum_dist += (jupiter_rad)+planet_gap + (saturn_ring_rad + planet_gap);
 
-	GravitationBody* saturn = new GravitationBody(saturn_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.5f, 0.2f, 1.0f), GravitationBody::PLANET_TYPE::CUBE);
-	GravitationBody* saturn_ring = new GravitationBody(saturn_ring_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.58f, 0.29f, 0.0f, 1.0f), GravitationBody::PLANET_TYPE::RING);
+	GravitationBody* saturn = new GravitationBody(saturn_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT4(1.0f, 0.5f, 0.2f, 1.0f), GravitationBody::PLANET_TYPE::CUBE);
 	gravBodies.push_back(saturn);
 	gravBodies.back()->position = Vector3::Transform(Vector3(0.0f, 0.0f, accum_dist), GetRandomRotateTransform());
-	//gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, GravitationBody::maxVelocity * 0.5), GetRandomRotateTransform());
+	gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, initVeloxity), GetRandomRotateTransform());
 
 
 	accum_dist += (saturn_ring_rad + planet_gap) + planet_gap + (saturn_ring_rad + planet_gap);
 
-
-	GravitationBody* uranus = new GravitationBody(uranus_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f), GravitationBody::PLANET_TYPE::GEOSPHERE);
+	/*
+	GravitationBody* uranus = new GravitationBody(uranus_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f), GravitationBody::PLANET_TYPE::GEOSPHERE);
 	gravBodies.push_back(uranus);
 	gravBodies.back()->position = Vector3::Transform(Vector3(0.0f, 0.0f, accum_dist), GetRandomRotateTransform());
-	//gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, GravitationBody::maxVelocity * 0.5), GetRandomRotateTransform());
-
-	/*
+	gravBodies.back()->velocity = Vector3::Transform(Vector3(0.0f, 0.0f, initVeloxity), GetRandomRotateTransform());
 	*/
 
 	starBox = new StarBox(100.0f, 5.0f, Vector3::Zero, Vector4::Zero);
@@ -203,27 +210,38 @@ void GravitationGame::Run()
 
 void GravitationGame::Update(float deltaTime)
 {
+	buttonTimer += deltaTime;
 	
 
-	buttonTimer += deltaTime;
+	for (size_t i = 0; i < gravBodies.size(); i++)
+	{
+		gravBodies[i]->acceleration = Vector3::Zero;
+		if (gravBodies[i]->position.Length() >(starBox->radius - gravBodies[i]->radius)) {
+			gravBodies[i]->velocity += starBox->ReflectBodyDeltaV(gravBodies[i]);
+		}
+	}
 
 
 	for (size_t i = 0; i < gravBodies.size() - 1; i++)
 	{
+		gravBodies[i]->acceleration = Vector3::Zero;
 		for (size_t j = i + 1; j < gravBodies.size(); j++)
 		{
 			if (Vector3::Distance(gravBodies[i]->position, gravBodies[j]->position)
-				> (gravBodies[i]->radius + gravBodies[j]->radius)) {
+				> (gravBodies[i]->radius - gravBodies[j]->radius))
+			{
+				//std::cout << "Grav!\n";
 				auto _force = gravBodies[i]->CalcGravForceBetween_noOwnMass(*(gravBodies[j]));
 				gravBodies[i]->acceleration += _force * gravBodies[j]->mass;
 				gravBodies[j]->acceleration -= _force * gravBodies[i]->mass;
+
 			}
 			else {
-				auto _accel = gravBodies[i]->CalcBounceForceBetween_noOwnMass(*(gravBodies[j]), deltaTime);
-				gravBodies[i]->acceleration += _accel;
-				gravBodies[j]->acceleration -= _accel * gravBodies[i]->mass / gravBodies[j]->mass;
-				gravBodies[i]->currBounce = true;
-				gravBodies[j]->currBounce = true;
+				auto _velocity = gravBodies[i]->CalcBounceDeltaV(*(gravBodies[j]));
+				gravBodies[i]->velocity += _velocity;
+				gravBodies[j]->velocity -= _velocity * gravBodies[i]->mass / gravBodies[j]->mass;
+				//_accel = gravBodies[j]->CalcBounceForceBetween_noOwnMass(*(gravBodies[i]), deltaTime);
+				//gravBodies[j]->acceleration += _accel;
 			}
 		}
 	}
@@ -301,60 +319,49 @@ void GravitationGame::HandleKeyDown(Keys key) {
 	}
 	if (key == Keys::D1)
 	{
+		focusedBodyIdx = 0;
 		focusedBody = gravBodies[0];
 		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
 	}
 	if (key == Keys::D2)
 	{
+
+		focusedBodyIdx = 1;
 		focusedBody = gravBodies[1];
 		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
 	}
 	if (key == Keys::D3)
 	{
+		focusedBodyIdx = 2;
 		focusedBody = gravBodies[2];
 		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
 	}
 	if (key == Keys::D4)
 	{
+		focusedBodyIdx = 3;
 		focusedBody = gravBodies[3];
 		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
 	}
 	if (key == Keys::OemComma)
 	{
-		if (buttonTimer > pressTime)
-		{
-			buttonTimer = 0.0f;
-			focusedBodyIdx = (focusedBodyIdx - 1 + gravBodies.size()) % gravBodies.size();
-			focusedBody = gravBodies[focusedBodyIdx];
-			renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
-		}
+		focusedBodyIdx = (focusedBodyIdx - 1 + gravBodies.size()) % gravBodies.size();
+		focusedBody = gravBodies[focusedBodyIdx];
+		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
 	}
 	if (key == Keys::OemPeriod)
 	{
-		if (buttonTimer > pressTime)
-		{
-			buttonTimer = 0.0f;
-			focusedBodyIdx = (focusedBodyIdx + 1) % gravBodies.size();
-			focusedBody = gravBodies[focusedBodyIdx];
-			renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
-		}
+		focusedBodyIdx = (focusedBodyIdx + 1) % gravBodies.size();
+		focusedBody = gravBodies[focusedBodyIdx];
+		renderer.camera.SwitchToOrbitalMode(focusedBody->GetCenterLocation(), focusedBody->spinAxis, focusedBody->radius);
 	}
 	if (key == Keys::B)
 	{
-		if (buttonTimer > pressTime)
-		{
-			buttonTimer = 0.0f;
-			renderer.camera.SwitchProjection();
-		}
+		renderer.camera.SwitchProjection();
 	}
 	if (key == Keys::Space)
 	{
-		if (buttonTimer > pressTime)
-		{
-			buttonTimer = 0.0f;
-			focusedBody = nullptr;
-			renderer.camera.SwitchToFPSMode();
-		}
+		focusedBody = nullptr;
+		renderer.camera.SwitchToFPSMode();
 	}
 
 }

@@ -9,7 +9,7 @@ Vector3 GravitationBody::CalcGravForceBetween_noOwnMass(GravitationBody other)
 
 }
 
-Vector3 GravitationBody::CalcBounceForceBetween_noOwnMass(GravitationBody other, float deltaTime)
+Vector3 GravitationBody::CalcBounceDeltaV(GravitationBody other)
 {
     Vector3 r12 = (other.position - position);
     r12.Normalize();
@@ -21,9 +21,7 @@ Vector3 GravitationBody::CalcBounceForceBetween_noOwnMass(GravitationBody other,
     float v1_proj_new = ((mass - other.mass) * v1_proj + 2 * other.mass * v2_proj) / ((mass + other.mass));
     float v2_proj_new = ((other.mass - mass) * v2_proj + 2 * mass * v1_proj) / ((mass + other.mass));
     Vector3 dv1 = -r12 * v1_proj + r12 * v1_proj_new;
-    //Vector3 dv2 = - r12 * v2_proj + r12 * v2_proj_new;
-    std::cout << v1_proj << "\t" << v1_proj_new << "\n";
-    return dv1 / deltaTime;
+    return dv1;
 }
 
 GravitationBody::GravitationBody(float radius, float spinSpeed,
@@ -55,9 +53,9 @@ GravitationBody::GravitationBody(float radius, float spinSpeed,
         auto col_2 = XMFLOAT4(0.5f + 0.5f * col.x, 0.5f + 0.5f * col.y, 0.5f + 0.5f * col.z, 1.0f);
         for (size_t i = 0; i < elevationCount * 2 + 1; i += 2)
         {
-            for (size_t j = 0; j < sliceCount; j++)
+            for (size_t j = 0; j < (sliceCount + 1); j++)
             {
-                vertices[1 + i * sliceCount + j].color = col_2;
+                vertices[1 + i * (sliceCount + 1) + j].color = col_2;
             }
         }
     }
@@ -131,7 +129,6 @@ void GravitationBody::Update(float deltaTime)
     if (velLen > maxVelocity) {
         velocity *= maxVelocity / velLen;
     }
-    currBounce = false;
     position += velocity * deltaTime;
 
 

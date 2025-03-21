@@ -6,7 +6,7 @@ StarBox::StarBox(float radius, float spinSpeed,
     : radius(radius), spinSpeed(spinSpeed), position(position), rotationAngle(0.0f)
 {
     {
-        CreateSimpleCubeMesh(radius, radius, radius, col, &vertices, &verticesNum, &indices, &indicesNum);
+        CreateSimpleSphereMesh(radius, 10, 5, col, &vertices, &verticesNum, &indices, &indicesNum);
 
         auto col_2 = XMFLOAT4(0.5f + 0.5f * col.x, 0.5f + 0.5f * col.y, 0.5f + 0.5f * col.z, 1.0f);
         vertices[0].color = col_2;
@@ -77,4 +77,19 @@ Vector3 StarBox::GetCenterLocation()
 {
     Vector3 center = Vector3(position);
     return center;
+}
+
+Vector3 StarBox::ReflectBodyDeltaV(GravitationBody* gBody)
+{
+    Vector3 r = gBody->position;
+    r.Normalize();
+    float v_proj = r.Dot(gBody->velocity);
+    if (v_proj < 0) {
+        return Vector3::Zero;
+    }
+    else
+    {
+        Vector3 dv1 = -2 * r * v_proj;
+        return dv1;
+    }
 }

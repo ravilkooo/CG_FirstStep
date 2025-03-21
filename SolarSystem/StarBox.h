@@ -5,6 +5,7 @@
 #include <DirectXMath.h>
 #include "SimpleMath.h"
 #include <ShapeGenerator.h>
+#include "GravitationBody.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -22,6 +23,7 @@ public:
 
     Vector3 GetCenterLocation() override;
 
+    Vector3 ReflectBodyDeltaV(GravitationBody* gBody);
 
     float spinSpeed;  // Скорость вращения вокруг своей оси
     float radius;
