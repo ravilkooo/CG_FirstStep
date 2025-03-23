@@ -106,8 +106,6 @@ void KatamariGame::Run()
 		if (totalTime > 1.0f) {
 			float fps = frameCount * 1.0f / totalTime;
 
-			//std::cout << frameCount << "\n";
-
 			totalTime -= 1.0f;
 
 			WCHAR text[256];
@@ -156,19 +154,19 @@ void KatamariGame::Render()
 
 void KatamariGame::SpawnCollectibles()
 {
-	for (int i = 0; i < 3; ++i)
+	// обычные объекты
+	for (int i = 0; i < 0; ++i)
 	{
 		float rad = 0.3f;
 		float x = (rand() % 20) - 10.0f;
 		float z = (rand() % 20) - 10.0f;
 		collectibles.emplace_back(renderer.GetDevice(), rad, DirectX::XMFLOAT3(x, rad, z));
 	}
-	// Генерация объектов
+	// загруженные модельки
 	for (int i = 0; i < 10; ++i)
 	{
 		float x = (rand() % 20) - 10.0f;
 		float z = (rand() % 20) - 10.0f;
-		//collectibles.emplace_back(0.3f, DirectX::XMFLOAT3(x, 0.3f, z));
 		collectibles.emplace_back(renderer.GetDevice(), "models\\", DirectX::XMFLOAT3(x, 0.3f, z));
 	}
 
