@@ -37,10 +37,10 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode, UINT a
 
 	const auto pMesh = pModel->mMeshes[0];
 	
-	/*if (pMesh->mTextureCoords[0])
+	if (pMesh->mTextureCoords[0])
 	{
 		std::cout << "aiModel has texture!\n";
-	}*/
+	}
 
 	for (unsigned i = 0; i < pMesh->mNumVertices; i++)
 	{
