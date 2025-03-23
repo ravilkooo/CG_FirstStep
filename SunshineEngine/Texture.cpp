@@ -15,7 +15,7 @@ Texture::Texture(ID3D11Device* device, const std::string& filePath, aiTextureTyp
 	this->type = type;
 	if (StringHelper::GetFileExtension(filePath) == "dds")
 	{
-		std::cout << "DDS loaded!!! " << filePath << " :: " << StringHelper::GetFileExtension(filePath) << "\n";
+		//std::cout << "DDS loaded!!! " << filePath << " :: " << StringHelper::GetFileExtension(filePath) << "\n";
 		HRESULT hr = DirectX::CreateDDSTextureFromFile(device, StringHelper::StringToWide(filePath).c_str(), &pTexture, GetTextureResourceViewAddress());
 		if (FAILED(hr))
 		{
