@@ -49,7 +49,7 @@ Floor::Floor(ID3D11Device* device)
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/PlaneShader.hlsl";
+	shaderFilePath = L"./Shaders/FloorShader.hlsl";
 	this->textures.push_back(Texture(device, "models\\Textures\\carpet.dds", aiTextureType_DIFFUSE));	
 	hasTexture = true;
 }
