@@ -62,14 +62,37 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, const std::string& mo
     appliedScale = radius / modelRadius;
     initialPosition = position;
     initialPosition.y = radius;
-    // std::cout << initialPosition.x << " "  << initialPosition.y << " " << initialPosition.z << "\n";
     
     worldMat = Matrix::CreateScale(appliedScale) * Matrix::CreateTranslation(initialPosition);
+}
 
-    numInputElements = 2;
+void CollectibleObject::LoadRandomModel(const std::string& folder)
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
 
+    auto models = GetModelList(folder);
+    if (models.empty()) return;
+
+    std::uniform_int_distribution<> distr(0, models.size() - 1);
+    auto chosen_model = models[distr(gen)];
+
+    auto model_name = StringHelper::GetFileNameWithoutExtension(chosen_model);
+
+    ModelLoader::LoadModel(chosen_model, this, ModelLoader::VertexAttrFlags::POSITION | ModelLoader::VertexAttrFlags::TEXTURE);
+    
+    // Рассчет bounding radius
+    float maxDistance = 0.0f;
+    for (int i = 0; i < this->verticesNum; i++)
+    {
+        XMFLOAT3 pos = this->vertices[i].pos;
+        float dist = sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+        maxDistance = max(maxDistance, dist);
+    }
+    modelRadius = maxDistance;
+
+    numInputElements = 3;
     IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
-
     IALayoutInputElements[0] =
         D3D11_INPUT_ELEMENT_DESC{
             "POSITION",
@@ -86,198 +109,23 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, const std::string& mo
             0,
             DXGI_FORMAT_R32G32B32A32_FLOAT,
             0,
-            D3D11_APPEND_ALIGNED_ELEMENT,
+            D3D11_APPEND_ALIGNED_ELEMENT, // 12,
             D3D11_INPUT_PER_VERTEX_DATA,
             0 };
 
-    shaderFilePath = L"./Shaders/CubeShader.hlsl";
+    IALayoutInputElements[2] =
+        D3D11_INPUT_ELEMENT_DESC{
+            "TEXCOORD",
+            0,
+            DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+            0,
+            D3D11_APPEND_ALIGNED_ELEMENT, // 28,
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0 };
 
-    if (verticesNum == 1260) {
-        numInputElements = 3;
-        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
-        IALayoutInputElements[0] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "POSITION",
-                0,
-                DXGI_FORMAT_R32G32B32_FLOAT,
-                0,
-                0,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        IALayoutInputElements[1] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "COLOR",
-                0,
-                DXGI_FORMAT_R32G32B32A32_FLOAT,
-                0,
-                D3D11_APPEND_ALIGNED_ELEMENT, // 12,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        IALayoutInputElements[2] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "TEXCOORD",
-                0,
-                DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
-                0,
-                D3D11_APPEND_ALIGNED_ELEMENT, // 28,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-        
-        shaderFilePath = L"./Shaders/ImportShader.hlsl";
-        this->textures.push_back(Texture(device, "models\\Textures\\plane_Diffuse.dds", aiTextureType_DIFFUSE));
-        hasTexture = true;
-    }
-
-    else if (verticesNum == 1078) {
-        numInputElements = 3;
-        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
-        IALayoutInputElements[0] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "POSITION",
-                0,
-                DXGI_FORMAT_R32G32B32_FLOAT,
-                0,
-                0,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        IALayoutInputElements[1] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "COLOR",
-                0,
-                DXGI_FORMAT_R32G32B32A32_FLOAT,
-                0,
-                D3D11_APPEND_ALIGNED_ELEMENT, // 12,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        IALayoutInputElements[2] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "TEXCOORD",
-                0,
-                DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
-                0,
-                D3D11_APPEND_ALIGNED_ELEMENT, // 28,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        shaderFilePath = L"./Shaders/ImportShader.hlsl";
-        this->textures.push_back(Texture(device, "models\\Textures\\lego_Diffuse.dds", aiTextureType_DIFFUSE));
-        hasTexture = true;
-    }
-    else if (verticesNum == 7322) {
-        numInputElements = 3;
-        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
-        IALayoutInputElements[0] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "POSITION",
-                0,
-                DXGI_FORMAT_R32G32B32_FLOAT,
-                0,
-                0,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        IALayoutInputElements[1] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "COLOR",
-                0,
-                DXGI_FORMAT_R32G32B32A32_FLOAT,
-                0,
-                D3D11_APPEND_ALIGNED_ELEMENT, // 12,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        IALayoutInputElements[2] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "TEXCOORD",
-                0,
-                DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
-                0,
-                D3D11_APPEND_ALIGNED_ELEMENT, // 28,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        shaderFilePath = L"./Shaders/ImportShader.hlsl";
-        this->textures.push_back(Texture(device, "models\\Textures\\horse_Diffuse.dds", aiTextureType_DIFFUSE));
-        hasTexture = true;
-    }
-
-    else if (verticesNum == 12512) {
-        numInputElements = 3;
-        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
-        IALayoutInputElements[0] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "POSITION",
-                0,
-                DXGI_FORMAT_R32G32B32_FLOAT,
-                0,
-                0,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        IALayoutInputElements[1] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "COLOR",
-                0,
-                DXGI_FORMAT_R32G32B32A32_FLOAT,
-                0,
-                D3D11_APPEND_ALIGNED_ELEMENT, // 12,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        IALayoutInputElements[2] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "TEXCOORD",
-                0,
-                DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
-                0,
-                D3D11_APPEND_ALIGNED_ELEMENT, // 28,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
-
-        shaderFilePath = L"./Shaders/ImportShader.hlsl";
-        this->textures.push_back(Texture(device, "models\\Textures\\gamepad_Diffuse.dds", aiTextureType_DIFFUSE));
-        hasTexture = true;
-        }
-
-    std::cout << sizeof(CommonVertex) << "\n";
-
-}
-
-void CollectibleObject::LoadRandomModel(const std::string& folder)
-{
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-
-    auto models = GetModelList(folder);
-    if (models.empty()) return;
-
-    std::uniform_int_distribution<> distr(0, models.size() - 1);
-    auto chosen_model = models[distr(gen)];
-    //auto chosen_model = "models\\plane.obj";
-    ModelLoader::LoadModel(chosen_model, this, ModelLoader::VertexAttrFlags::POSITION | ModelLoader::VertexAttrFlags::TEXTURE);
-    
-    // ModelLoader::LoadModel("models\\suzanne.obj", this);
-
-    // Рассчет bounding radius
-    float maxDistance = 0.0f;
-    for (int i = 0; i < this->verticesNum; i++)
-    {
-        XMFLOAT3 pos = this->vertices[i].pos;
-        float dist = sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
-        maxDistance = max(maxDistance, dist);
-    }
-    modelRadius = maxDistance;
-
-    std::cout << chosen_model << " :: " << verticesNum << " :: " << StringHelper::GetFileNameWithoutExtension(chosen_model) << "\n";
-
-
-    if (chosen_model == "models\\plane.obj") {
-        this->hasTexture = true;
-    }
+    shaderFilePath = L"./Shaders/ImportShader.hlsl";
+    this->textures.push_back(Texture(device, "models\\Textures\\" + model_name + "_Diffuse.dds", aiTextureType_DIFFUSE));
+    hasTexture = true;
 }
 
 std::vector<std::string> CollectibleObject::GetModelList(const std::string& modelsFolder)
