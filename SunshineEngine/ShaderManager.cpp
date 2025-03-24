@@ -33,7 +33,7 @@ bool ShaderManager::LoadVertexShader(LPCWSTR filePath, ID3D11VertexShader** vert
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			std::cout << L"MyVeryFirstShader.hlsl" << L"Missing Shader File\n";
+			std::cout << filePath << L" - Missing Shader File\n";
 		}
 
 		return 0;
@@ -70,12 +70,12 @@ bool ShaderManager::LoadPixelShader(LPCWSTR filePath, ID3D11PixelShader** pixelS
 		if (errorPixelCode) {
 			char* compileErrors = (char*)(errorPixelCode->GetBufferPointer());
 
-			std::cout << compileErrors << std::endl;
+			std::cout << compileErrors << " - // -- " << std::endl;
 		}
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			std::cout << L"MyVeryFirstShader.hlsl" << L"Missing Shader File\n";
+			std::cout << filePath << L" - Missing Shader File\n";
 		}
 
 		return 0;

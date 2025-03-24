@@ -11,6 +11,15 @@
 #include "Sampler.h"
 #include "CommonVertex.h"
 #include <assimp/scene.h>
+#include "Bindable.h"
+#include "ConstantBuffer.h"
+
+//class Bindable;
+
+//namespace Bind
+//{
+//    class Bindable;
+//}
 
 class SceneNode
 {
@@ -19,9 +28,12 @@ public:
     virtual ~SceneNode();
 
     virtual void Update(float deltaTime) = 0;
-    void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
+    void PrepareDraw(
+        Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
         ID3D11RenderTargetView* renderTargetView,
         ID3D11DepthStencilView* pDSV);
+
+    void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) const noexcept;
 
     void InitBuffers(ResourceManager resourceManager);
 
@@ -38,7 +50,8 @@ public:
     D3D11_INPUT_ELEMENT_DESC* IALayoutInputElements;
     UINT numInputElements = 2;
 
-    LPCWSTR shaderFilePath;
+    LPCWSTR vertexShaderFilePath;
+    LPCWSTR pixelShaderFilePath;
     ID3D11VertexShader* vertexShader = nullptr;
     ID3D11PixelShader* pixelShader = nullptr;
 
@@ -82,6 +95,8 @@ public:
 
     std::string directory = "";
 
+    void AddBind(Bind::Bindable* bind);
+    std::vector<Bind::Bindable*> binds = {};
 
 protected:
     // std::vector<SceneNode*> children;

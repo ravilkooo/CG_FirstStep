@@ -209,6 +209,14 @@ void Camera::RotatePitch(float angle)
     {
         orbitalPitch += angle;
     }
+    else if (cameraMode == CAMERA_MODE::FOLLOW)
+    {
+        followPitch = min(max(-XM_PIDIV2 * 0.9, followPitch + angle), 0);
+        float cam2targetDist = 2.0f * referenceLen / tanf(fov * 0.5);
+        Vector3 direction = (target - position);
+        direction.y = 0; direction.Normalize();
+        position = target - cam2targetDist * (direction + sinf(followPitch) * up);
+    }
     else
     {
         Vector3 look_dir = target - position;

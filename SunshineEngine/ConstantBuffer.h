@@ -1,6 +1,73 @@
 #pragma once
+#include "Bindable.h"
 
-template <class T>
-class ConstantBuffer {
-	T data;
-};
+namespace Bind
+{
+	template <class C>
+	class ConstantBuffer : public Bindable {
+	protected:
+		ID3D11Buffer* pConstantBuffer;
+		//UINT slot;
+	public:
+		void Update(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context, const C& consts) {
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			context->Map(pConstantBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mappedResource);
+			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16))); // aligned size
+			context->Unmap(pConstantBuffer, 0);
+			context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
+		}
+
+		ConstantBuffer(Microsoft::WRL::ComPtr<ID3D11Device> device, const C& consts)
+		{
+			D3D11_BUFFER_DESC cbd;
+			cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			cbd.Usage = D3D11_USAGE_DYNAMIC;
+			cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			cbd.MiscFlags = 0u;
+			cbd.ByteWidth = sizeof(consts) + (16 - (sizeof(consts) % 16));  // aligned size
+			cbd.StructureByteStride = 0u;
+
+			D3D11_SUBRESOURCE_DATA InitData = {};
+			InitData.pSysMem = &consts;
+			device->CreateBuffer(&cbd, &InitData, &pConstantBuffer);
+		}
+
+		ConstantBuffer(Microsoft::WRL::ComPtr<ID3D11Device> device)
+		{
+			D3D11_BUFFER_DESC cbd;
+			cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			cbd.Usage = D3D11_USAGE_DYNAMIC;
+			cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			cbd.MiscFlags = 0u;
+			cbd.ByteWidth = sizeof(C) + (16 - (sizeof(C) % 16)); // aligned size
+			cbd.StructureByteStride = 0u;
+			device->CreateBuffer(&cbd, nullptr, &pConstantBuffer);
+		}
+	};
+
+	template<typename C>
+	class VertexConstantBuffer : public ConstantBuffer<C>
+	{
+		using ConstantBuffer<C>::pConstantBuffer;
+		//using Bindable::GetContext;
+	public:
+		using ConstantBuffer<C>::ConstantBuffer;
+		void Bind(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) noexcept override
+		{
+			context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
+		}
+	};
+
+	template<typename C>
+	class PixelConstantBuffer : public ConstantBuffer<C>
+	{
+		using ConstantBuffer<C>::pConstantBuffer;
+		//using Bindable::GetContext;
+	public:
+		using ConstantBuffer<C>::ConstantBuffer;
+		void Bind(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) noexcept override
+		{
+			context->PSSetConstantBuffers(0u, 1u, &pConstantBuffer);
+		}
+	};
+}

@@ -1,4 +1,5 @@
 #include "SceneNode.h"
+#include "Bindable.h"
 
 SceneNode::SceneNode()
 {
@@ -9,7 +10,8 @@ SceneNode::~SceneNode()
 }
 
 
-void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
+void SceneNode::PrepareDraw(
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 	ID3D11RenderTargetView* renderTargetView,
 	ID3D11DepthStencilView* pDSV)
 {
@@ -38,9 +40,16 @@ void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
     context->VSSetShader(vertexShader, nullptr, 0);
 
     context->OMSetRenderTargets(1, &renderTargetView, pDSV);
+}
 
-    // 14. At the End of While (!isExitRequested): Draw the Triangle
-    context->DrawIndexed(indicesNum, 0, 0);
+void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) const noexcept {
+	for (size_t i = 0; i < binds.size(); i++)
+	{
+		binds[i]->Bind(context);
+	}
+
+	// 14. At the End of While (!isExitRequested): Draw the Triangle
+	context->DrawIndexed(indicesNum, 0, 0);
 }
 
 
@@ -63,9 +72,9 @@ void SceneNode::InitBuffers(ResourceManager resourceManager)
 
 void SceneNode::LoadAndCompileShader(ShaderManager shaderManager)
 {
-	if (!shaderManager.LoadVertexShader(shaderFilePath, &vertexShader, &vsBlob))
+	if (!shaderManager.LoadVertexShader(vertexShaderFilePath, &vertexShader, &vsBlob))
 		std::cout << "Ujas!\n";
-	if (!shaderManager.LoadPixelShader(shaderFilePath, &pixelShader))
+	if (!shaderManager.LoadPixelShader(pixelShaderFilePath, &pixelShader))
 		std::cout << "Ujas!\n";
 }
 
@@ -183,4 +192,9 @@ TextureStorageType SceneNode::DetermineTextureStorageType(const aiScene* pScene,
 	}
 
 	return TextureStorageType::None; // No texture exists
+}
+
+void SceneNode::AddBind(Bind::Bindable* bind)
+{
+	binds.push_back(bind);
 }
