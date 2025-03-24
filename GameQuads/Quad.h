@@ -1,7 +1,7 @@
 #ifndef QUAD_H
 #define QUAD_H
 
-#include "SceneNode.h"
+#include <SceneNode.h>
 
 #include <directxmath.h>
 #include <d3d11.h>
