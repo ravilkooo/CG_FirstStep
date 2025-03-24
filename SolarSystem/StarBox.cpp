@@ -48,7 +48,8 @@ StarBox::StarBox(float radius, float spinSpeed,
             D3D11_INPUT_PER_VERTEX_DATA,
             0 };
 
-    shaderFilePath = L"./Shaders/StarBoxShader.hlsl";
+    vertexShaderFilePath = L"./Shaders/StarBoxShader.hlsl";
+    pixelShaderFilePath = L"./Shaders/StarBoxShader.hlsl";
 }
 
 StarBox::~StarBox()

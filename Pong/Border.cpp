@@ -54,7 +54,8 @@ Border::Border()
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 //Border::Border(float width, float height)
@@ -84,7 +85,7 @@ Border::Border()
 //		points[i] = _points[i];
 //	}
 //
-//	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+//	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 //}
 
 void Border::Update(float deltaTime)

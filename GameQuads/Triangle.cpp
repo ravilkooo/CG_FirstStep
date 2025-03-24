@@ -48,7 +48,8 @@ Triangle::Triangle()
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 Triangle::Triangle(CommonVertex* vertices)
@@ -92,7 +93,8 @@ Triangle::Triangle(CommonVertex* vertices)
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 void Triangle::Update(float deltaTime)

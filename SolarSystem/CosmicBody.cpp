@@ -91,7 +91,8 @@ CosmicBody::CosmicBody(float radius, float rotationSpeed,
             D3D11_INPUT_PER_VERTEX_DATA,
             0};
 
-    shaderFilePath = L"./Shaders/CubeShader.hlsl";
+    vertexShaderFilePath = L"./Shaders/CubeShader.hlsl";
+    pixelShaderFilePath = L"./Shaders/CubeShader.hlsl";
 }
 
 CosmicBody::~CosmicBody()

@@ -49,7 +49,8 @@ Quad::Quad()
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 Quad::Quad(DirectX::XMFLOAT4 position, float width)
@@ -100,7 +101,8 @@ Quad::Quad(DirectX::XMFLOAT4 position, float width)
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 Quad::Quad(DirectX::XMFLOAT4 position, float width, float height)
@@ -153,7 +155,8 @@ Quad::Quad(DirectX::XMFLOAT4 position, float width, float height)
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 void Quad::Update(float deltaTime)

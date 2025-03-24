@@ -49,7 +49,8 @@ Ball::Ball()
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 Ball::Ball(DirectX::XMFLOAT4 position, float width) : position(position), width(width)
@@ -104,7 +105,8 @@ Ball::Ball(DirectX::XMFLOAT4 position, float width) : position(position), width(
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 Ball::Ball(DirectX::XMFLOAT4* vertices)
@@ -148,7 +150,8 @@ Ball::Ball(DirectX::XMFLOAT4* vertices)
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 void Ball::Update(float deltaTime)

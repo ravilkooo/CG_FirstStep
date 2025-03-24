@@ -59,7 +59,8 @@ Gates::Gates(DirectX::XMFLOAT4 position, float racket_width) : position(position
             D3D11_INPUT_PER_VERTEX_DATA,
             0 };
 
-    shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+    vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+    pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 //Gates::Gates(float width, float height)
@@ -89,7 +90,7 @@ Gates::Gates(DirectX::XMFLOAT4 position, float racket_width) : position(position
 //    points[i] = _points[i];
 //  }
 //
-//  shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+//  vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 //}
 
 void Gates::Update(float deltaTime)

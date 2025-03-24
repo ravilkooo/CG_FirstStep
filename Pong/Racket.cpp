@@ -49,7 +49,8 @@ Racket::Racket()
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 Racket::Racket(DirectX::XMFLOAT4 position, float width) :
@@ -115,7 +116,8 @@ Racket::Racket(DirectX::XMFLOAT4 position, float width, float height, DirectX::X
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/MyVeryFirstShader.hlsl";
 }
 
 void Racket::Update(float deltaTime)
