@@ -30,10 +30,10 @@ KatamariGame::KatamariGame()
 	renderer = Renderer(&displayWindow);
 	renderer.camera = Camera(winWidth * 1.0f / winHeight);
 
-	ball = StickyBall(renderer.GetDevice());
-	floor = Floor(renderer.GetDevice());
-	scene.AddNode(&ball);
-	scene.AddNode(&floor);
+	ball = new StickyBall(renderer.GetDevice());
+	floor = new Floor(renderer.GetDevice());
+	scene.AddNode(ball);
+	scene.AddNode(floor);
 
 	SpawnCollectibles();
 
@@ -69,8 +69,24 @@ KatamariGame::KatamariGame()
 		node->camera = &(renderer.camera);
 		//std::cout << "f1\n";
 	}
+	ball->pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(renderer.GetDevice(), ball->ball_pcb);
+	ball->AddBind(ball->pcb);
 
-	renderer.camera.SwitchToFollowMode(ball.position, ball.GetMoveDir(), ball.radius);
+	ball->vcb = new Bind::VertexConstantBuffer<StickyBall::Ball_VCB>(renderer.GetDevice(), ball->ball_vcb);
+	ball->AddBind(ball->vcb);
+
+	for (auto& obj : collectibles)
+	{
+		obj.pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(renderer.GetDevice(), obj.coll_pcb);
+		obj.AddBind(obj.pcb);
+
+		obj.vcb = new Bind::VertexConstantBuffer<CollectibleObject::Collectible_VCB>(renderer.GetDevice(), obj.coll_vcb);
+		obj.AddBind(obj.vcb);
+	}
+
+	//std::cout << floor->binds.size() << " " << ball->binds.size() << " " << "\n";
+
+	renderer.camera.SwitchToFollowMode(ball->position, ball->GetMoveDir(), ball->radius);
 
 	InputDevice::getInstance().OnKeyPressed.AddRaw(this, &KatamariGame::HandleKeyDown);
 	InputDevice::getInstance().MouseMove.AddRaw(this, &KatamariGame::HandleMouseMove);
@@ -122,7 +138,11 @@ void KatamariGame::Run()
 
 void KatamariGame::Update(float deltaTime)
 {
-	ball.SlowDown(deltaTime);
+
+	//std::cout << floor->binds.size() << " " << ball->binds.size() << " " << "\n";
+	// delete this
+
+	ball->SlowDown(deltaTime);
 	physEngine->Update(deltaTime);
 
 
@@ -131,18 +151,42 @@ void KatamariGame::Update(float deltaTime)
 	{
 		if (obj.CheckCollision(ball))
 		{
-			obj.AttachToBall(&ball);
-			ball.Grow(obj.radius / deltaTime);
+			obj.AttachToBall(ball);
+			ball->Grow(obj.radius / deltaTime);
 		}
 	}
-	renderer.camera.Update(deltaTime, ball.worldMat, ball.GetMoveDir(), ball.radius);
+	renderer.camera.Update(deltaTime, ball->worldMat, ball->GetMoveDir(), ball->radius);
 
 	Matrix vpMat = renderer.camera.GetViewMatrix() * renderer.camera.GetProjectionMatrix();
 
-	for (auto node : scene.nodes)
+
+	ball->pcb->Update(renderer.GetDeviceContext(), ball->ball_pcb);
+	ball->vcb->Update(renderer.GetDeviceContext(),
+		{
+			ball->worldMat,
+			vpMat,
+			// ball->radius
+		}
+		);
+
+	for (auto& obj : collectibles)
+	{
+		obj.pcb->Update(renderer.GetDeviceContext(), obj.coll_pcb);
+		obj.vcb->Update(renderer.GetDeviceContext(),
+			{
+				obj.worldMat,
+				vpMat,
+				obj.isAttached ? ball->position : obj.initialPosition
+			}
+		);
+	}
+	floor->cb.wvpMat = floor->worldMat * (XMMATRIX)vpMat;
+
+
+	/*for (auto node : scene.nodes)
 	{
 		node->cb.wvpMat = node->worldMat * (XMMATRIX)vpMat;
-	}
+	}*/
 
 }
 
@@ -183,7 +227,7 @@ void KatamariGame::SpawnCollectibles()
 void KatamariGame::HandleKeyDown(Keys key) {
 	if (key == Keys::W)
 	{
-		ball.PushForward(deltaTime);
+		ball->PushForward(deltaTime);
 	}
 	if (key == Keys::S)
 	{
@@ -191,17 +235,17 @@ void KatamariGame::HandleKeyDown(Keys key) {
 	}
 	if (key == Keys::A)
 	{
-		ball.AddTurn(-1.0f, deltaTime);
+		ball->AddTurn(-1.0f, deltaTime);
 	}
 	if (key == Keys::D)
 	{
-		ball.AddTurn(1.0f, deltaTime);
+		ball->AddTurn(1.0f, deltaTime);
 	}
 }
 
 
 void KatamariGame::HandleMouseMove(const InputDevice::MouseMoveEventArgs& args)
 {
-	ball.AddTurn(args.Offset.x * 0.1, deltaTime);
-	//renderer.camera.RotatePitch(-deltaTime * args.Offset.y * 0.1);
+	ball->AddTurn(args.Offset.x * 0.1, deltaTime);
+	renderer.camera.RotatePitch(-deltaTime * args.Offset.y * 0.1);
 }

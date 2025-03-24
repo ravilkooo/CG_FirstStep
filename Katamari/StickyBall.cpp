@@ -9,7 +9,7 @@ StickyBall::StickyBall(ID3D11Device* device)
 	UINT sliceCount = 15;
 	UINT elevationCount = 8;
 	XMFLOAT4 col(0.9f, 0.0f, 0.0f, 1.0f);
-	CreateSimpleSphereMesh(1.0f, sliceCount, elevationCount, col, &vertices, &verticesNum, &indices, &indicesNum);
+	CreateSimpleSphereMesh(radius, sliceCount, elevationCount, col, &vertices, &verticesNum, &indices, &indicesNum);
 	for (size_t i = 0; i < verticesNum; i++)
 	{
 		vertices[i].pos = Vector3::Transform(vertices[i].pos, Matrix::CreateFromYawPitchRoll(0.0f, 0.0f, XM_PIDIV2));
@@ -58,9 +58,12 @@ StickyBall::StickyBall(ID3D11Device* device)
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/StickyBallShader.hlsl";
+	vertexShaderFilePath = L"./Shaders/StickyBallVShader.hlsl";
+	pixelShaderFilePath = L"./Shaders/StickyBallPShader.hlsl";
 	this->textures.push_back(Texture(device, "models\\Textures\\pixeleye.dds", aiTextureType_DIFFUSE));
 	hasTexture = true;
+	
+	// delete this
 }
 
 Vector3 StickyBall::GetCenterLocation()
@@ -100,6 +103,7 @@ Vector3 StickyBall::GetMoveDir()
 
 void StickyBall::Update(float deltaTime)
 {
+
 	//curr_rotation = 0.0f;
 	radiusGrow = max(0.0, radiusGrow - deltaTime * radiusSlow);
 	radius += radiusGrow * deltaTime;

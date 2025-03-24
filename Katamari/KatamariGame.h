@@ -22,8 +22,8 @@ public:
 
     InputHandler* inputHandler;
 
-    StickyBall ball;
-    Floor floor;
+    StickyBall* ball;
+    Floor* floor;
 
     void HandleKeyDown(Keys key);
     void HandleMouseMove(const InputDevice::MouseMoveEventArgs& args);

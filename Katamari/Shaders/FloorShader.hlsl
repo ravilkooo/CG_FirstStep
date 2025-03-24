@@ -7,7 +7,7 @@ SamplerState Sampler : register(s0)
 
 float HeightFunc(float3 pos)
 {
-    return max(0, 2 * sin(pos.x) * sin(pos.z));
+    return max(0, 2 * sin(pos.x * 0.5) * sin(pos.z * 0.5));
 
 }
 

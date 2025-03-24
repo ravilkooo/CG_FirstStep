@@ -5,19 +5,6 @@ SamplerState Sampler : register(s0)
     AddressV = BORDER;
 };
 
-float HeightFunc(float3 pos)
-{
-    return max(0, 2 * sin(pos.x) * sin(pos.z));
-
-}
-
-struct VS_IN
-{
-    float3 pos : POSITION0;
-    float4 col : COLOR0;
-    float2 texCoord : TEXCOORD0;
-};
-
 struct PS_IN
 {
     float4 pos : SV_POSITION;
@@ -27,19 +14,8 @@ struct PS_IN
 
 cbuffer CBuf
 {
-    row_major float4x4 wvpMat;
+    float alpha;
 };
-
-PS_IN VSMain(VS_IN input)
-{
-    PS_IN output = (PS_IN) 0;
-	
-    output.pos = mul(float4(input.pos, 1.0), wvpMat);
-    output.col = input.col;
-    output.texCoord = input.texCoord;
-	
-    return output;
-}
 
 float4 PSMain(PS_IN input) : SV_Target
 {
@@ -48,6 +24,6 @@ float4 PSMain(PS_IN input) : SV_Target
     //if (input.pos.x > 400)
     //    col = float4(0.0f, 1.0f, 0.0f, 1.0f);
 
-    float3 pixelColor = DiffuseMap.Sample(Sampler, input.texCoord);
+    float3 pixelColor = DiffuseMap.Sample(Sampler, input.texCoord) * alpha;
     return float4(pixelColor, 1);
 }

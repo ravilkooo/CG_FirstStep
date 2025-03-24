@@ -17,7 +17,7 @@ public:
 
     void Update(float deltaTime) override;
     Vector3 GetCenterLocation() override;
-    bool CheckCollision(StickyBall& ball);
+    bool CheckCollision(StickyBall* ball);
     void AttachToBall(StickyBall* ball);
 
     float radius = 1.0f;
@@ -25,11 +25,23 @@ public:
     bool isAttached = false;
     float appliedScale = 1.0f;
 
+    DirectX::XMFLOAT3 initialPosition;
 private:
     static std::vector<std::string> GetModelList(const std::string& folder);
     void LoadRandomModel(const std::string& folder);
 
-    DirectX::XMFLOAT3 initialPosition;
     StickyBall* attachedBall = nullptr;
     Matrix attachTransform;
+
+public:
+    struct Collectible_PCB {
+        float a = 1.0;
+    } coll_pcb;
+    struct Collectible_VCB {
+        DirectX::XMMATRIX wMat = DirectX::XMMatrixIdentity();
+        DirectX::XMMATRIX vpMat = DirectX::XMMatrixIdentity();
+        DirectX::XMFLOAT3 center_position = { 0, 0, 0 };
+    } coll_vcb;
+    Bind::PixelConstantBuffer<Collectible_PCB>* pcb;
+    Bind::VertexConstantBuffer<Collectible_VCB>* vcb;
 };

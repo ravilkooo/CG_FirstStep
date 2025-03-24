@@ -42,7 +42,8 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, float radius, const D
             0 };
 
 
-    shaderFilePath = L"./Shaders/PlaneShader.hlsl";
+    vertexShaderFilePath = L"./Shaders/PlaneShader.hlsl";
+    pixelShaderFilePath = L"./Shaders/PlaneShader.hlsl";
     this->textures.push_back(Texture(device, "models\\Textures\\basketballskin.dds", aiTextureType_DIFFUSE));
     hasTexture = true;
 }
@@ -125,7 +126,8 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
             D3D11_INPUT_PER_VERTEX_DATA,
             0 };
 
-    shaderFilePath = L"./Shaders/ImportShader.hlsl";
+    vertexShaderFilePath = L"./Shaders/ImportVShader.hlsl";
+    pixelShaderFilePath = L"./Shaders/ImportPShader.hlsl";
     this->textures.push_back(Texture(device, "models\\Textures\\" + model_name + "_Diffuse.dds", aiTextureType_DIFFUSE));
     hasTexture = true;
 }
@@ -150,14 +152,14 @@ Vector3 CollectibleObject::GetCenterLocation()
     return Vector3(initialPosition);
 }
 
-bool CollectibleObject::CheckCollision(StickyBall& ball)
+bool CollectibleObject::CheckCollision(StickyBall* ball)
 {
     if (isAttached) return false;
 
-    Vector3 ballPos = ball.GetCenterLocation();
+    Vector3 ballPos = ball->GetCenterLocation();
     Vector3 objPos = GetCenterLocation();
     float distance = Vector3::Distance(ballPos, objPos);
-    return distance < (ball.radius + radius);
+    return distance < (ball->radius + radius);
 }
 
 void CollectibleObject::AttachToBall(StickyBall* ball)
