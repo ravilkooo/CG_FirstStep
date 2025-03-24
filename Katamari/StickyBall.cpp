@@ -58,7 +58,7 @@ StickyBall::StickyBall(ID3D11Device* device)
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0 };
 
-	shaderFilePath = L"./Shaders/PlaneShader.hlsl";
+	shaderFilePath = L"./Shaders/StickyBallShader.hlsl";
 	this->textures.push_back(Texture(device, "models\\Textures\\pixeleye.dds", aiTextureType_DIFFUSE));
 	hasTexture = true;
 }
