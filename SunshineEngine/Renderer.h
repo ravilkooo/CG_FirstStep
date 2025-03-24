@@ -23,6 +23,7 @@
 
 class Renderer
 {
+    friend class Bindable;
 public:
     Renderer();
     Renderer(DisplayWindow* displayWin);

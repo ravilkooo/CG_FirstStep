@@ -48,9 +48,7 @@ public:
     ID3D11Buffer* pVertexBuffer;
     ID3D11Buffer* pConstantBuffer;
 
-    DirectX::XMMATRIX worldMat = DirectX::XMMatrixIdentity();   // Мировая матрица
-    DirectX::XMMATRIX viewMat = DirectX::XMMatrixIdentity();    // Матрица вида (камеры)
-    DirectX::XMMATRIX projMat = DirectX::XMMatrixIdentity();    // Проекционная матрица
+    void UpdateCB(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context);
 
     struct ConstantBuffer
     {
@@ -59,9 +57,9 @@ public:
 
     ConstantBuffer cb;
 
-    void SetWorldMatrix(const DirectX::XMMATRIX& worldMatrix);
-    void SetViewMatrix(const DirectX::XMMATRIX& viewMatrix);
-    void SetProjectionMatrix(const DirectX::XMMATRIX& projectionMatrix);
+    DirectX::XMMATRIX worldMat = DirectX::XMMatrixIdentity();   // Мировая матрица
+    DirectX::XMMATRIX viewMat = DirectX::XMMatrixIdentity();    // Матрица вида (камеры)
+    DirectX::XMMATRIX projMat = DirectX::XMMatrixIdentity();    // Проекционная матрица
 
     void InitTextures(std::vector<Texture>& textures);
 

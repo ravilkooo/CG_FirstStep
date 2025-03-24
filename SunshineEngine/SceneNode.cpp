@@ -31,11 +31,8 @@ void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
 
     context->IASetVertexBuffers(0, 1, &(pVertexBuffer), strides, offsets);
 
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	context->Map(pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, &cb, sizeof(cb));
-	context->Unmap(pConstantBuffer, 0);
-    context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
+	// Copy constant buffer data to GPU
+	UpdateCB(context);
 
 	context->PSSetShader(pixelShader, nullptr, 0);
     context->VSSetShader(vertexShader, nullptr, 0);
@@ -72,22 +69,13 @@ void SceneNode::LoadAndCompileShader(ShaderManager shaderManager)
 		std::cout << "Ujas!\n";
 }
 
-void SceneNode::SetWorldMatrix(const DirectX::XMMATRIX& worldMatrix)
+void SceneNode::UpdateCB(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 {
-	worldMat = worldMatrix;
-	cb.wvpMat = worldMat * viewMat * projMat;
-}
-
-void SceneNode::SetViewMatrix(const DirectX::XMMATRIX& viewMatrix)
-{
-	viewMat = viewMatrix;
-	cb.wvpMat = worldMat * viewMat * projMat;
-}
-
-void SceneNode::SetProjectionMatrix(const DirectX::XMMATRIX& projectionMatrix)
-{
-	projMat = projectionMatrix;
-	cb.wvpMat = worldMat * viewMat * projMat;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	context->Map(pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &cb, sizeof(cb));
+	context->Unmap(pConstantBuffer, 0);
+	context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 }
 
 void SceneNode::InitTextures(std::vector<Texture>& textures)
