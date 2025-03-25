@@ -1,8 +1,4 @@
-float HeightFunc(float3 pos)
-{
-    return max(0, 2 * sin(pos.x * 0.5) * sin(pos.z * 0.5));
-
-}
+#include "FloorHeightFunc.hlsl"
 
 struct VS_IN
 {
@@ -30,7 +26,7 @@ PS_IN VSMain(VS_IN input)
     PS_IN output = (PS_IN) 0;
 	
     output.pos = mul(float4(input.pos, 1.0), wMat);
-    output.pos.y += HeightFunc(wMat._41_42_43);
+    output.pos.y += FloorHeightFunc(wMat._41_42_43);
     output.pos = mul(output.pos, vpMat);
     output.col = input.col;
     output.texCoord = input.texCoord;

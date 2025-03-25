@@ -1,15 +1,11 @@
+#include "FloorHeightFunc.hlsl"
+
 Texture2D DiffuseMap : register(t0);
 SamplerState Sampler : register(s0)
 {
     AddressU = BORDER;
     AddressV = BORDER;
 };
-
-float HeightFunc(float3 pos)
-{
-    return max(0, 2 * sin(pos.x * 0.5) * sin(pos.z * 0.5));
-
-}
 
 struct VS_IN
 {
@@ -34,7 +30,7 @@ PS_IN VSMain(VS_IN input)
 {
     PS_IN output = (PS_IN) 0;
 	
-    output.pos = mul(float4(input.pos.x, HeightFunc(input.pos), input.pos.z, 1.0), wvpMat);
+    output.pos = mul(float4(input.pos.x, FloorHeightFunc(input.pos), input.pos.z, 1.0), wvpMat);
     output.col = input.col;
     output.texCoord = input.texCoord;
 	
