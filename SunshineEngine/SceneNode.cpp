@@ -1,5 +1,4 @@
 #include "SceneNode.h"
-#include "Bindable.h"
 
 SceneNode::SceneNode()
 {
@@ -10,16 +9,12 @@ SceneNode::~SceneNode()
 }
 
 
-void SceneNode::PrepareDraw(
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
-	ID3D11RenderTargetView* renderTargetView,
-	ID3D11DepthStencilView* pDSV)
+void SceneNode::BindAll(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 {
+	// TO-DO: Replace to Bindables .Bind()
 	context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	UINT strides[] = { VertexStride() };
-	UINT offsets[] = { 0 };
-
+	// TO-DO: Replace to Bindables .Bind()
 	for (int i = 0; i < textures.size(); i++)
 	{
 		if (textures[i].GetType() == aiTextureType_DIFFUSE) {
@@ -29,25 +24,29 @@ void SceneNode::PrepareDraw(
 		}
 	}
 
+	// TO-DO: Replace to Bindables .Bind()
     context->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
+	// TO-DO: Replace to Bindables .Bind()
+	UINT strides[] = { VertexStride() };
+	UINT offsets[] = { 0 };
     context->IASetVertexBuffers(0, 1, &(pVertexBuffer), strides, offsets);
 
-	// Copy constant buffer data to GPU
+	// TO-DO: Replace to Bindables .Bind()
 	UpdateCB(context);
-
+	
+	// TO-DO: Replace to Bindables .Bind()
 	context->PSSetShader(pixelShader, nullptr, 0);
     context->VSSetShader(vertexShader, nullptr, 0);
 
-    context->OMSetRenderTargets(1, &renderTargetView, pDSV);
+
+	for (size_t i = 0; i < bindables.size(); i++)
+	{
+		bindables[i]->Bind(context.Get());
+	}
 }
 
 void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) const noexcept {
-	for (size_t i = 0; i < binds.size(); i++)
-	{
-		binds[i]->Bind(context);
-	}
-
 	// 14. At the End of While (!isExitRequested): Draw the Triangle
 	context->DrawIndexed(indicesNum, 0, 0);
 }
@@ -63,7 +62,7 @@ void SceneNode::InitBuffers(ResourceManager resourceManager)
 	// Create Set of indices
 
 	// Create pIndexBuffer
-	pIndexBuffer = resourceManager.CreateIndexBuffer(indices, sizeof(int) * indicesNum);
+	pIndexBuffer = resourceManager.CreateIndexBuffer(indices, sizeof(UINT) * indicesNum);
 
 	pConstantBuffer = resourceManager.CreateConstantBuffer(&cb, sizeof(cb));
 
@@ -196,5 +195,5 @@ TextureStorageType SceneNode::DetermineTextureStorageType(const aiScene* pScene,
 
 void SceneNode::AddBind(Bind::Bindable* bind)
 {
-	binds.push_back(bind);
+	bindables.push_back(bind);
 }

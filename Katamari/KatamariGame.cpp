@@ -40,31 +40,12 @@ KatamariGame::KatamariGame()
 	for (auto node : scene.nodes)
 	{
 		node->device = renderer.GetDevice();
+
+		// TO-DO: Change to SceneNode.AddBind()
 		node->LoadAndCompileShader(renderer.shaderManager);
+
+		// TO-DO: Change to SceneNode.AddBind()
 		node->InitBuffers(renderer.resourceManager);
-
-		if (node->hasTexture) {
-			//std::cout << "hasTexture\n";
-
-
-			// node->textures.push_back(Texture(renderer.GetDevice(), SE_Colors::UnloadedTextureColor, aiTextureType_DIFFUSE));
-			/*
-			node->texture = new Texture(renderer.GetDevice());
-
-			HRESULT hr = CreateDDSTextureFromFile( renderer.GetDevice(),
-				StringHelper::StringToWide("models\\Textures\\plane_Diffuse.dds").c_str(),
-				&(node->texture->pTexture),
-				&(node->texture->pTextureView));
-			if (FAILED(hr))
-			{
-				std::cout << "FAILED TEXTURE LOAD: " << "models\\Textures\\plane_Diffuse.dds" << "\n";
-			}
-
-			node->texture->Bind(renderer.GetDeviceContext());
-			node->textureSampler = new Sampler(renderer.GetDevice());
-			node->textureSampler->Bind(renderer.GetDeviceContext());
-			*/
-		}
 
 		node->camera = &(renderer.camera);
 		//std::cout << "f1\n";
@@ -83,7 +64,6 @@ KatamariGame::KatamariGame()
 		obj.vcb = new Bind::VertexConstantBuffer<CollectibleObject::Collectible_VCB>(renderer.GetDevice(), obj.coll_vcb);
 		obj.AddBind(obj.vcb);
 	}
-
 	//std::cout << floor->binds.size() << " " << ball->binds.size() << " " << "\n";
 
 	renderer.camera.SwitchToFollowMode(ball->position, ball->GetMoveDir(), ball->radius);
@@ -161,8 +141,7 @@ void KatamariGame::Update(float deltaTime)
 
 
 	ball->pcb->Update(renderer.GetDeviceContext(), ball->ball_pcb);
-	ball->vcb->Update(renderer.GetDeviceContext(),
-		{
+	ball->vcb->Update(renderer.GetDeviceContext(), {
 			ball->worldMat,
 			vpMat,
 			// ball->radius
@@ -217,8 +196,13 @@ void KatamariGame::SpawnCollectibles()
 	for (auto& obj : collectibles)
 	{
 		scene.AddNode(&obj);
+		
+		// TO-DO: Change to SceneNode.AddBind()
 		obj.LoadAndCompileShader(renderer.shaderManager);
+
+		// TO-DO: Change to SceneNode.AddBind()
 		obj.InitBuffers(renderer.resourceManager);
+
 		obj.camera = &(renderer.camera);
 	}
 }

@@ -9,6 +9,10 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, float radius, const D
         &vertices, &verticesNum, &indices, &indicesNum);
     worldMat = Matrix::CreateTranslation(position);
 
+    
+
+
+
     numInputElements = 3;
     IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 

@@ -11,15 +11,9 @@
 #include "Sampler.h"
 #include "CommonVertex.h"
 #include <assimp/scene.h>
-#include "Bindable.h"
-#include "ConstantBuffer.h"
 
-//class Bindable;
+#include "BindableCollection.h"
 
-//namespace Bind
-//{
-//    class Bindable;
-//}
 
 class SceneNode
 {
@@ -28,10 +22,7 @@ public:
     virtual ~SceneNode();
 
     virtual void Update(float deltaTime) = 0;
-    void PrepareDraw(
-        Microsoft::WRL::ComPtr<ID3D11DeviceContext> context,
-        ID3D11RenderTargetView* renderTargetView,
-        ID3D11DepthStencilView* pDSV);
+    void BindAll(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context);
 
     void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) const noexcept;
 
@@ -96,7 +87,7 @@ public:
     std::string directory = "";
 
     void AddBind(Bind::Bindable* bind);
-    std::vector<Bind::Bindable*> binds = {};
+    std::vector<Bind::Bindable*> bindables;
 
 protected:
     // std::vector<SceneNode*> children;

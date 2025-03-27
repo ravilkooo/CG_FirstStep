@@ -9,7 +9,7 @@ namespace Bind
 		ID3D11Buffer* pConstantBuffer;
 		//UINT slot;
 	public:
-		void Update(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context, const C& consts) {
+		void Update(ID3D11DeviceContext* context, const C& consts) {
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			context->Map(pConstantBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mappedResource);
 			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16))); // aligned size
@@ -17,7 +17,7 @@ namespace Bind
 			context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 		}
 
-		ConstantBuffer(Microsoft::WRL::ComPtr<ID3D11Device> device, const C& consts)
+		ConstantBuffer(ID3D11Device* device, const C& consts)
 		{
 			D3D11_BUFFER_DESC cbd;
 			cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -32,7 +32,7 @@ namespace Bind
 			device->CreateBuffer(&cbd, &InitData, &pConstantBuffer);
 		}
 
-		ConstantBuffer(Microsoft::WRL::ComPtr<ID3D11Device> device)
+		ConstantBuffer(ID3D11Device* device)
 		{
 			D3D11_BUFFER_DESC cbd;
 			cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -49,10 +49,9 @@ namespace Bind
 	class VertexConstantBuffer : public ConstantBuffer<C>
 	{
 		using ConstantBuffer<C>::pConstantBuffer;
-		//using Bindable::GetContext;
 	public:
 		using ConstantBuffer<C>::ConstantBuffer;
-		void Bind(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) noexcept override
+		void Bind(ID3D11DeviceContext* context) noexcept override
 		{
 			context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 		}
@@ -62,10 +61,9 @@ namespace Bind
 	class PixelConstantBuffer : public ConstantBuffer<C>
 	{
 		using ConstantBuffer<C>::pConstantBuffer;
-		//using Bindable::GetContext;
 	public:
 		using ConstantBuffer<C>::ConstantBuffer;
-		void Bind(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) noexcept override
+		void Bind(ID3D11DeviceContext* context) noexcept override
 		{
 			context->PSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 		}

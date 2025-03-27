@@ -172,9 +172,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Bindable.h" />
+    <ClInclude Include="BindableCollection.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonVertex.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="InputLayout.h" />
+    <ClInclude Include="PixelShader.h" />
+    <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="SE_Color.h" />
     <ClInclude Include="Delegates.h" />
     <ClInclude Include="DisplayWindow.h" />
@@ -196,10 +201,20 @@
     <ClInclude Include="ShapeGenerator.h" />
     <ClInclude Include="StringHelper.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureB.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Topology.h" />
+    <ClInclude Include="TransformCBuffer.h" />
+    <ClInclude Include="VertexBuffer.h" />
+    <ClInclude Include="VertexShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="InputLayout.cpp" />
+    <ClCompile Include="PixelShader.cpp" />
+    <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="SE_Color.cpp" />
     <ClCompile Include="Delegates.cpp" />
     <ClCompile Include="DisplayWindow.cpp" />
@@ -218,9 +233,13 @@
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShapeGenerator.cpp" />
     <ClCompile Include="StringHelper.cpp" />
-    <ClCompile Include="TestFramework.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureB.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Topology.cpp" />
+    <ClCompile Include="TransformCBuffer.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
+    <ClCompile Include="VertexShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectXTK-main\DirectXTK_Desktop_2022_Win10.vcxproj">

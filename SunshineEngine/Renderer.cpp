@@ -89,15 +89,19 @@ Renderer::Renderer(DisplayWindow* displayWin)
 
 	context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
 
+	camera = Camera();
+
+	// TO-DO: Move to Game [SceneNode.AddBind()]
 	resourceManager = ResourceManager(GetDevice());
 
+	// TO-DO: Move to Game [SceneNode.AddBind()]
 	shaderManager = ShaderManager(GetDevice());
 
+	// TO-DO: Move to Game [SceneNode.AddBind()]
 	pipelineState.SetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID); // D3D11_CULL_NONE, D3D11_CULL_BACK, D3D11_FILL_SOLID, D3D11_FILL_WIREFRAME
 
+	// TO-DO: Move to Game [SceneNode.AddBind()]
 	inputAssembler = InputAssembler(GetDevice(), GetDeviceContext());
-
-	camera = Camera();
 
     return;
 }
@@ -140,9 +144,14 @@ void Renderer::RenderScene(const Scene& scene)
 
 void Renderer::DrawNode(SceneNode* node)
 {
+	// TO-DO: Move to SceneNode/Bindables
 	inputAssembler.CreateInputLayout(node->IALayoutInputElements, node->numInputElements, node->vsBlob);
 	inputAssembler.SetInputLayout();
-	node->PrepareDraw(context, renderTargetView, pDSV);
+
+	node->BindAll(context);
+
+	context->OMSetRenderTargets(1, &renderTargetView, pDSV);
+
 	node->Draw(context);
 
 	/*
