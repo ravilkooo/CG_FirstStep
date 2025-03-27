@@ -11,6 +11,7 @@ SceneNode::~SceneNode()
 
 void SceneNode::BindAll(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 {
+	/*
 	// TO-DO: Replace to Bindables .Bind()
 	context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -38,7 +39,7 @@ void SceneNode::BindAll(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 	// TO-DO: Replace to Bindables .Bind()
 	context->PSSetShader(pixelShader, nullptr, 0);
     context->VSSetShader(vertexShader, nullptr, 0);
-
+	*/
 
 	for (size_t i = 0; i < bindables.size(); i++)
 	{
@@ -47,26 +48,17 @@ void SceneNode::BindAll(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 }
 
 void SceneNode::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) const noexcept {
-	// 14. At the End of While (!isExitRequested): Draw the Triangle
 	context->DrawIndexed(indicesNum, 0, 0);
 }
 
 
 void SceneNode::InitBuffers(ResourceManager resourceManager)
 {
-	// 7. Create Vertex and Index Buffers
-
-	// Create pVertexBuffer
 	pVertexBuffer = resourceManager.CreateVertexBuffer(vertices, sizeof(CommonVertex) * verticesNum);
 
-	// Create Set of indices
-
-	// Create pIndexBuffer
 	pIndexBuffer = resourceManager.CreateIndexBuffer(indices, sizeof(UINT) * indicesNum);
 
 	pConstantBuffer = resourceManager.CreateConstantBuffer(&cb, sizeof(cb));
-
-
 }
 
 void SceneNode::LoadAndCompileShader(ShaderManager shaderManager)
@@ -196,4 +188,14 @@ TextureStorageType SceneNode::DetermineTextureStorageType(const aiScene* pScene,
 void SceneNode::AddBind(Bind::Bindable* bind)
 {
 	bindables.push_back(bind);
+}
+
+DirectX::XMMATRIX SceneNode::GetViewMatrix() const
+{
+	return camera->GetViewMatrix();
+}
+
+DirectX::XMMATRIX SceneNode::GetProjectionMatrix() const
+{
+	return camera->GetProjectionMatrix();
 }

@@ -145,8 +145,10 @@ void Renderer::RenderScene(const Scene& scene)
 void Renderer::DrawNode(SceneNode* node)
 {
 	// TO-DO: Move to SceneNode/Bindables
+	/*
 	inputAssembler.CreateInputLayout(node->IALayoutInputElements, node->numInputElements, node->vsBlob);
 	inputAssembler.SetInputLayout();
+	*/
 
 	node->BindAll(context);
 

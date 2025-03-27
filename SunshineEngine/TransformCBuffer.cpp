@@ -2,7 +2,7 @@
 
 namespace Bind {
 
-	TransformCBuffer::TransformCBuffer(ID3D11Device* device, const SceneNode* parent)
+	TransformCBuffer::TransformCBuffer(ID3D11Device* device, const Drawable* parent)
 		: vcbuf(device), pParent(parent)
 	{
 	}
@@ -12,8 +12,8 @@ namespace Bind {
 		vcbuf.Update(context, 
 			{
 				pParent->worldMat
-				* pParent->camera->GetViewMatrix()
-				* pParent->camera->GetProjectionMatrix()
+				* pParent->GetViewMatrix()
+				* pParent->GetProjectionMatrix()
 			});
 		vcbuf.Bind(context);
 	}

@@ -11,11 +11,12 @@
 #include "Sampler.h"
 #include "CommonVertex.h"
 #include <assimp/scene.h>
+#include "Drawable.h"
 
 #include "BindableCollection.h"
 
 
-class SceneNode
+class SceneNode : public Drawable
 {
 public:
     SceneNode();
@@ -61,10 +62,10 @@ public:
 
     ConstantBuffer cb;
 
-    DirectX::XMMATRIX worldMat = DirectX::XMMatrixIdentity();   // Мировая матрица
+    //DirectX::XMMATRIX worldMat = DirectX::XMMatrixIdentity();   // Мировая матрица
     DirectX::XMMATRIX viewMat = DirectX::XMMatrixIdentity();    // Матрица вида (камеры)
     DirectX::XMMATRIX projMat = DirectX::XMMatrixIdentity();    // Проекционная матрица
-
+    
     void InitTextures(std::vector<Texture>& textures);
 
     Camera* camera;
@@ -88,6 +89,9 @@ public:
 
     void AddBind(Bind::Bindable* bind);
     std::vector<Bind::Bindable*> bindables;
+
+    DirectX::XMMATRIX GetViewMatrix() const override;
+    DirectX::XMMATRIX GetProjectionMatrix() const override;
 
 protected:
     // std::vector<SceneNode*> children;

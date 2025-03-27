@@ -54,5 +54,7 @@ public:
     } ball_vcb;
     Bind::PixelConstantBuffer<Ball_PCB>* pcb;
     Bind::VertexConstantBuffer<Ball_VCB>* vcb;
+private:
+    Bind::VertexShader* vertexShaderB;
 };
 

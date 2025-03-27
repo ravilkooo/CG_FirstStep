@@ -32,6 +32,7 @@ private:
 
     StickyBall* attachedBall = nullptr;
     Matrix attachTransform;
+    Bind::VertexShader* vertexShaderB;
 
 public:
     struct Collectible_PCB {

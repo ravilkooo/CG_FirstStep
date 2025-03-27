@@ -30,14 +30,14 @@ namespace Bind
 				std::cout << filePath << L" - Missing Shader File\n";
 			}
 
-			device->CreateVertexShader(
-				pShaderBytecodeBlob->GetBufferPointer(),
-				pShaderBytecodeBlob->GetBufferSize(),
-				nullptr,
-				&pVertexShader
-			);
 		}
 
+		device->CreateVertexShader(
+			pShaderBytecodeBlob->GetBufferPointer(),
+			pShaderBytecodeBlob->GetBufferSize(),
+			nullptr,
+			&pVertexShader
+		);
 	}
 
 	void VertexShader::Bind(ID3D11DeviceContext* context) noexcept

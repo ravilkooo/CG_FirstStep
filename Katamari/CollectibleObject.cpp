@@ -9,46 +9,67 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, float radius, const D
         &vertices, &verticesNum, &indices, &indicesNum);
     worldMat = Matrix::CreateTranslation(position);
 
-    
+    AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+    AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
+    AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
+    AddBind(new Bind::TextureB(device, "models\\Textures\\basketballskin.dds", aiTextureType_DIFFUSE));
+    vertexShaderB = new Bind::VertexShader(device, L"./Shaders/ImportVShader.hlsl");
+    AddBind(vertexShaderB);
+
+    {
+        numInputElements = 3;
+        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+
+        IALayoutInputElements[0] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "POSITION",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                0,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        IALayoutInputElements[1] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "COLOR",
+                0,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+        IALayoutInputElements[2] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "TEXCOORD",
+                0,
+                DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT, // 28,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+    }
+
+    AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
+    AddBind(new Bind::PixelShader(device, L"./Shaders/ImportPShader.hlsl"));
+
+    vcb = new Bind::VertexConstantBuffer<CollectibleObject::Collectible_VCB>(device, coll_vcb);
+    AddBind(vcb);
+
+    pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(device, coll_pcb);
+    AddBind(pcb);
+
+    D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
+    rastDesc.CullMode = D3D11_CULL_BACK;
+    rastDesc.FillMode = D3D11_FILL_SOLID;
+    AddBind(new Bind::Rasterizer(device, rastDesc));
 
 
 
-    numInputElements = 3;
-    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
-
-    IALayoutInputElements[0] =
-        D3D11_INPUT_ELEMENT_DESC{
-            "POSITION",
-            0,
-            DXGI_FORMAT_R32G32B32_FLOAT,
-            0,
-            0,
-            D3D11_INPUT_PER_VERTEX_DATA,
-            0 };
-
-    IALayoutInputElements[1] =
-        D3D11_INPUT_ELEMENT_DESC{
-            "COLOR",
-            0,
-            DXGI_FORMAT_R32G32B32A32_FLOAT,
-            0,
-            D3D11_APPEND_ALIGNED_ELEMENT,
-            D3D11_INPUT_PER_VERTEX_DATA,
-            0 };
-    IALayoutInputElements[2] =
-        D3D11_INPUT_ELEMENT_DESC{
-            "TEXCOORD",
-            0,
-            DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
-            0,
-            D3D11_APPEND_ALIGNED_ELEMENT, // 28,
-            D3D11_INPUT_PER_VERTEX_DATA,
-            0 };
-
-
-    vertexShaderFilePath = L"./Shaders/PlaneShader.hlsl";
-    pixelShaderFilePath = L"./Shaders/PlaneShader.hlsl";
-    this->textures.push_back(Texture(device, "models\\Textures\\basketballskin.dds", aiTextureType_DIFFUSE));
+    //vertexShaderFilePath = L"./Shaders/PlaneShader.hlsl";
+    //pixelShaderFilePath = L"./Shaders/PlaneShader.hlsl";
+    //this->textures.push_back(Texture(device, "models\\Textures\\basketballskin.dds", aiTextureType_DIFFUSE));
     hasTexture = true;
 }
 
@@ -63,6 +84,7 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, const std::string& mo
             rand() % 20 - 10.0f
         );*/
 
+    
 
     appliedScale = radius / modelRadius;
     initialPosition = position;
@@ -97,6 +119,12 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
     }
     modelRadius = maxDistance;
 
+    AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+    AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
+    AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
+    AddBind(new Bind::TextureB(device, "models\\Textures\\" + model_name + "_Diffuse.dds", aiTextureType_DIFFUSE));
+    vertexShaderB = new Bind::VertexShader(device, L"./Shaders/ImportVShader.hlsl");
+    AddBind(vertexShaderB);
     
     numInputElements = 3;
     IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
@@ -130,10 +158,24 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
             D3D11_INPUT_PER_VERTEX_DATA,
             0 };
 
-    vertexShaderFilePath = L"./Shaders/ImportVShader.hlsl";
-    pixelShaderFilePath = L"./Shaders/ImportPShader.hlsl";
-    this->textures.push_back(Texture(device, "models\\Textures\\" + model_name + "_Diffuse.dds", aiTextureType_DIFFUSE));
-    hasTexture = true;
+//    vertexShaderFilePath = L"./Shaders/ImportVShader.hlsl";
+//    pixelShaderFilePath = L"./Shaders/ImportPShader.hlsl";
+//    this->textures.push_back(Texture(device, "models\\Textures\\" + model_name + "_Diffuse.dds", aiTextureType_DIFFUSE));
+//    hasTexture = true;
+
+    AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
+    AddBind(new Bind::PixelShader(device, L"./Shaders/ImportPShader.hlsl"));
+
+    vcb = new Bind::VertexConstantBuffer<CollectibleObject::Collectible_VCB>(device, coll_vcb);
+    AddBind(vcb);
+
+    pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(device, coll_pcb);
+    AddBind(pcb);
+
+    D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
+    rastDesc.CullMode = D3D11_CULL_BACK;
+    rastDesc.FillMode = D3D11_FILL_SOLID;
+    AddBind(new Bind::Rasterizer(device, rastDesc));
 }
 
 std::vector<std::string> CollectibleObject::GetModelList(const std::string& modelsFolder)

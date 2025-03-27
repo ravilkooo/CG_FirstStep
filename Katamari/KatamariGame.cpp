@@ -36,7 +36,7 @@ KatamariGame::KatamariGame()
 	scene.AddNode(floor);
 
 	SpawnCollectibles();
-
+	/*
 	for (auto node : scene.nodes)
 	{
 		node->device = renderer.GetDevice();
@@ -50,12 +50,22 @@ KatamariGame::KatamariGame()
 		node->camera = &(renderer.camera);
 		//std::cout << "f1\n";
 	}
+	*/
+	/*
+	ball->LoadAndCompileShader(renderer.shaderManager);
+	ball->InitBuffers(renderer.resourceManager);
+	*/
+	floor->LoadAndCompileShader(renderer.shaderManager);
+	floor->InitBuffers(renderer.resourceManager);
+	/*
 	ball->pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(renderer.GetDevice(), ball->ball_pcb);
 	ball->AddBind(ball->pcb);
 
 	ball->vcb = new Bind::VertexConstantBuffer<StickyBall::Ball_VCB>(renderer.GetDevice(), ball->ball_vcb);
 	ball->AddBind(ball->vcb);
-
+	*/
+	/*
+	// Move inside Collectible
 	for (auto& obj : collectibles)
 	{
 		obj.pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(renderer.GetDevice(), obj.coll_pcb);
@@ -64,6 +74,7 @@ KatamariGame::KatamariGame()
 		obj.vcb = new Bind::VertexConstantBuffer<CollectibleObject::Collectible_VCB>(renderer.GetDevice(), obj.coll_vcb);
 		obj.AddBind(obj.vcb);
 	}
+	*/
 	//std::cout << floor->binds.size() << " " << ball->binds.size() << " " << "\n";
 
 	renderer.camera.SwitchToFollowMode(ball->position, ball->GetMoveDir(), ball->radius);
@@ -139,7 +150,7 @@ void KatamariGame::Update(float deltaTime)
 
 	Matrix vpMat = renderer.camera.GetViewMatrix() * renderer.camera.GetProjectionMatrix();
 
-
+	
 	ball->pcb->Update(renderer.GetDeviceContext(), ball->ball_pcb);
 	ball->vcb->Update(renderer.GetDeviceContext(), {
 			ball->worldMat,
@@ -147,6 +158,7 @@ void KatamariGame::Update(float deltaTime)
 			// ball->radius
 		}
 		);
+	
 
 	for (auto& obj : collectibles)
 	{
@@ -159,8 +171,9 @@ void KatamariGame::Update(float deltaTime)
 			}
 		);
 	}
-	floor->cb.wvpMat = floor->worldMat * (XMMATRIX)vpMat;
 
+	floor->cb.wvpMat = floor->worldMat * (XMMATRIX)vpMat;
+	std::cout << ball->position.x << ", " << ball->position.z << "\n";
 
 	/*for (auto node : scene.nodes)
 	{
@@ -196,13 +209,13 @@ void KatamariGame::SpawnCollectibles()
 	for (auto& obj : collectibles)
 	{
 		scene.AddNode(&obj);
-		
+		/*
 		// TO-DO: Change to SceneNode.AddBind()
 		obj.LoadAndCompileShader(renderer.shaderManager);
 
 		// TO-DO: Change to SceneNode.AddBind()
 		obj.InitBuffers(renderer.resourceManager);
-
+		*/
 		obj.camera = &(renderer.camera);
 	}
 }

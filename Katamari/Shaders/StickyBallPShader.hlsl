@@ -24,6 +24,7 @@ float4 PSMain(PS_IN input) : SV_Target
     //if (input.pos.x > 400)
     //    col = float4(0.0f, 1.0f, 0.0f, 1.0f);
 
-    float3 pixelColor = DiffuseMap.Sample(Sampler, input.texCoord) * alpha;
+    // float3 pixelColor = DiffuseMap.Sample(Sampler, input.texCoord) * alpha;
+    float3 pixelColor = float3(1.0, 1.0, 1.0);
     return float4(pixelColor, 1);
 }
