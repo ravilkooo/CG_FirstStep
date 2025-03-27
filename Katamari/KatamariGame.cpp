@@ -31,7 +31,10 @@ KatamariGame::KatamariGame()
 	renderer.camera = Camera(winWidth * 1.0f / winHeight);
 
 	ball = new StickyBall(renderer.GetDevice());
+	ball->camera = &(renderer.camera);
+
 	floor = new Floor(renderer.GetDevice());
+	floor->camera = &(renderer.camera);
 	scene.AddNode(ball);
 	scene.AddNode(floor);
 
@@ -138,19 +141,19 @@ void KatamariGame::Update(float deltaTime)
 
 
 	// ѕроверка коллизий
-	for (auto& obj : collectibles)
+	for (auto coll : collectibles)
 	{
-		if (obj.CheckCollision(ball))
+		if (coll->CheckCollision(ball))
 		{
-			obj.AttachToBall(ball);
-			ball->Grow(obj.radius / deltaTime);
+			coll->AttachToBall(ball);
+			ball->Grow(coll->radius / deltaTime);
 		}
 	}
 	renderer.camera.Update(deltaTime, ball->worldMat, ball->GetMoveDir(), ball->radius);
 
 	Matrix vpMat = renderer.camera.GetViewMatrix() * renderer.camera.GetProjectionMatrix();
 
-	
+	/*
 	ball->pcb->Update(renderer.GetDeviceContext(), ball->ball_pcb);
 	ball->vcb->Update(renderer.GetDeviceContext(), {
 			ball->worldMat,
@@ -159,18 +162,16 @@ void KatamariGame::Update(float deltaTime)
 		}
 		);
 	
-
-	for (auto& obj : collectibles)
+	*/
+	for (auto coll : collectibles)
 	{
-		obj.pcb->Update(renderer.GetDeviceContext(), obj.coll_pcb);
-		obj.vcb->Update(renderer.GetDeviceContext(),
+		coll->vcb->Update(renderer.GetDeviceContext(),
 			{
-				obj.worldMat,
-				vpMat,
-				obj.isAttached ? ball->position : obj.initialPosition
+				coll->isAttached ? ball->position : coll->initialPosition
 			}
 		);
 	}
+	
 
 	floor->cb.wvpMat = floor->worldMat * (XMMATRIX)vpMat;
 	std::cout << ball->position.x << ", " << ball->position.z << "\n";
@@ -196,19 +197,19 @@ void KatamariGame::SpawnCollectibles()
 		float rad = 0.3f;
 		float x = (rand() % 20) - 10.0f;
 		float z = (rand() % 20) - 10.0f;
-		collectibles.emplace_back(renderer.GetDevice(), rad, DirectX::XMFLOAT3(x, rad, z));
+		collectibles.push_back(new CollectibleObject(renderer.GetDevice(), rad, DirectX::XMFLOAT3(x, rad, z)));
 	}
 	// загруженные модельки
 	for (int i = 0; i < 10; ++i)
 	{
 		float x = (rand() % 20) - 10.0f;
 		float z = (rand() % 20) - 10.0f;
-		collectibles.emplace_back(renderer.GetDevice(), "models\\", DirectX::XMFLOAT3(x, 0.3f, z));
+		collectibles.push_back(new CollectibleObject(renderer.GetDevice(), "models\\", DirectX::XMFLOAT3(x, 0.3f, z)));
 	}
 
-	for (auto& obj : collectibles)
+	for (auto coll : collectibles)
 	{
-		scene.AddNode(&obj);
+		scene.AddNode(coll);
 		/*
 		// TO-DO: Change to SceneNode.AddBind()
 		obj.LoadAndCompileShader(renderer.shaderManager);
@@ -216,7 +217,7 @@ void KatamariGame::SpawnCollectibles()
 		// TO-DO: Change to SceneNode.AddBind()
 		obj.InitBuffers(renderer.resourceManager);
 		*/
-		obj.camera = &(renderer.camera);
+		coll->camera = &(renderer.camera);
 	}
 }
 

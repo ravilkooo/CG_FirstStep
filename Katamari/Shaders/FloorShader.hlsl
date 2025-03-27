@@ -23,14 +23,15 @@ struct PS_IN
 
 cbuffer CBuf
 {
-    row_major float4x4 wvpMat;
+    row_major float4x4 wMat;
+    row_major float4x4 vpMat;
 };
 
 PS_IN VSMain(VS_IN input)
 {
     PS_IN output = (PS_IN) 0;
 	
-    output.pos = mul(float4(input.pos.x, FloorHeightFunc(input.pos), input.pos.z, 1.0), wvpMat);
+    output.pos = mul(float4(input.pos.x, FloorHeightFunc(input.pos), input.pos.z, 1.0), mul(wMat, vpMat));
     output.col = input.col;
     output.texCoord = input.texCoord;
 	

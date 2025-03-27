@@ -17,7 +17,7 @@ public:
     void Update(float deltaTime) override;
     void Render() override;
 
-    std::vector<CollectibleObject> collectibles;
+    std::vector<CollectibleObject*> collectibles;
     void SpawnCollectibles();
 
     InputHandler* inputHandler;

@@ -70,11 +70,13 @@ StickyBall::StickyBall(ID3D11Device* device)
 	AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
 	AddBind(new Bind::PixelShader(device, L"./Shaders/StickyBallPShader.hlsl"));
 
-	vcb = new Bind::VertexConstantBuffer<StickyBall::Ball_VCB>(device, ball_vcb);
+	AddBind(new Bind::TransformCBuffer(device, this, 0u));
+
+	vcb = new Bind::VertexConstantBuffer<StickyBall::Ball_VCB>(device, ball_vcb, 1u);
 	AddBind(vcb);
 
-	pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(device, ball_pcb);
-	AddBind(pcb);
+	//pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(device, ball_pcb);
+	//AddBind(pcb);
 
 	D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
 	rastDesc.CullMode = D3D11_CULL_BACK;

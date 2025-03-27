@@ -14,10 +14,15 @@ struct PS_IN
     float2 texCoord : TEXCOORD;
 };
 
-cbuffer CBuf
+
+cbuffer TransfromCBuf
 {
     row_major float4x4 wMat;
     row_major float4x4 vpMat;
+}
+cbuffer ItemCBuf
+{
+    // row_major float4x4 wMat;
     // float ball_radius;
 };
 

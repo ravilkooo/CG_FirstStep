@@ -11,12 +11,12 @@ namespace Bind
 	protected:
 		struct Transforms
 		{
-			//DirectX::XMMATRIX model;
+			DirectX::XMMATRIX model;
 			//DirectX::XMMATRIX modelView;
-			DirectX::XMMATRIX modelViewProj;
+			DirectX::XMMATRIX viewProj;
 		};
 	public:
-		TransformCBuffer(ID3D11Device* device, const Drawable* parent);
+		TransformCBuffer(ID3D11Device* device, const Drawable* parent, UINT slot = 0u);
 		void Bind(ID3D11DeviceContext* context) noexcept override;
 	private:
 		VertexConstantBuffer<Transforms> vcbuf;

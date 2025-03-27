@@ -39,8 +39,6 @@ public:
         float a = 1.0;
     } coll_pcb;
     struct Collectible_VCB {
-        DirectX::XMMATRIX wMat = DirectX::XMMatrixIdentity();
-        DirectX::XMMATRIX vpMat = DirectX::XMMatrixIdentity();
         DirectX::XMFLOAT3 center_position = { 0, 0, 0 };
     } coll_vcb;
     Bind::PixelConstantBuffer<Collectible_PCB>* pcb;
