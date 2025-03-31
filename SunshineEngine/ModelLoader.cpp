@@ -6,7 +6,9 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode, UINT a
 	rootNode->directory = StringHelper::GetDirectoryFromPath(path);
 	Assimp::Importer importer;
 	const aiScene* pModel = importer.ReadFile(path,
-		aiProcess_Triangulate | aiProcess_FlipUVs );
+		aiProcess_Triangulate | aiProcess_FlipUVs
+		| (((attrFlags & ModelLoader::VertexAttrFlags::NORMAL) != 0) ? aiProcess_GenNormals : 0x0)
+	);
 
 	//	aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
 	// aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_MakeLeftHanded
@@ -37,6 +39,8 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode, UINT a
 
 	const auto pMesh = pModel->mMeshes[0];
 
+	std::cout << (((attrFlags & ModelLoader::VertexAttrFlags::NORMAL))) << "\n";
+	std::cout << (((attrFlags & ModelLoader::VertexAttrFlags::NORMAL) != 0) ? aiProcess_GenNormals : 0x0) << "\n";
 	for (unsigned i = 0; i < pMesh->mNumVertices; i++)
 	{
 		(rootNode->vertices)[vertexIdx++] = {
@@ -53,8 +57,16 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode, UINT a
 			(rootNode->vertices)[vertexIdx - 1].texCoord.y = (float)pMesh->mTextureCoords[0][i].y;
 			//std::cout << (float)pMesh->mTextureCoords[0][i].x << ", " << (float)pMesh->mTextureCoords[0][i].y << "\n";
 		}
+
+		if (attrFlags & VertexAttrFlags::NORMAL) {
+			(rootNode->vertices)[vertexIdx - 1].normal = {
+				XMFLOAT3(
+				pMesh->mNormals[i].x,
+				pMesh->mNormals[i].y,
+				pMesh->mNormals[i].z
+				) };
+		}
 	}
-	
 	for (unsigned i = 0; i < pMesh->mNumFaces; i++)
 	{
 		aiFace face = pMesh->mFaces[i];

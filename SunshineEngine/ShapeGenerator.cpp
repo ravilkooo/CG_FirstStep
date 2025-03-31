@@ -48,7 +48,8 @@ void CreateRandomHeightPlane(float width, float depth, UINT widthSegments, UINT 
             (*vertices)[i * (widthSegments + 1) + j] = {
                 DirectX::XMFLOAT3(x, y, z),
                 ((i + j) % 2 ? col : XMFLOAT4(1.0f - col.x, 1.0f - col.y, 1.0f - col.z, 1.0f)),
-                XMFLOAT2(i * 1.0f / depthSegments, j * 1.0f / widthSegments)
+                XMFLOAT2(i * 1.0f / depthSegments, j * 1.0f / widthSegments),
+                XMFLOAT3(0,1,0)
             };
         }
     }
@@ -208,7 +209,8 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
 
     UINT _offsetCommonVertexIdx = 0;
     // top vertex
-    (*vertices)[_offsetCommonVertexIdx++] = { DirectX::XMFLOAT3(0.0f, radius, 0.0f), col, XMFLOAT2(0, 0)};
+    (*vertices)[_offsetCommonVertexIdx++] = { DirectX::XMFLOAT3(0.0f, radius, 0.0f), col, XMFLOAT2(0, 0),
+    XMFLOAT3(0,1,0)};
     // other vertices
     for (UINT i = 1; i <= 2 * elevationCount + 1; ++i)
     {
@@ -218,11 +220,19 @@ void CreateSimpleSphereMesh(float radius, UINT sliceCount, UINT elevationCount,
                 radius * sinf(elevationStep * i) * cosf(sliceStep * j),
                 radius * cosf(elevationStep * i),
                 radius * sinf(elevationStep * i) * sinf(sliceStep * j)
-            ), col, XMFLOAT2( j * 1.0f / sliceCount , (i * 1.0f) / (2 * elevationCount+2)), };
+            ),
+                col,
+                XMFLOAT2( j * 1.0f / sliceCount , (i * 1.0f) / (2 * elevationCount+2)),
+                XMFLOAT3(
+                    sinf(elevationStep * i) * cosf(sliceStep * j),
+                    cosf(elevationStep * i),
+                    sinf(elevationStep * i) * sinf(sliceStep * j)
+                )};
         }
     }
     // bottom vertex
-    (*vertices)[_offsetCommonVertexIdx++] = { DirectX::XMFLOAT3(0.0f, -radius, 0.0f), col, XMFLOAT2(1, 1) };
+    (*vertices)[_offsetCommonVertexIdx++] = { DirectX::XMFLOAT3(0.0f, -radius, 0.0f), col, XMFLOAT2(1, 1),
+    XMFLOAT3(0,-1,0) };
 
 
     *indicesNum = 6 * (sliceCount + 1) + 2 * 6 * elevationCount * (sliceCount + 1);

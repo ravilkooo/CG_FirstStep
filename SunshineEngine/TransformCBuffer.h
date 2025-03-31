@@ -11,8 +11,9 @@ namespace Bind
 	protected:
 		struct Transforms
 		{
-			DirectX::XMMATRIX model;
+			DirectX::XMMATRIX wMat;
 			//DirectX::XMMATRIX modelView;
+			DirectX::XMMATRIX wMatInvTranspose;
 			DirectX::XMMATRIX viewProj;
 		};
 	public:

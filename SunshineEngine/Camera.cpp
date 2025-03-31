@@ -27,6 +27,11 @@ void Camera::SetPosition(Vector3 position)
     this->position = position;
 }
 
+Vector3 Camera::GetPosition()
+{
+    return this->position;
+}
+
 void Camera::SetTarget(Vector3 target)
 {
     this->target = target;

@@ -199,3 +199,8 @@ DirectX::XMMATRIX SceneNode::GetProjectionMatrix() const
 {
 	return camera->GetProjectionMatrix();
 }
+
+DirectX::XMFLOAT3 SceneNode::GetCameraPosition() const
+{
+	return camera->GetPosition();
+}

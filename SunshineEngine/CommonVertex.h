@@ -26,6 +26,9 @@ public:
     CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT4 color, DirectX::XMFLOAT3 normal, DirectX::XMFLOAT2 texCoord)
         : pos(pos), color(color), normal(normal), texCoord(texCoord) {
     }
+    CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT4 color, DirectX::XMFLOAT2 texCoord, DirectX::XMFLOAT3 normal)
+        : pos(pos), color(color), normal(normal), texCoord(texCoord) {
+    }
     CommonVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 normal)
         : pos(pos), normal(normal) {
     }

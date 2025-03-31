@@ -21,6 +21,7 @@ public:
     ~Camera();
 
     void SetPosition(Vector3 position);
+    Vector3 GetPosition();
     void SetTarget(Vector3 target);
     void SetUp(Vector3 up);
 

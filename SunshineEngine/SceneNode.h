@@ -92,6 +92,7 @@ public:
 
     DirectX::XMMATRIX GetViewMatrix() const override;
     DirectX::XMMATRIX GetProjectionMatrix() const override;
+    DirectX::XMFLOAT3 GetCameraPosition() const override;
 
 protected:
     // std::vector<SceneNode*> children;

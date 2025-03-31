@@ -9,4 +9,6 @@ public:
 	virtual DirectX::XMMATRIX GetViewMatrix() const = 0;
 	virtual DirectX::XMMATRIX GetProjectionMatrix() const = 0;
 
+	virtual DirectX::XMFLOAT3 GetCameraPosition() const = 0;
+
 };
