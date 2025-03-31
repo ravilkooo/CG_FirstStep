@@ -1,8 +1,24 @@
+#include "FloorHeightFunc.hlsl"
+
 Texture2D DiffuseMap : register(t0);
 SamplerState Sampler : register(s0)
 {
-    AddressU = WRAP;
-    AddressV = WRAP;
+    AddressU = BORDER;
+    AddressV = BORDER;
+};
+
+struct PS_IN
+{
+    float4 pos : SV_POSITION;
+    float4 col : COLOR;
+    float2 texCoord : TEXCOORD;
+    float3 normal : NORMAL0;
+    float3 wPos : POSITION;
+};
+
+cbuffer FloorCBuf
+{
+    float3 cam_pos;
 };
 
 struct DirectionalLight
@@ -21,47 +37,44 @@ struct Material
     float4 Specular; // w = SpecPower
     float4 Reflect;
 };
-cbuffer CollectibleCBuf
-{
-    float3 cam_pos;
-};
-
-struct PS_IN
-{
-    float4 pos : SV_POSITION;
-    float4 col : COLOR;
-    float2 texCoord : TEXCOORD;
-    float3 normal : NORMAL0;
-    float3 wPos : POSITION;
-};
 
 float4 PSMain(PS_IN input) : SV_Target
 {
+    // float4 col = input.col;
+    // float4 col = DiffuseMap.Sample(Sampler, input.tex.xy);
+    //if (input.pos.x > 400)
+    //    col = float4(0.0f, 1.0f, 0.0f, 1.0f);
     float4 pixelColor = DiffuseMap.Sample(Sampler, input.texCoord);
+    
     
     float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
     Material mat;
-    // mat.Ambient = float4(0.48f, 0.47f, 0.46f, 1.0f);
+    //mat.Ambient = float4(0.48f, 0.77f, 0.46f, 1.0f);
     mat.Ambient = pixelColor;
     // mat.Diffuse = float4(0.48f, 0.77f, 0.46f, 1.0f);
     mat.Diffuse = pixelColor;
-    mat.Specular = float4(0.9f, 0.9f, 0.9f, 16.0f);
+    mat.Specular = float4(0.05f, 0.05f, 0.05f, 16.0f);
     
     DirectionalLight L;
-    L.Ambient = float4(0.2f, 0.2f, 0.2f, 0.0f);
-    L.Diffuse = float4(0.8f, 0.8f, 0.8f, 0.0f);
-    L.Specular = float4(0.9f, 0.9f, 0.9f, 0.0f);
-    L.Direction = float4(normalize(float3(-2.0f, -1.0f, -1.0f)), 0.0f);
+    L.Ambient = float4(0.2f, 0.2f, 0.2f, 1.0f);
+    L.Diffuse = float4(0.5f, 0.5f, 0.5f, 1.0f);
+    L.Specular = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    L.Direction = normalize(float4(-2.0f, -1.0f, -1.0f, 0.0f));
 
     float3 normal = normalize(input.normal);
     
     float3 toEye = normalize(cam_pos - input.wPos / input.wPos);
-    float3 lightVec = -L.Direction;
     
+    // The light vector aims opposite the direction the light rays travel.
+    float3 lightVec = -L.Direction;
+    // Add ambient term.
     ambient = mat.Ambient * L.Ambient;
+    // Add diffuse and specular term, provided the surface is in
+    // the line of site of the light.
     float diffuseFactor = dot(lightVec, normal);
+    // Flatten to avoid dynamic branching.
     [flatten]
     if (diffuseFactor > 0.0f)
     {
@@ -71,5 +84,8 @@ float4 PSMain(PS_IN input) : SV_Target
         spec = specFactor * mat.Specular * L.Specular;
     }
     
+    //return float4(pixelColor, 1);
     return float4(ambient + spec + diffuse);
+    
+    // return float4(pixelColor, 1);
 }

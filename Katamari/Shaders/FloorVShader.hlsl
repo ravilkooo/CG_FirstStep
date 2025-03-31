@@ -17,29 +17,30 @@ struct PS_IN
     float3 wPos : POSITION;
 };
 
-cbuffer TransfromCBuf : register(b0)
+cbuffer CBuf
 {
     row_major float4x4 wMat;
     row_major float4x4 wMatInvTranspose;
     row_major float4x4 vpMat;
-}
-cbuffer CollectibleCBuf : register(b1)
-{
-    float3 center_position;
 };
 
 PS_IN VSMain(VS_IN input)
 {
     PS_IN output = (PS_IN) 0;
 	
-    output.pos = mul(float4(input.pos, 1.0), wMat);
-    output.pos.y += FloorHeightFunc(center_position);
+    output.pos = mul(float4(input.pos.x, FloorHeightFunc(input.pos), input.pos.z, 1.0), wMat);
     output.wPos = output.pos.xyz / output.pos.w;
+    
     output.pos = mul(output.pos, vpMat);
     output.col = input.col;
     output.texCoord = input.texCoord;
+    output.normal = mul(float4(input.normal, 0), wMat);
     
-    output.normal = normalize(mul(float4(input.normal, 0), wMatInvTranspose));
+    output.normal = -normalize(float3(
+    (FloorHeightFunc(input.pos + float3(0.01, 0, 0)) - FloorHeightFunc(input.pos)) * 100,
+    -1,
+    (FloorHeightFunc(input.pos + float3(0, 0, 0.01)) - FloorHeightFunc(input.pos)) * 100
+    ));
 	
     return output;
 }
