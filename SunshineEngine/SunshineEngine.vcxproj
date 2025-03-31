@@ -186,7 +186,6 @@
     <ClInclude Include="DisplayWindow.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameTimer.h" />
-    <ClInclude Include="InputAssembler.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keys.h" />
     <ClInclude Include="ModelLoader.h" />
@@ -194,16 +193,11 @@
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="PipelineState.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="Sampler.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
-    <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShapeGenerator.h" />
     <ClInclude Include="StringHelper.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureB.h" />
-    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Topology.h" />
     <ClInclude Include="TransformCBuffer.h" />
     <ClInclude Include="VertexBuffer.h" />
@@ -212,6 +206,7 @@
   <ItemGroup>
     <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="PixelShader.cpp" />
@@ -221,22 +216,16 @@
     <ClCompile Include="DisplayWindow.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameTimer.cpp" />
-    <ClCompile Include="InputAssembler.cpp" />
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="PipelineState.cpp" />
     <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneNode.cpp" />
-    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShapeGenerator.cpp" />
     <ClCompile Include="StringHelper.cpp" />
-    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureB.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Topology.cpp" />
     <ClCompile Include="TransformCBuffer.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />

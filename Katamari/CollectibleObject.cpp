@@ -72,7 +72,6 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, float radius, const D
     //vertexShaderFilePath = L"./Shaders/PlaneShader.hlsl";
     //pixelShaderFilePath = L"./Shaders/PlaneShader.hlsl";
     //this->textures.push_back(Texture(device, "models\\Textures\\basketballskin.dds", aiTextureType_DIFFUSE));
-    hasTexture = true;
 }
 
 CollectibleObject::CollectibleObject(ID3D11Device* device, const std::string& modelsFolder, const DirectX::XMFLOAT3& position)

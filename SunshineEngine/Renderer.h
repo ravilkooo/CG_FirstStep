@@ -1,11 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "ShaderManager.h"
 #include "Scene.h"
-#include "ResourceManager.h"
-#include "InputAssembler.h"
-// #include "TextureManager.h"
 
 #include <d3d11.h>
 #include <wrl.h>
@@ -15,9 +11,6 @@
 #include "PipelineState.h"
 
 #include "Camera.h"
-
-#include "Texture.h"
-#include "Sampler.h"
 
 #include <chrono>
 
@@ -37,9 +30,6 @@ public:
     ID3D11Device* GetDevice();
     ID3D11DeviceContext* GetDeviceContext();
 
-    ShaderManager shaderManager;
-    ResourceManager resourceManager;
-
     Camera camera;
 private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
@@ -53,7 +43,6 @@ private:
 
     D3D_FEATURE_LEVEL featureLevels[1] = { D3D_FEATURE_LEVEL_11_1 };
 
-    InputAssembler inputAssembler;
     PipelineState pipelineState;
     
     DisplayWindow* displayWindow;

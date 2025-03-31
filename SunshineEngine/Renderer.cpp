@@ -92,16 +92,7 @@ Renderer::Renderer(DisplayWindow* displayWin)
 	camera = Camera();
 
 	// TO-DO: Move to Game [SceneNode.AddBind()]
-	resourceManager = ResourceManager(GetDevice());
-
-	// TO-DO: Move to Game [SceneNode.AddBind()]
-	shaderManager = ShaderManager(GetDevice());
-
-	// TO-DO: Move to Game [SceneNode.AddBind()]
 	pipelineState.SetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID); // D3D11_CULL_NONE, D3D11_CULL_BACK, D3D11_FILL_SOLID, D3D11_FILL_WIREFRAME
-
-	// TO-DO: Move to Game [SceneNode.AddBind()]
-	inputAssembler = InputAssembler(GetDevice(), GetDeviceContext());
 
     return;
 }

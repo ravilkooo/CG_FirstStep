@@ -5,6 +5,7 @@
 #include "SceneNode.h"
 #include <filesystem>
 #include <random>
+#include <iostream>
 
 class ModelLoader
 {

@@ -2,8 +2,7 @@
 
 #include <d3d11.h>
 #include <wrl.h>
-//#include "SceneNode.h"
-//#include "Renderer.h"
+
 namespace Bind
 {
 	class Bindable

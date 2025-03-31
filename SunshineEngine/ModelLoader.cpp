@@ -3,7 +3,6 @@
 
 void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode, UINT attrFlags)
 {
-	rootNode->directory = StringHelper::GetDirectoryFromPath(path);
 	Assimp::Importer importer;
 	const aiScene* pModel = importer.ReadFile(path,
 		aiProcess_Triangulate | aiProcess_FlipUVs
