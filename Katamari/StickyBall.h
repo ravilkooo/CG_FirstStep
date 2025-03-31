@@ -43,17 +43,10 @@ public:
 
     XMFLOAT3 position = XMFLOAT3(0.0f, radius, 0.0f);
 public:
-    // delete this
     struct Ball_PCB {
-        float a = 0.5;
+        XMFLOAT3 cam_pos;
     } ball_pcb;
-    struct Ball_VCB {
-        DirectX::XMMATRIX wMat = DirectX::XMMatrixIdentity();
-        DirectX::XMMATRIX vpMat = DirectX::XMMatrixIdentity();
-        // float ball_radius;
-    } ball_vcb;
     Bind::PixelConstantBuffer<Ball_PCB>* pcb;
-    Bind::VertexConstantBuffer<Ball_VCB>* vcb;
 private:
     Bind::VertexShader* vertexShaderB;
 };

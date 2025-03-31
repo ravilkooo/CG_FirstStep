@@ -10,12 +10,14 @@ StickyBall::StickyBall(ID3D11Device* device)
 	UINT elevationCount = 8;
 	XMFLOAT4 col(0.9f, 0.0f, 0.0f, 1.0f);
 	CreateSimpleSphereMesh(radius, sliceCount, elevationCount, col, &vertices, &verticesNum, &indices, &indicesNum);
+	/*
 	for (size_t i = 0; i < verticesNum; i++)
 	{
 		vertices[i].pos = Vector3::Transform(vertices[i].pos, Matrix::CreateFromYawPitchRoll(0.0f, 0.0f, XM_PIDIV2));
 	}
+	*/
 	//auto col_2 = XMFLOAT4(0.5f + 0.5f * col.x, 0.5f + 0.5f * col.y, 0.5f + 0.5f * col.z, 1.0f);
-	auto col_2 = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	/*auto col_2 = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	for (size_t i = 0; i < elevationCount * 2 + 1; i++)
 	{
 		for (size_t j = 0; j < sliceCount; j+=2)
@@ -23,6 +25,7 @@ StickyBall::StickyBall(ID3D11Device* device)
 			vertices[1 + i * sliceCount + j].color = col_2;
 		}
 	}
+	*/
 	worldMat = Matrix::CreateTranslation(position);
 
 	AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
@@ -33,7 +36,7 @@ StickyBall::StickyBall(ID3D11Device* device)
 	AddBind(vertexShaderB);
 
 	{
-		numInputElements = 3;
+		numInputElements = 4;
 		IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 
 		IALayoutInputElements[0] =
@@ -61,7 +64,16 @@ StickyBall::StickyBall(ID3D11Device* device)
 				0,
 				DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
 				0,
-				D3D11_APPEND_ALIGNED_ELEMENT, // 28,
+				D3D11_APPEND_ALIGNED_ELEMENT,
+				D3D11_INPUT_PER_VERTEX_DATA,
+				0 };
+		IALayoutInputElements[3] =
+			D3D11_INPUT_ELEMENT_DESC{
+				"NORMAL",
+				0,
+				DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT,
+				0,
+				D3D11_APPEND_ALIGNED_ELEMENT,
 				D3D11_INPUT_PER_VERTEX_DATA,
 				0 };
 
@@ -72,11 +84,8 @@ StickyBall::StickyBall(ID3D11Device* device)
 
 	AddBind(new Bind::TransformCBuffer(device, this, 0u));
 
-	vcb = new Bind::VertexConstantBuffer<StickyBall::Ball_VCB>(device, ball_vcb, 1u);
-	AddBind(vcb);
-
-	//pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(device, ball_pcb);
-	//AddBind(pcb);
+	pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(device, ball_pcb);
+	AddBind(pcb);
 
 	D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
 	rastDesc.CullMode = D3D11_CULL_BACK;
@@ -174,9 +183,11 @@ void StickyBall::Update(float deltaTime)
 
 
 
-	Matrix spinTransform = Matrix::CreateFromYawPitchRoll(0.0f, currentSpin, 0.0f);
-	Matrix rotTransform = Matrix::CreateFromYawPitchRoll(currentRotation, 0.0f, 0.0f);
-	worldMat = Matrix::CreateScale(radius) * spinTransform * rotTransform * Matrix::CreateTranslation(position);
+	//Matrix spinTransform = Matrix::CreateFromYawPitchRoll(0.0f, currentSpin, 0.0f);
+	//Matrix rotTransform = Matrix::CreateFromYawPitchRoll(currentRotation, 0.0f, 0.0f);
+	//worldMat = Matrix::CreateScale(radius) * spinTransform * rotTransform * Matrix::CreateTranslation(position);
+	Matrix allRotTransform = Matrix::CreateFromYawPitchRoll(currentRotation, currentSpin, XM_PIDIV2);
+	worldMat = Matrix::CreateScale(radius) * allRotTransform * Matrix::CreateTranslation(position);
 
 
 	//Matrix viewMat = camera->GetViewMatrix();
@@ -187,9 +198,9 @@ void StickyBall::Update(float deltaTime)
 
 void StickyBall::UpdateScale()
 {
-    worldMat = Matrix::CreateScale(radius) * 
-             Matrix::CreateFromYawPitchRoll(currentRotation, 0, currentSpin) * 
-             Matrix::CreateTranslation(position);
+	worldMat = Matrix::CreateScale(radius)
+		* Matrix::CreateFromYawPitchRoll(currentRotation, currentSpin, XM_PIDIV2)
+		* Matrix::CreateTranslation(position);
 }
 
 void StickyBall::Grow(float volume)

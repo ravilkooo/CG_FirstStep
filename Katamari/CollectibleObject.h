@@ -36,7 +36,7 @@ private:
 
 public:
     struct Collectible_PCB {
-        float a = 1.0;
+        XMFLOAT3 cam_pos;
     } coll_pcb;
     struct Collectible_VCB {
         DirectX::XMFLOAT3 center_position = { 0, 0, 0 };

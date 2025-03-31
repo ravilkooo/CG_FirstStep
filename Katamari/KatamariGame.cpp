@@ -58,8 +58,8 @@ KatamariGame::KatamariGame()
 	ball->LoadAndCompileShader(renderer.shaderManager);
 	ball->InitBuffers(renderer.resourceManager);
 	*/
-	floor->LoadAndCompileShader(renderer.shaderManager);
-	floor->InitBuffers(renderer.resourceManager);
+	//floor->LoadAndCompileShader(renderer.shaderManager);
+	//floor->InitBuffers(renderer.resourceManager);
 	/*
 	ball->pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(renderer.GetDevice(), ball->ball_pcb);
 	ball->AddBind(ball->pcb);
@@ -163,6 +163,7 @@ void KatamariGame::Update(float deltaTime)
 		);
 	
 	*/
+	XMFLOAT3 camera_pos = renderer.camera.GetPosition();
 	for (auto coll : collectibles)
 	{
 		coll->vcb->Update(renderer.GetDeviceContext(),
@@ -170,11 +171,23 @@ void KatamariGame::Update(float deltaTime)
 				coll->isAttached ? ball->position : coll->initialPosition
 			}
 		);
+		coll->pcb->Update(renderer.GetDeviceContext(),
+			{
+				camera_pos
+			});
 	}
-	
+	ball->pcb->Update(renderer.GetDeviceContext(),
+		{
+			camera_pos
+		});
+	floor->pcb->Update(renderer.GetDeviceContext(),
+		{
+			camera_pos
+		});
 
-	floor->cb.wvpMat = floor->worldMat * (XMMATRIX)vpMat;
-	std::cout << ball->position.x << ", " << ball->position.z << "\n";
+
+	// floor->cb.wvpMat = floor->worldMat * (XMMATRIX)vpMat;
+	// std::cout << ball->position.x << ", " << ball->position.z << "\n";
 
 	/*for (auto node : scene.nodes)
 	{

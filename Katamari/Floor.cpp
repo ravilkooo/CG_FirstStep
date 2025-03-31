@@ -21,11 +21,11 @@ Floor::Floor(ID3D11Device* device)
 	AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
 	AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
 	AddBind(new Bind::TextureB(device, "models\\Textures\\carpet.dds", aiTextureType_DIFFUSE));
-	auto vertexShaderB = new Bind::VertexShader(device, L"./Shaders/FloorShader.hlsl");
+	auto vertexShaderB = new Bind::VertexShader(device, L"./Shaders/FloorVShader.hlsl");
 	AddBind(vertexShaderB);
 
 	{
-		numInputElements = 3;
+		numInputElements = 4;
 		IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 
 		IALayoutInputElements[0] =
@@ -53,19 +53,28 @@ Floor::Floor(ID3D11Device* device)
 				0,
 				DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
 				0,
-				D3D11_APPEND_ALIGNED_ELEMENT, // 28,
+				D3D11_APPEND_ALIGNED_ELEMENT,
+				D3D11_INPUT_PER_VERTEX_DATA,
+				0 };
+		IALayoutInputElements[3] =
+			D3D11_INPUT_ELEMENT_DESC{
+				"NORMAL",
+				0,
+				DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT,
+				0,
+				D3D11_APPEND_ALIGNED_ELEMENT,
 				D3D11_INPUT_PER_VERTEX_DATA,
 				0 };
 
 	}
 
 	AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
-	AddBind(new Bind::PixelShader(device, L"./Shaders/FloorShader.hlsl"));
+	AddBind(new Bind::PixelShader(device, L"./Shaders/FloorPShader.hlsl"));
 
 	AddBind(new Bind::TransformCBuffer(device, this, 0u));
 
-	//pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(device, ball_pcb);
-	//AddBind(pcb);
+	pcb = new Bind::PixelConstantBuffer<Floor::Floor_PCB>(device, floor_pcb);
+	AddBind(pcb);
 
 	D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
 	rastDesc.CullMode = D3D11_CULL_BACK;

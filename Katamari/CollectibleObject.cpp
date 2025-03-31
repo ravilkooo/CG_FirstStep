@@ -59,8 +59,8 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, float radius, const D
     vcb = new Bind::VertexConstantBuffer<CollectibleObject::Collectible_VCB>(device, coll_vcb, 1u);
     AddBind(vcb);
 
-    pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(device, coll_pcb);
-    AddBind(pcb);
+    /*pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(device, coll_pcb);
+    AddBind(pcb);*/
 
     D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
     rastDesc.CullMode = D3D11_CULL_BACK;
@@ -107,7 +107,8 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
     std::uniform_int_distribution<> distr(0, models.size() - 1);
     auto chosen_model = models[distr(gen)];
     auto model_name = StringHelper::GetFileNameWithoutExtension(chosen_model);
-    ModelLoader::LoadModel(chosen_model, this, ModelLoader::VertexAttrFlags::POSITION | ModelLoader::VertexAttrFlags::TEXTURE);
+    ModelLoader::LoadModel(chosen_model, this, ModelLoader::VertexAttrFlags::POSITION | ModelLoader::VertexAttrFlags::TEXTURE
+    | ModelLoader::VertexAttrFlags::NORMAL );
     
     // ModelLoader::LoadModel("models\\suzanne.obj", this);
 
@@ -128,7 +129,7 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
     vertexShaderB = new Bind::VertexShader(device, L"./Shaders/ImportVShader.hlsl");
     AddBind(vertexShaderB);
     
-    numInputElements = 3;
+    numInputElements = 4;
     IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
     IALayoutInputElements[0] =
         D3D11_INPUT_ELEMENT_DESC{
@@ -139,24 +140,31 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
             0,
             D3D11_INPUT_PER_VERTEX_DATA,
             0 };
-
     IALayoutInputElements[1] =
         D3D11_INPUT_ELEMENT_DESC{
             "COLOR",
             0,
             DXGI_FORMAT_R32G32B32A32_FLOAT,
             0,
-            D3D11_APPEND_ALIGNED_ELEMENT, // 12,
+            D3D11_APPEND_ALIGNED_ELEMENT,
             D3D11_INPUT_PER_VERTEX_DATA,
             0 };
-
     IALayoutInputElements[2] =
         D3D11_INPUT_ELEMENT_DESC{
             "TEXCOORD",
             0,
             DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
             0,
-            D3D11_APPEND_ALIGNED_ELEMENT, // 28,
+            D3D11_APPEND_ALIGNED_ELEMENT,
+            D3D11_INPUT_PER_VERTEX_DATA,
+            0 };
+    IALayoutInputElements[3] =
+        D3D11_INPUT_ELEMENT_DESC{
+            "NORMAL",
+            0,
+            DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT,
+            0,
+            D3D11_APPEND_ALIGNED_ELEMENT,
             D3D11_INPUT_PER_VERTEX_DATA,
             0 };
 
@@ -173,8 +181,8 @@ void CollectibleObject::LoadRandomModel(const std::string& folder)
     vcb = new Bind::VertexConstantBuffer<CollectibleObject::Collectible_VCB>(device, coll_vcb, 1u);
     AddBind(vcb);
 
-    //pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(device, coll_pcb);
-    //AddBind(pcb);
+    pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(device, coll_pcb);
+    AddBind(pcb);
 
     D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
     rastDesc.CullMode = D3D11_CULL_BACK;
