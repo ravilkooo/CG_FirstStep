@@ -59,8 +59,8 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, float radius, const D
     vcb = new Bind::VertexConstantBuffer<CollectibleObject::Collectible_VCB>(device, coll_vcb, 1u);
     AddBind(vcb);
 
-    /*pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(device, coll_pcb);
-    AddBind(pcb);*/
+    pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(device, coll_pcb);
+    AddBind(pcb);
 
     D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
     rastDesc.CullMode = D3D11_CULL_BACK;

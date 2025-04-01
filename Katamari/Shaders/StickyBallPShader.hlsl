@@ -62,7 +62,7 @@ float4 PSMain(PS_IN input) : SV_Target
 
     float3 normal = normalize(input.normal);
     
-    float3 toEye = normalize(cam_pos - input.wPos / input.wPos);
+    float3 toEye = normalize(cam_pos - input.wPos);
     float3 lightVec = -L.Direction;
     
     ambient = mat.Ambient * L.Ambient;
