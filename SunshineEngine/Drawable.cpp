@@ -14,7 +14,6 @@ void Drawable::AddBind(Bind::Bindable* bind)
 
 void Drawable::BindAll(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 {
-
 	for (size_t i = 0; i < bindables.size(); i++)
 	{
 		bindables[i]->Bind(context.Get());

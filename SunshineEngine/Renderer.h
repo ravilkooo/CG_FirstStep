@@ -14,6 +14,10 @@
 
 #include <chrono>
 
+/*
+namespace Bind {
+    class Bindable;
+}*/
 
 class Renderer
 {
@@ -31,6 +35,8 @@ public:
     ID3D11DeviceContext* GetDeviceContext();
 
     Camera camera;
+
+    void AddPerFrameBind(Bind::Bindable* bind);
 private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
     ID3D11Texture2D* pDepthStencil;
@@ -55,6 +61,9 @@ private:
 
     // TextureManager textureManager;
     //ID3D11InputLayout* layout;
+
+    std::vector<Bind::Bindable*> perFrameBindables;
+    void BindAll();
 };
 
 #endif // RENDERER_H

@@ -126,6 +126,8 @@ void Renderer::RenderScene(const Scene& scene)
 	viewport.MaxDepth = 1.0f;
 	context->RSSetViewports(1, &viewport);
 
+	BindAll();
+
 	for (SceneNode* node : scene.nodes) {
 		DrawNode(node);
 	}
@@ -135,29 +137,11 @@ void Renderer::RenderScene(const Scene& scene)
 
 void Renderer::DrawNode(SceneNode* node)
 {
-	// TO-DO: Move to SceneNode/Bindables
-	/*
-	inputAssembler.CreateInputLayout(node->IALayoutInputElements, node->numInputElements, node->vsBlob);
-	inputAssembler.SetInputLayout();
-	*/
-
 	node->BindAll(context);
 
 	context->OMSetRenderTargets(1, &renderTargetView, pDSV);
 
 	node->Draw(context);
-
-	/*
-	if (node->GetChildren().size() == 0) {
-		// Draw this node
-	}
-	else {
-		for (SceneNode* childNode : node->GetChildren())
-		{
-			childNode->Draw(context, renderTargetView, pDSV);
-		}
-	}
-	*/
 }
 
 ID3D11Device* Renderer::GetDevice()
@@ -168,4 +152,17 @@ ID3D11Device* Renderer::GetDevice()
 ID3D11DeviceContext* Renderer::GetDeviceContext()
 {
 	return context.Get();
+}
+
+void Renderer::AddPerFrameBind(Bind::Bindable* bind)
+{
+	perFrameBindables.push_back(bind);
+}
+
+void Renderer::BindAll()
+{
+	for (size_t i = 0; i < perFrameBindables.size(); i++)
+	{
+		perFrameBindables[i]->Bind(context.Get());
+	}
 }
