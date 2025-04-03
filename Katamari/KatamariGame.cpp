@@ -65,16 +65,17 @@ KatamariGame::KatamariGame()
 		//std::cout << (i + 1) % 2 * 1.0f << ", " << i / 3 * 1.0f << ", " << (i + 2) % 6 / 3 * 1.0f << "\n";
 	}
 
+	
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> dis(0.0f, 1.0f);
-
-	for (int i = 6; i < 14; i++)
+	
+	for (int i = 0; i < 8; i++)
 	{
 		Matrix rotationX = Matrix::CreateRotationX(dis(gen) * XM_2PI);
 		Matrix rotationY = Matrix::CreateRotationY(dis(gen) * XM_2PI);
 		Matrix rotationZ = Matrix::CreateRotationZ(dis(gen) * XM_2PI);
-		float _dist = dis(gen)*2.0f + 5.0f;
+		float _dist = dis(gen) * 2.0f + 5.0f;
 		Vector3 lightColor = {
 			dis(gen),
 			dis(gen),
@@ -91,16 +92,33 @@ KatamariGame::KatamariGame()
 
 		Matrix rotation = rotationX * rotationY * rotationZ;
 
-		lightData.pointLights[i].Ambient = { 0, 0, 0, 1 };
-		lightData.pointLights[i].Diffuse = { lightColor.x, lightColor.y, lightColor.z, 1.0f };
-		lightData.pointLights[i].Specular = { lightColor.x, lightColor.y, lightColor.z, 1.0f };
+		lightData.pointLights[i + 6].Ambient = { 0, 0, 0, 1 };
+		lightData.pointLights[i + 6].Diffuse = { lightColor.x, lightColor.y, lightColor.z, 1.0f };
+		lightData.pointLights[i + 6].Specular = { lightColor.x, lightColor.y, lightColor.z, 1.0f };
 
-		pointLightInitPositions[i-6] = Vector3::Transform({ _dist, 0.0f, 0.0f }, rotation);
+		//pointLightPositions[i] = Vector3::Transform({ _dist, 0.0f, 0.0f }, rotation);
+		pointLightLifeTime[i] = lifeTime * 2.0f;
 
-		lightData.pointLights[i].Range = 7.0f;
-		lightData.pointLights[i].Att = { 0.01f, 1.0f, 0.0f };
+		lightData.pointLights[i + 6].Range = 0.0f;
+		lightData.pointLights[i + 6].Att = { 0.01f, 0.1f, 0.0f };
 	}
+	
 
+	lightData.spotLight = {
+		Vector4(0.1f, 0.1f, 0.1f, 0.0f),
+		Vector4(0.7f, 0.7f, 0.7f, 0.7f),
+		Vector4(0.9f, 0.9f, 0.9f, 0.0f),
+		Vector3(0.0f, 15.0f, 0.0f),
+		100.0f,
+		Vector3(0.0f, 1.0f, 0.0f),
+		16.0f,
+		{ 0.01f, 0.02f, 0.0f },
+		0
+	};
+
+	Vector3 _spotDir = ball->position + ball->GetMoveDir() * 5.0f - Vector3(0.0f, 15.0f, 0.0f);
+	_spotDir.Normalize();
+	lightData.spotLight.Direction = _spotDir;
 
 	light_pcb = new Bind::PixelConstantBuffer<LightData>(renderer.GetDevice(), lightData, 0u);
 	renderer.AddPerFrameBind(light_pcb);
@@ -196,16 +214,29 @@ void KatamariGame::Update(float deltaTime)
 			camera_pos
 		});
 
-	
+
 
 	for (size_t i = 0; i < 6; i++)
 	{
-		lightData.pointLights[i].Position = Vector3::Transform(lightData.pointLights[i].Position, Matrix::CreateRotationY(deltaTime*1.0f));
+		lightData.pointLights[i].Position = Vector3::Transform(lightData.pointLights[i].Position, Matrix::CreateRotationY(deltaTime * 1.0f));
 	}
-	for (size_t i = 6; i < 14; i++)
+	for (size_t i = 0; i < 8; i++)
 	{
-		lightData.pointLights[i].Position = Vector3::Transform(pointLightInitPositions[i-6], ball->worldMat);
+		if ((pointLightLifeTime[i] + deltaTime) < lifeTime) {
+			pointLightLifeTime[i] += deltaTime;
+			lightData.pointLights[i + 6].Position = lightData.pointLights[i + 6].Position + pointLightDirections[i] * 20.0f * deltaTime;
+			//lightData.pointLights[i + 6].Diffuse = Vector4(lightData.pointLights[i + 6].Diffuse);
+		}
+		else {
+			lightData.pointLights[i + 6].Range = 0.0f;
+		}
 	}
+	{
+		Vector3 _spotDir = (ball->GetCenterLocation() + ball->GetMoveDir() * 5.0f) - lightData.spotLight.Position;
+		_spotDir.Normalize();
+		lightData.spotLight.Direction = _spotDir;
+	}
+	
 
 	light_pcb->Update(renderer.GetDeviceContext(),
 		{
@@ -250,13 +281,6 @@ void KatamariGame::SpawnCollectibles()
 	for (auto coll : collectibles)
 	{
 		scene.AddNode(coll);
-		/*
-		// TO-DO: Change to SceneNode.AddBind()
-		obj.LoadAndCompileShader(renderer.shaderManager);
-
-		// TO-DO: Change to SceneNode.AddBind()
-		obj.InitBuffers(renderer.resourceManager);
-		*/
 		coll->camera = &(renderer.camera);
 	}
 }
@@ -278,6 +302,16 @@ void KatamariGame::HandleKeyDown(Keys key) {
 	if (key == Keys::D)
 	{
 		ball->AddTurn(1.0f, deltaTime);
+	}
+	if (key == Keys::Space)
+	{
+		pointLightLifeTime[currPointLightBullet] = 0.0f;
+		pointLightDirections[currPointLightBullet] = ball->GetMoveDir();
+		//pointLightColors[currPointLightBullet] = { (i + 1) % 2 * 1.0f, i / 3 * 1.0f, (i + 2) % 6 / 3 * 1.0f, 1 };
+		lightData.pointLights[currPointLightBullet + 6].Position = ball->GetCenterLocation();
+		lightData.pointLights[currPointLightBullet + 6].Range = 10.0f;
+		currPointLightBullet = (currPointLightBullet + 1) % 8;
+		std::cout << ball->GetMoveDir().x << ", " << ball->GetMoveDir().z << "\n";
 	}
 }
 

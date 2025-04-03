@@ -92,47 +92,6 @@ StickyBall::StickyBall(ID3D11Device* device)
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 	AddBind(new Bind::Rasterizer(device, rastDesc));
 
-	/*
-	numInputElements = 3;
-
-	IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
-	IALayoutInputElements[0] =
-		D3D11_INPUT_ELEMENT_DESC{
-			"POSITION",
-			0,
-			DXGI_FORMAT_R32G32B32_FLOAT,
-			0,
-			0,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0 };
-
-	IALayoutInputElements[1] =
-		D3D11_INPUT_ELEMENT_DESC{
-			"COLOR",
-			0,
-			DXGI_FORMAT_R32G32B32A32_FLOAT,
-			0,
-			D3D11_APPEND_ALIGNED_ELEMENT,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0 };
-
-	IALayoutInputElements[2] =
-		D3D11_INPUT_ELEMENT_DESC{
-			"TEXCOORD",
-			0,
-			DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
-			0,
-			D3D11_APPEND_ALIGNED_ELEMENT, // 28,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0 };
-
-	vertexShaderFilePath = L"./Shaders/StickyBallVShader.hlsl";
-	pixelShaderFilePath = L"./Shaders/StickyBallPShader.hlsl";
-	this->textures.push_back(Texture(device, "models\\Textures\\pixeleye.dds", aiTextureType_DIFFUSE));
-	hasTexture = true;
-	*/
-	
-	// delete this
 }
 
 Vector3 StickyBall::GetCenterLocation()

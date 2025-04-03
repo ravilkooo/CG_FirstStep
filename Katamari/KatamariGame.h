@@ -31,7 +31,11 @@ public:
     Bind::PixelConstantBuffer<LightData>* light_pcb;
 
     LightData lightData;
-    XMFLOAT3 pointLightInitPositions[8];
+    XMFLOAT3 pointLightColors[8];
+    XMFLOAT3 pointLightDirections[8];
+    float pointLightLifeTime[8];
+    float lifeTime = 2.0f;
+    size_t currPointLightBullet = 0;
 };
 
 #endif
