@@ -4,8 +4,11 @@
 namespace Bind {
 
 	TransformCBuffer::TransformCBuffer(ID3D11Device* device, const Drawable* parent, UINT slot)
-		: vcbuf(device, slot), pParent(parent)
+		: pParent(parent)
 	{
+		if (!pVcbuf) {
+			pVcbuf = new VertexConstantBuffer<Transforms>(device, slot);
+		}
 	}
 
 	void TransformCBuffer::Bind(ID3D11DeviceContext* context) noexcept
@@ -20,7 +23,9 @@ namespace Bind {
 		const Transforms tf = {
 				wMat, wMatInvTranspose, vpMat
 		};
-		vcbuf.Update(context, tf);
-		vcbuf.Bind(context);
+		pVcbuf->Update(context, tf);
+		pVcbuf->Bind(context);
 	}
+	
+	VertexConstantBuffer<TransformCBuffer::Transforms>* TransformCBuffer::pVcbuf;
 }

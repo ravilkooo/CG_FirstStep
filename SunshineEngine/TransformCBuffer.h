@@ -12,7 +12,6 @@ namespace Bind
 		struct Transforms
 		{
 			DirectX::XMMATRIX wMat;
-			//DirectX::XMMATRIX modelView;
 			DirectX::XMMATRIX wMatInvTranspose;
 			DirectX::XMMATRIX viewProj;
 		};
@@ -20,7 +19,7 @@ namespace Bind
 		TransformCBuffer(ID3D11Device* device, const Drawable* parent, UINT slot = 0u);
 		void Bind(ID3D11DeviceContext* context) noexcept override;
 	private:
-		VertexConstantBuffer<Transforms> vcbuf;
+		static VertexConstantBuffer<Transforms>* pVcbuf;
 		const Drawable* pParent = nullptr;
 	};
 }
