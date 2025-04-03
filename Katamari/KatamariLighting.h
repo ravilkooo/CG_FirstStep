@@ -22,7 +22,7 @@ struct LightData {
 
 		DirectX::XMFLOAT3 Att;
 		float pad;
-	} pointLights[6];
+	} pointLights[14];
 };
 
 

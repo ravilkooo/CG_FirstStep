@@ -39,7 +39,7 @@ struct DirectionalLight
 cbuffer LightBuffer : register(b0) // per frame
 {
     DirectionalLight dLight;
-    PointLight pointLights[6];
+    PointLight pointLights[14];
 };
 
 cbuffer CollectibleCBuf : register(b1)
@@ -66,12 +66,8 @@ float4 calcDirectLight(float3 wPos, float3 normal, float3 toEye, Material mat, D
     dl_ambient = mat.Ambient * dirLight.Ambient;
     
     {
-        // Add ambient term.
-        // Add diffuse and specular term, provided the surface is in
-        // the line of site of the light.
         float3 lightVec = -dirLight.Direction;
         float diffuseFactor = dot(lightVec, normal);
-        // Flatten to avoid dynamic branching.
         [flatten]
         if (diffuseFactor > 0.0f)
         {
@@ -120,7 +116,6 @@ float4 calcPointLight(float3 wPos, float3 normal, float3 toEye, Material mat, Po
 float4 PSMain(PS_IN input) : SV_Target
 {
     float4 pixelColor = DiffuseMap.Sample(Sampler, input.texCoord);
-    //float4 pixelColor = { 1.0f, 1.0f, 1.0f, 1.0f };
     Material mat =
     {
         pixelColor,
@@ -135,8 +130,8 @@ float4 PSMain(PS_IN input) : SV_Target
     float4 dirLightCol = calcDirectLight(input.wPos, normal, toEye, mat, dLight);
 
     float4 pointLightSum = { 0, 0, 0, 0 };
-
-    for (int i = 0; i < 6; i++)
+    
+    for (int i = 0; i < 14; i++)
     {
         pointLightSum += calcPointLight(input.wPos, normal, toEye, mat, pointLights[i]);
     }

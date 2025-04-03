@@ -19,8 +19,5 @@ public:
         XMFLOAT3 cam_pos;
     } floor_pcb;
     Bind::PixelConstantBuffer<Floor_PCB>* pcb;
-    Bind::PixelConstantBuffer<LightData>* light_pcb;
-
-    LightData lightData;
 };
 

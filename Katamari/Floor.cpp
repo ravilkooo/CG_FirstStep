@@ -72,37 +72,7 @@ Floor::Floor(ID3D11Device* device)
 	AddBind(new Bind::PixelShader(device, L"./Shaders/FloorPShader.hlsl"));
 
 	AddBind(new Bind::TransformCBuffer(device, this, 0u));
-
-	lightData.dLight = {
-		Vector4(0.1f, 0.1f, 0.1f, 0.0f),
-		Vector4(0.4f, 0.4f, 0.4f, 0.0f),
-		Vector4(0.6f, 0.6f, 0.6f, 0.0f),
-		Vector3(-2.0f, -1.0f, -1.0f) / Vector3(-2.0f, -1.0f, -1.0f).Length(),
-		0
-	};
-
-	for (int i = 0; i < 6; i++)
-	{
-		/*
-		(+1)% 2, // 3, (+2) % 6 // 3
-		100
-		001
-		101
-		011
-		110
-		010
-		*/
-		lightData.pointLights[i].Ambient = { 0, 0, 0, 1 };
-		lightData.pointLights[i].Diffuse = { (i + 1) % 2 * 1.0f, i / 3 * 1.0f, (i + 2) % 6 / 3 * 1.0f, 1 };
-		lightData.pointLights[i].Specular = { (i + 1) % 2 * 1.0f, i / 3 * 1.0f, (i + 2) % 6 / 3 * 1.0f, 1 };
-		lightData.pointLights[i].Position = { 15.0f * cos(XM_2PI * i / 6.0f), 2.0f, 15.0f * sin(XM_2PI * i / 6.0f) };
-		lightData.pointLights[i].Range = 100.0f;
-		lightData.pointLights[i].Att = { 0.01f, 1.0f, 0.0f };
-		std::cout << (i + 1) % 2 * 1.0f << ", " << i / 3 * 1.0f << ", " << (i + 2) % 6 / 3 * 1.0f << "\n";
-	}
-
-	light_pcb = new Bind::PixelConstantBuffer<LightData>(device, lightData, 0u);
-	AddBind(light_pcb);
+	
 	pcb = new Bind::PixelConstantBuffer<Floor::Floor_PCB>(device, floor_pcb, 1u);
 	AddBind(pcb);
 

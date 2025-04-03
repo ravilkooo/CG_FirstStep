@@ -35,6 +35,76 @@ KatamariGame::KatamariGame()
 
 	renderer.camera.SwitchToFollowMode(ball->position, ball->GetMoveDir(), ball->radius);
 
+	// Light
+
+	lightData.dLight = {
+		Vector4(0.1f, 0.1f, 0.1f, 0.0f),
+		Vector4(0.4f, 0.4f, 0.4f, 0.0f),
+		Vector4(0.6f, 0.6f, 0.6f, 0.0f),
+		Vector3(-2.0f, -1.0f, -1.0f) / Vector3(-2.0f, -1.0f, -1.0f).Length(),
+		0
+	};
+
+	for (int i = 0; i < 6; i++)
+	{
+		/*
+		(+1)% 2, // 3, (+2) % 6 // 3
+		100
+		001
+		101
+		011
+		110
+		010
+		*/
+		lightData.pointLights[i].Ambient = { 0, 0, 0, 1 };
+		lightData.pointLights[i].Diffuse = { (i + 1) % 2 * 1.0f, i / 3 * 1.0f, (i + 2) % 6 / 3 * 1.0f, 1 };
+		lightData.pointLights[i].Specular = { (i + 1) % 2 * 1.0f, i / 3 * 1.0f, (i + 2) % 6 / 3 * 1.0f, 1 };
+		lightData.pointLights[i].Position = { 15.0f * cos(XM_2PI * i / 6.0f), 2.0f, 15.0f * sin(XM_2PI * i / 6.0f) };
+		lightData.pointLights[i].Range = 100.0f;
+		lightData.pointLights[i].Att = { 0.01f, 1.0f, 0.0f };
+		//std::cout << (i + 1) % 2 * 1.0f << ", " << i / 3 * 1.0f << ", " << (i + 2) % 6 / 3 * 1.0f << "\n";
+	}
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+	for (int i = 6; i < 14; i++)
+	{
+		Matrix rotationX = Matrix::CreateRotationX(dis(gen) * XM_2PI);
+		Matrix rotationY = Matrix::CreateRotationY(dis(gen) * XM_2PI);
+		Matrix rotationZ = Matrix::CreateRotationZ(dis(gen) * XM_2PI);
+		float _dist = dis(gen)*2.0f + 5.0f;
+		Vector3 lightColor = {
+			dis(gen),
+			dis(gen),
+			dis(gen),
+		};
+
+		while (lightColor.Length() < 0.9f) {
+			lightColor = {
+				dis(gen),
+				dis(gen),
+				dis(gen)
+			};
+		}
+
+		Matrix rotation = rotationX * rotationY * rotationZ;
+
+		lightData.pointLights[i].Ambient = { 0, 0, 0, 1 };
+		lightData.pointLights[i].Diffuse = { lightColor.x, lightColor.y, lightColor.z, 1.0f };
+		lightData.pointLights[i].Specular = { lightColor.x, lightColor.y, lightColor.z, 1.0f };
+
+		pointLightInitPositions[i-6] = Vector3::Transform({ _dist, 0.0f, 0.0f }, rotation);
+
+		lightData.pointLights[i].Range = 7.0f;
+		lightData.pointLights[i].Att = { 0.01f, 1.0f, 0.0f };
+	}
+
+
+	light_pcb = new Bind::PixelConstantBuffer<LightData>(renderer.GetDevice(), lightData, 0u);
+	renderer.AddPerFrameBind(light_pcb);
+
 	InputDevice::getInstance().OnKeyPressed.AddRaw(this, &KatamariGame::HandleKeyDown);
 	InputDevice::getInstance().MouseMove.AddRaw(this, &KatamariGame::HandleMouseMove);
 }
@@ -120,19 +190,32 @@ void KatamariGame::Update(float deltaTime)
 				camera_pos
 			});
 	}
+
 	ball->pcb->Update(renderer.GetDeviceContext(),
 		{
 			camera_pos
 		});
 
+	
+
 	for (size_t i = 0; i < 6; i++)
 	{
-		floor->lightData.pointLights[i].Position = Vector3::Transform(floor->lightData.pointLights[i].Position, Matrix::CreateRotationY(deltaTime*1.0f));
+		lightData.pointLights[i].Position = Vector3::Transform(lightData.pointLights[i].Position, Matrix::CreateRotationY(deltaTime*1.0f));
 	}
-	floor->light_pcb->Update(renderer.GetDeviceContext(),
+	for (size_t i = 6; i < 14; i++)
+	{
+		lightData.pointLights[i].Position = Vector3::Transform(pointLightInitPositions[i-6], ball->worldMat);
+	}
+
+	light_pcb->Update(renderer.GetDeviceContext(),
 		{
-			floor->lightData
-		});
+			lightData
+		}
+	);
+
+
+
+
 	floor->pcb->Update(renderer.GetDeviceContext(),
 		{
 			camera_pos
