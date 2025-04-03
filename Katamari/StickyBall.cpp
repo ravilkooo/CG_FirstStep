@@ -84,7 +84,7 @@ StickyBall::StickyBall(ID3D11Device* device)
 
 	AddBind(new Bind::TransformCBuffer(device, this, 0u));
 
-	pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(device, ball_pcb);
+	pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(device, ball_pcb, 1u);
 	AddBind(pcb);
 
 	D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});

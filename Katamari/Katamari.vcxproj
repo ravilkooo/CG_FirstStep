@@ -169,6 +169,7 @@
     <ClCompile Include="CollectibleObject.cpp" />
     <ClCompile Include="Floor.cpp" />
     <ClCompile Include="KatamariGame.cpp" />
+    <ClCompile Include="KatamariLighting.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="StickyBall.cpp" />
   </ItemGroup>

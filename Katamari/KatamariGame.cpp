@@ -16,16 +16,9 @@ KatamariGame::KatamariGame()
 
 	scene = Scene();
 
-	// Добавление объектов на сцену
-	/*for (auto body : cosmicBodies)
-	{
-		scene.AddNode(body);
-	}*/
-
 	physEngine = new PhysicsEngine(&scene);
 
 	displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
-	// inputHandler = displayWindow.GetInputHandler();
 
 	renderer = Renderer(&displayWindow);
 	renderer.camera = Camera(winWidth * 1.0f / winHeight);
@@ -39,46 +32,6 @@ KatamariGame::KatamariGame()
 	scene.AddNode(floor);
 
 	SpawnCollectibles();
-	/*
-	for (auto node : scene.nodes)
-	{
-		node->device = renderer.GetDevice();
-
-		// TO-DO: Change to SceneNode.AddBind()
-		node->LoadAndCompileShader(renderer.shaderManager);
-
-		// TO-DO: Change to SceneNode.AddBind()
-		node->InitBuffers(renderer.resourceManager);
-
-		node->camera = &(renderer.camera);
-		//std::cout << "f1\n";
-	}
-	*/
-	/*
-	ball->LoadAndCompileShader(renderer.shaderManager);
-	ball->InitBuffers(renderer.resourceManager);
-	*/
-	//floor->LoadAndCompileShader(renderer.shaderManager);
-	//floor->InitBuffers(renderer.resourceManager);
-	/*
-	ball->pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(renderer.GetDevice(), ball->ball_pcb);
-	ball->AddBind(ball->pcb);
-
-	ball->vcb = new Bind::VertexConstantBuffer<StickyBall::Ball_VCB>(renderer.GetDevice(), ball->ball_vcb);
-	ball->AddBind(ball->vcb);
-	*/
-	/*
-	// Move inside Collectible
-	for (auto& obj : collectibles)
-	{
-		obj.pcb = new Bind::PixelConstantBuffer<CollectibleObject::Collectible_PCB>(renderer.GetDevice(), obj.coll_pcb);
-		obj.AddBind(obj.pcb);
-
-		obj.vcb = new Bind::VertexConstantBuffer<CollectibleObject::Collectible_VCB>(renderer.GetDevice(), obj.coll_vcb);
-		obj.AddBind(obj.vcb);
-	}
-	*/
-	//std::cout << floor->binds.size() << " " << ball->binds.size() << " " << "\n";
 
 	renderer.camera.SwitchToFollowMode(ball->position, ball->GetMoveDir(), ball->radius);
 
@@ -153,16 +106,7 @@ void KatamariGame::Update(float deltaTime)
 
 	Matrix vpMat = renderer.camera.GetViewMatrix() * renderer.camera.GetProjectionMatrix();
 
-	/*
-	ball->pcb->Update(renderer.GetDeviceContext(), ball->ball_pcb);
-	ball->vcb->Update(renderer.GetDeviceContext(), {
-			ball->worldMat,
-			vpMat,
-			// ball->radius
-		}
-		);
-	
-	*/
+
 	XMFLOAT3 camera_pos = renderer.camera.GetPosition();
 	for (auto coll : collectibles)
 	{
@@ -180,19 +124,19 @@ void KatamariGame::Update(float deltaTime)
 		{
 			camera_pos
 		});
+
+	for (size_t i = 0; i < 6; i++)
+	{
+		floor->lightData.pointLights[i].Position = Vector3::Transform(floor->lightData.pointLights[i].Position, Matrix::CreateRotationY(deltaTime*1.0f));
+	}
+	floor->light_pcb->Update(renderer.GetDeviceContext(),
+		{
+			floor->lightData
+		});
 	floor->pcb->Update(renderer.GetDeviceContext(),
 		{
 			camera_pos
 		});
-
-
-	// floor->cb.wvpMat = floor->worldMat * (XMMATRIX)vpMat;
-	// std::cout << ball->position.x << ", " << ball->position.z << "\n";
-
-	/*for (auto node : scene.nodes)
-	{
-		node->cb.wvpMat = node->worldMat * (XMMATRIX)vpMat;
-	}*/
 
 }
 

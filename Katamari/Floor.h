@@ -1,7 +1,10 @@
 #pragma once
 #include <SceneNode.h>
-class Floor :
-    public SceneNode
+#include <DrawableBase.h>
+
+#include "KatamariLighting.h"
+
+class Floor : public DrawableBase<Floor>
 {
 public:
     Floor();
@@ -16,6 +19,8 @@ public:
         XMFLOAT3 cam_pos;
     } floor_pcb;
     Bind::PixelConstantBuffer<Floor_PCB>* pcb;
+    Bind::PixelConstantBuffer<LightData>* light_pcb;
 
+    LightData lightData;
 };
 

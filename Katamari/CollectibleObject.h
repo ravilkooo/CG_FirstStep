@@ -1,14 +1,16 @@
 #pragma once
-#include "SceneNode.h"
+#include <SceneNode.h>
 #include "StickyBall.h"
 #include "ModelLoader.h"
 #include <filesystem>
 #include "ShapeGenerator.h"
 #include <StringHelper.h>
 #include <random>
+
+#include <DrawableBase.h>
 //#include <assimp/ai_assert.h>
 
-class CollectibleObject : public SceneNode
+class CollectibleObject : public DrawableBase<CollectibleObject>
 {
 public:
     CollectibleObject(ID3D11Device* device, const std::string& modelsFolder, const DirectX::XMFLOAT3& position);
