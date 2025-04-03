@@ -1,6 +1,6 @@
 #include "CosmicBody.h"
 
-CosmicBody::CosmicBody(float radius, float rotationSpeed,
+CosmicBody::CosmicBody(ID3D11Device* device, float radius, float rotationSpeed,
     XMFLOAT3 position,
     XMFLOAT4 col, PLANET_TYPE planet_type,
     CosmicBody* attractedTo, float orbitRadius, float orbitSpeed)

@@ -254,14 +254,16 @@ struct PS_IN
 
 cbuffer CBuf
 {
-    row_major float4x4 wvpMat;
+    row_major float4x4 wMat;
+    row_major float4x4 wMatInvTranspose;
+    row_major float4x4 vpMat;
 };
 
 PS_IN VSMain(VS_IN input)
 {
     PS_IN output = (PS_IN) 0;
 	
-    output.screen_pos = mul(float4(input.pos, 1.0), wvpMat);
+    output.screen_pos = mul(mul(float4(input.pos, 1.0), wMat), vpMat);
     output.pos = input.pos;
     output.col = input.col;
 	

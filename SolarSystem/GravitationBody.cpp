@@ -24,7 +24,7 @@ Vector3 GravitationBody::CalcBounceDeltaV(GravitationBody other)
     return dv1;
 }
 
-GravitationBody::GravitationBody(float radius, float spinSpeed,
+GravitationBody::GravitationBody(ID3D11Device* device, float radius, float spinSpeed,
     XMFLOAT3 position,
     XMFLOAT4 col, PLANET_TYPE planet_type, float density)
     : radius(radius), spinSpeed(spinSpeed), position(position), rotationAngle(0.0f), mass(radius*radius*radius * density)
@@ -87,45 +87,47 @@ GravitationBody::GravitationBody(float radius, float spinSpeed,
         break;
     }
     
-    AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-    AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
-    AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
-    vertexShaderB = new Bind::VertexShader(device, L"./Shaders/CubeShader.hlsl");
-    AddBind(vertexShaderB);
+    if (!IsStaticInitialized()) {
+        AddStaticBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+        AddStaticBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
+        AddStaticBind(new Bind::IndexBuffer(device, indices, indicesNum));
+        vertexShaderB = new Bind::VertexShader(device, L"./Shaders/CubeShader.hlsl");
+        AddStaticBind(vertexShaderB);
 
 
-    numInputElements = 2;
+        numInputElements = 2;
 
-    IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
-    IALayoutInputElements[0] =
-        D3D11_INPUT_ELEMENT_DESC{
-            "POSITION",
-            0,
-            DXGI_FORMAT_R32G32B32_FLOAT,
-            0,
-            0,
-            D3D11_INPUT_PER_VERTEX_DATA,
-            0 };
+        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+        IALayoutInputElements[0] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "POSITION",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                0,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
 
-    IALayoutInputElements[1] =
-        D3D11_INPUT_ELEMENT_DESC{
-            "COLOR",
-            0,
-            DXGI_FORMAT_R32G32B32A32_FLOAT,
-            0,
-            D3D11_APPEND_ALIGNED_ELEMENT,
-            D3D11_INPUT_PER_VERTEX_DATA,
-            0 };
+        IALayoutInputElements[1] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "COLOR",
+                0,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
 
-    AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
-    AddBind(new Bind::PixelShader(device, L"./Shaders/CubeShader.hlsl"));
+        AddStaticBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
+        AddStaticBind(new Bind::PixelShader(device, L"./Shaders/CubeShader.hlsl"));
 
+
+        D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
+        rastDesc.CullMode = D3D11_CULL_BACK;
+        rastDesc.FillMode = D3D11_FILL_SOLID;
+        AddStaticBind(new Bind::Rasterizer(device, rastDesc));
+    }
     AddBind(new Bind::TransformCBuffer(device, this, 0u));
-
-    D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
-    rastDesc.CullMode = D3D11_CULL_BACK;
-    rastDesc.FillMode = D3D11_FILL_SOLID;
-    AddBind(new Bind::Rasterizer(device, rastDesc));
 }
 
 GravitationBody::~GravitationBody()

@@ -1,6 +1,7 @@
 #include "StarBox.h"
 
-StarBox::StarBox(float radius, float spinSpeed,
+StarBox::StarBox(ID3D11Device* device,
+    float radius, float spinSpeed,
     XMFLOAT3 position,
     XMFLOAT4 col)
     : radius(radius), spinSpeed(spinSpeed), position(position), rotationAngle(0.0f)
@@ -27,7 +28,6 @@ StarBox::StarBox(float radius, float spinSpeed,
     AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
     vertexShaderB = new Bind::VertexShader(device, L"./Shaders/StarBoxShader.hlsl");
     AddBind(vertexShaderB);
-
 
     numInputElements = 2;
 

@@ -5,7 +5,6 @@
 #include <directxmath.h>
 #include <SceneNode.h>
 #include <DirectXMath.h>
-#include "SimpleMath.h"
 #include <ShapeGenerator.h>
 #include <DrawableBase.h>
 
@@ -20,7 +19,7 @@ public:
     };
 
 
-    CosmicBody(float radius, float rotationSpeed,
+    CosmicBody(ID3D11Device* device, float radius, float rotationSpeed,
         XMFLOAT3 position, XMFLOAT4 col, PLANET_TYPE planet_type,
         CosmicBody* attractedTo = nullptr, float orbitRadius = 0.0, float orbitSpeed = 0.0 );
     ~CosmicBody();  

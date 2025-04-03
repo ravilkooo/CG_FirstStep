@@ -3,7 +3,6 @@
 #include <directxmath.h>
 #include <SceneNode.h>
 #include <DirectXMath.h>
-#include "SimpleMath.h"
 #include <ShapeGenerator.h>
 #include <DrawableBase.h>
 
@@ -13,7 +12,7 @@ using namespace DirectX::SimpleMath;
 class GravitationBody : public DrawableBase<GravitationBody>
 {
 public:
-    static constexpr float g_const = 6.67430e-11 * 1e14;
+    static constexpr float g_const = 6.67430e-11 * 1e13;
     static constexpr float maxVelocity = 10000.0f;
     float mass = 1.0f;
 
@@ -31,7 +30,7 @@ public:
         CUBE = 0, SPHERE = 1, GEOSPHERE = 2, RING = 3,
     };
 
-    GravitationBody(float radius, float spinSpeed,
+    GravitationBody(ID3D11Device* device, float radius, float spinSpeed,
         XMFLOAT3 position, XMFLOAT4 col, PLANET_TYPE planet_type, float density = 0.1f);
     ~GravitationBody();
 

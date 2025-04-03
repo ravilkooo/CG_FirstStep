@@ -2,7 +2,6 @@
 #include <Game.h>
 #include "SolarSystemPhysics.h"
 #include "GravitationBody.h"
-#include <Camera.h>
 #include <random>
 #include "StarBox.h"
 
@@ -37,5 +36,6 @@ private:
 
     void HandleKeyDown(Keys key);
     void HandleMouseMove(const InputDevice::MouseMoveEventArgs& args);
+    void SpawnGravBody();
 };
 

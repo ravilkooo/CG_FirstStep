@@ -35,23 +35,23 @@ SolarSystemGame::SolarSystemGame()
 
 	// Создание планет и лун
 	accum_dist = sun_rad;
-	CosmicBody* sun = new CosmicBody(sun_rad, 0.2f, DirectX::XMFLOAT3(0.0f, 0.3f, 0.5f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE);
+	CosmicBody* sun = new CosmicBody(renderer.GetDevice(), sun_rad, 0.2f, DirectX::XMFLOAT3(0.0f, 0.3f, 0.5f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE);
 	cosmicBodies.push_back(sun);
 
 	accum_dist += planet_gap + merc_rad;
-	CosmicBody* mercury = new CosmicBody(merc_rad, 1.9f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.6f, 0.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::GEOSPHERE,
+	CosmicBody* mercury = new CosmicBody(renderer.GetDevice(), merc_rad, 1.9f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.6f, 0.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::GEOSPHERE,
 		sun, accum_dist, 10.5f);
 	cosmicBodies.push_back(mercury);
 
 	accum_dist += merc_rad + planet_gap + venus_rad;
-	CosmicBody* venus = new CosmicBody(venus_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.5f, 0.5f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
+	CosmicBody* venus = new CosmicBody(renderer.GetDevice(), venus_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.5f, 0.5f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
 		sun, accum_dist, 1.0f);
 	cosmicBodies.push_back(venus);
 
 	accum_dist += venus_rad + planet_gap + (2 * moon_rad + moon_gap + earth_rad);
-	CosmicBody* earth = new CosmicBody(earth_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE,
+	CosmicBody* earth = new CosmicBody(renderer.GetDevice(), earth_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE,
 		sun, accum_dist, 0.7f);
-	CosmicBody* moon = new CosmicBody(moon_rad, 0.6f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
+	CosmicBody* moon = new CosmicBody(renderer.GetDevice(), moon_rad, 0.6f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
 		earth, earth_rad + moon_gap + moon_rad, 1.8f);
 	cosmicBodies.push_back(earth);
 	cosmicBodies.push_back(moon);
@@ -60,11 +60,11 @@ SolarSystemGame::SolarSystemGame()
 
 	//std::cout << mars_rad + moon_gap + fobos_rad << "\n";
 
-	CosmicBody* mars = new CosmicBody(mars_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE,
+	CosmicBody* mars = new CosmicBody(renderer.GetDevice(), mars_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE,
 		sun, accum_dist, 0.8);
-	CosmicBody* fobos = new CosmicBody(fobos_rad, 0.6f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.4f, 0.1f, 0.1f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
+	CosmicBody* fobos = new CosmicBody(renderer.GetDevice(), fobos_rad, 0.6f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.4f, 0.1f, 0.1f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
 		mars, mars_rad + moon_gap + fobos_rad, 2.1f);
-	CosmicBody* deimos = new CosmicBody(deimos_rad, 0.4f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.2f, 0.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
+	CosmicBody* deimos = new CosmicBody(renderer.GetDevice(), deimos_rad, 0.4f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.2f, 0.0f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
 		mars, 2 * fobos_rad + deimos_rad + 2 * moon_gap + mars_rad, 2.9f);
 	cosmicBodies.push_back(mars);
 	cosmicBodies.push_back(fobos);
@@ -76,7 +76,7 @@ SolarSystemGame::SolarSystemGame()
 	for (size_t i = 0; i < asteroid_cnt; i++)
 	{
 		cosmicBodies.push_back(
-			new CosmicBody(merc_rad, 0.9f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.3f, 0.2f, 0.2f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
+			new CosmicBody(renderer.GetDevice(), merc_rad, 0.9f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.3f, 0.2f, 0.2f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
 				sun, accum_dist, 0.5f)
 		);
 		cosmicBodies[cosmicBodies.size() - 1]->rotationAngle = ((7 * i) % asteroid_cnt) * XM_2PI / asteroid_cnt;
@@ -85,15 +85,15 @@ SolarSystemGame::SolarSystemGame()
 
 	accum_dist += (merc_rad)+planet_gap + (jupiter_rad);
 
-	CosmicBody* jupiter = new CosmicBody(jupiter_rad, 0.3f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.58f, 0.29f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE,
+	CosmicBody* jupiter = new CosmicBody(renderer.GetDevice(), jupiter_rad, 0.3f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.58f, 0.29f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::SPHERE,
 		sun, accum_dist, 1.4f);
 	cosmicBodies.push_back(jupiter);
 
 	accum_dist += (jupiter_rad)+planet_gap + (saturn_ring_rad + planet_gap);
 
-	CosmicBody* saturn = new CosmicBody(saturn_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.5f, 0.2f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
+	CosmicBody* saturn = new CosmicBody(renderer.GetDevice(), saturn_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.5f, 0.2f, 1.0f), CosmicBody::PLANET_TYPE::CUBE,
 		sun, accum_dist, 1.73f);
-	CosmicBody* saturn_ring = new CosmicBody(saturn_ring_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.58f, 0.29f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::RING,
+	CosmicBody* saturn_ring = new CosmicBody(renderer.GetDevice(), saturn_ring_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.58f, 0.29f, 0.0f, 1.0f), CosmicBody::PLANET_TYPE::RING,
 		saturn, 0.0f, 2.4f);
 	cosmicBodies.push_back(saturn);
 	cosmicBodies.push_back(saturn_ring);
@@ -102,9 +102,9 @@ SolarSystemGame::SolarSystemGame()
 	accum_dist += (saturn_ring_rad + planet_gap) + planet_gap + (saturn_ring_rad + planet_gap);
 
 
-	CosmicBody* uranus = new CosmicBody(uranus_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::GEOSPHERE,
+	CosmicBody* uranus = new CosmicBody(renderer.GetDevice(), uranus_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::GEOSPHERE,
 		sun, accum_dist, 1.4f);
-	CosmicBody* uranus_ring = new CosmicBody(uranus_ring_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.1f, 0.1f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::RING,
+	CosmicBody* uranus_ring = new CosmicBody(renderer.GetDevice(), uranus_ring_rad, 0.8f, DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.1f, 0.1f, 1.0f, 1.0f), CosmicBody::PLANET_TYPE::RING,
 		uranus, 0.0f, 5.1f);
 	uranus_ring->orbitalAxis = Vector3(0.0f, cosf(XM_PIDIV2 * 0.9), sinf(XM_PIDIV2 * 0.9));
 	cosmicBodies.push_back(uranus);
@@ -129,8 +129,6 @@ SolarSystemGame::SolarSystemGame()
 
 	for (auto node : scene.nodes)
 	{
-		node->LoadAndCompileShader(renderer.shaderManager);
-		node->InitBuffers(renderer.resourceManager);
 		node->camera = &(renderer.camera);
 		//std::cout << "f1\n";
 	}
@@ -193,13 +191,6 @@ void SolarSystemGame::Update(float deltaTime)
 	if (focusedBody) {
 
 		renderer.camera.Update(deltaTime, focusedBody->worldMat);
-	}
-
-	Matrix vpMat = renderer.camera.GetViewMatrix() * renderer.camera.GetProjectionMatrix();
-
-	for (auto node : scene.nodes)
-	{
-		node->cb.wvpMat = node->worldMat * (XMMATRIX)vpMat;
 	}
 }
 
