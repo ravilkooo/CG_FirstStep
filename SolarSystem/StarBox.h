@@ -6,11 +6,12 @@
 #include "SimpleMath.h"
 #include <ShapeGenerator.h>
 #include "GravitationBody.h"
+#include <DrawableBase.h>
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-class StarBox : public SceneNode
+class StarBox : public DrawableBase<StarBox>
 {
 public:
     Vector3 position = Vector3::Zero;
@@ -29,5 +30,8 @@ public:
     float radius;
     float rotationAngle; // Текущий угол вращения
     Vector3 spinAxis = Vector3(0.0f, 1.0f, 0.0f);
+
+private:
+    Bind::VertexShader* vertexShaderB;
 };
 

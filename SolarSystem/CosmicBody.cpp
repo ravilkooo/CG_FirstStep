@@ -67,6 +67,13 @@ CosmicBody::CosmicBody(float radius, float rotationSpeed,
     //CreateSimpleCubeMesh(radius, radius, radius, col, &vertices, &verticesNum, &indices, &indicesNum);
     //CreateSimpleGeosphereMesh(radius, col, &vertices, &verticesNum, &indices, &indicesNum);
     //CreateSimpleSphereMesh(radius, 6, 3, col, &vertices, &verticesNum, &indices, &indicesNum);
+    
+    AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+    AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
+    AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
+    vertexShaderB = new Bind::VertexShader(device, L"./Shaders/CubeShader.hlsl");
+    AddBind(vertexShaderB);
+
 
     numInputElements = 2;
 
@@ -91,8 +98,15 @@ CosmicBody::CosmicBody(float radius, float rotationSpeed,
             D3D11_INPUT_PER_VERTEX_DATA,
             0};
 
-    vertexShaderFilePath = L"./Shaders/CubeShader.hlsl";
-    pixelShaderFilePath = L"./Shaders/CubeShader.hlsl";
+    AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
+    AddBind(new Bind::PixelShader(device, L"./Shaders/CubeShader.hlsl"));
+
+    AddBind(new Bind::TransformCBuffer(device, this, 0u));
+
+    D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
+    rastDesc.CullMode = D3D11_CULL_BACK;
+    rastDesc.FillMode = D3D11_FILL_SOLID;
+    AddBind(new Bind::Rasterizer(device, rastDesc));
 }
 
 CosmicBody::~CosmicBody()

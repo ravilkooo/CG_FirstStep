@@ -5,11 +5,12 @@
 #include <DirectXMath.h>
 #include "SimpleMath.h"
 #include <ShapeGenerator.h>
+#include <DrawableBase.h>
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-class GravitationBody : public SceneNode
+class GravitationBody : public DrawableBase<GravitationBody>
 {
 public:
     static constexpr float g_const = 6.67430e-11 * 1e14;
@@ -44,5 +45,7 @@ public:
     float rotationAngle; // Текущий угол вращения
     Vector3 spinAxis = Vector3(0.0f, 1.0f, 0.0f);
 
+private:
+    Bind::VertexShader* vertexShaderB;
 };
 

@@ -6,9 +6,7 @@
 #include "ShapeGenerator.h"
 #include <StringHelper.h>
 #include <random>
-
 #include <DrawableBase.h>
-//#include <assimp/ai_assert.h>
 
 class CollectibleObject : public DrawableBase<CollectibleObject>
 {

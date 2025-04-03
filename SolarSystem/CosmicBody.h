@@ -7,11 +7,12 @@
 #include <DirectXMath.h>
 #include "SimpleMath.h"
 #include <ShapeGenerator.h>
+#include <DrawableBase.h>
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-class CosmicBody : public SceneNode
+class CosmicBody : public DrawableBase<CosmicBody>
 {
 public:
     enum class PLANET_TYPE {
@@ -46,6 +47,9 @@ private:
     float orbitRadius;
     CosmicBody* attractedTo;  // Тело, вокруг которого вращается
     float eyeTime = 0.0f;
+
+
+    Bind::VertexShader* vertexShaderB;
    
 };
 
