@@ -3,7 +3,11 @@
 
 namespace Bind
 {
-
+	TextureB::TextureB(ID3D11Device* device, ID3D11Resource* pTexture, ID3D11ShaderResourceView* pTextureView)
+	{
+		this->pTexture = pTexture;
+		this->pTextureView = pTextureView;
+	}
 	TextureB::TextureB(ID3D11Device* device, const std::string& filePath, aiTextureType type)
 		: filePath(filePath), type(type)
 	{

@@ -125,6 +125,7 @@ void Renderer::RenderScene(const Scene& scene)
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1.0f;
 	context->RSSetViewports(1, &viewport);
+	context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
 
 	BindAll();
 

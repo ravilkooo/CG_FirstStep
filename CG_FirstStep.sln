@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Katamari", "Katamari\Katama
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameQuads", "GameQuads\GameQuads.vcxproj", "{4B973B49-EBA0-4B48-957E-E295FCE551AD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CascadeShadowsTesting", "CascadeShadowsTesting\CascadeShadowsTesting.vcxproj", "{4EA7792E-2BC1-48FC-82F3-6535D902A90F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -91,6 +93,14 @@ Global
 		{4B973B49-EBA0-4B48-957E-E295FCE551AD}.Release|x64.Build.0 = Release|x64
 		{4B973B49-EBA0-4B48-957E-E295FCE551AD}.Release|x86.ActiveCfg = Release|Win32
 		{4B973B49-EBA0-4B48-957E-E295FCE551AD}.Release|x86.Build.0 = Release|Win32
+		{4EA7792E-2BC1-48FC-82F3-6535D902A90F}.Debug|x64.ActiveCfg = Debug|x64
+		{4EA7792E-2BC1-48FC-82F3-6535D902A90F}.Debug|x64.Build.0 = Debug|x64
+		{4EA7792E-2BC1-48FC-82F3-6535D902A90F}.Debug|x86.ActiveCfg = Debug|Win32
+		{4EA7792E-2BC1-48FC-82F3-6535D902A90F}.Debug|x86.Build.0 = Debug|Win32
+		{4EA7792E-2BC1-48FC-82F3-6535D902A90F}.Release|x64.ActiveCfg = Release|x64
+		{4EA7792E-2BC1-48FC-82F3-6535D902A90F}.Release|x64.Build.0 = Release|x64
+		{4EA7792E-2BC1-48FC-82F3-6535D902A90F}.Release|x86.ActiveCfg = Release|Win32
+		{4EA7792E-2BC1-48FC-82F3-6535D902A90F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
