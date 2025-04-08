@@ -87,43 +87,58 @@ void CreateSimpleCubeMesh(float width, float height, float depth, DirectX::XMFLO
     //DirectX::XMFLOAT4 col_1 = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
     //DirectX::XMFLOAT4 col_2 = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
-    *vertices = (CommonVertex*)calloc(8, sizeof(CommonVertex));
-    *verticesNum = 8;
+    *vertices = (CommonVertex*)calloc(24, sizeof(CommonVertex));
+    *verticesNum = 24;
 
-    (*vertices)[0] = { DirectX::XMFLOAT3(-w2, -h2, -d2), col };
-    (*vertices)[1] = { DirectX::XMFLOAT3(-w2, +h2, -d2), col };
-    (*vertices)[2] = { DirectX::XMFLOAT3(+w2, +h2, -d2), col };
-    (*vertices)[3] = { DirectX::XMFLOAT3(+w2, -h2, -d2), col };
-    (*vertices)[4] = { DirectX::XMFLOAT3(-w2, -h2, +d2), col };
-    (*vertices)[5] = { DirectX::XMFLOAT3(-w2, +h2, +d2), col };
-    (*vertices)[6] = { DirectX::XMFLOAT3(+w2, +h2, +d2), col };
-    (*vertices)[7] = { DirectX::XMFLOAT3(+w2, -h2, +d2), col };
+    (*vertices)[0] = { DirectX::XMFLOAT3(-w2, -h2, -d2), col, {0, 0, -1} };
+    (*vertices)[1] = { DirectX::XMFLOAT3(-w2, +h2, -d2), col, {0, 0, -1} };
+    (*vertices)[2] = { DirectX::XMFLOAT3(+w2, +h2, -d2), col, {0, 0, -1} };
+    (*vertices)[3] = { DirectX::XMFLOAT3(+w2, -h2, -d2), col, {0, 0, -1} };
+
+    (*vertices)[4] = { DirectX::XMFLOAT3(-w2, -h2, +d2), col, {0, 0, 1} };
+    (*vertices)[5] = { DirectX::XMFLOAT3(-w2, +h2, +d2), col, {0, 0, 1} };
+    (*vertices)[6] = { DirectX::XMFLOAT3(+w2, +h2, +d2), col, {0, 0, 1} };
+    (*vertices)[7] = { DirectX::XMFLOAT3(+w2, -h2, +d2), col, {0, 0, 1} };
+
+    (*vertices)[8] = { DirectX::XMFLOAT3(-w2, -h2, +d2), col, {-1, 0, 0} }; // 4
+    (*vertices)[9] = { DirectX::XMFLOAT3(-w2, +h2, +d2), col, {-1, 0, 0} }; // 5
+    (*vertices)[10] = { DirectX::XMFLOAT3(-w2, +h2, -d2), col, {-1, 0, 0} }; // 1
+    (*vertices)[11] = { DirectX::XMFLOAT3(-w2, -h2, -d2), col, {-1, 0, 0} }; // 0
+
+    (*vertices)[12] = { DirectX::XMFLOAT3(+w2, -h2, -d2), col, {1, 0, 0} }; // 3
+    (*vertices)[13] = { DirectX::XMFLOAT3(+w2, +h2, -d2), col, {1, 0, 0} }; // 2
+    (*vertices)[14] = { DirectX::XMFLOAT3(+w2, +h2, +d2), col, {1, 0, 0} }; // 6
+    (*vertices)[15] = { DirectX::XMFLOAT3(+w2, -h2, +d2), col, {1, 0, 0} }; // 7
+
+    (*vertices)[16] = { DirectX::XMFLOAT3(-w2, +h2, -d2), col, {0, 1, 0} }; // 1
+    (*vertices)[17] = { DirectX::XMFLOAT3(-w2, +h2, +d2), col, {0, 1, 0} }; // 5
+    (*vertices)[18] = { DirectX::XMFLOAT3(+w2, +h2, +d2), col, {0, 1, 0} }; // 6
+    (*vertices)[19] = { DirectX::XMFLOAT3(+w2, +h2, -d2), col, {0, 1, 0} }; // 2
+
+    (*vertices)[20] = { DirectX::XMFLOAT3(-w2, -h2, +d2), col, {0, -1, 0} }; // 4
+    (*vertices)[21] = { DirectX::XMFLOAT3(-w2, -h2, -d2), col, {0, -1, 0} }; // 0
+    (*vertices)[22] = { DirectX::XMFLOAT3(+w2, -h2, -d2), col, {0, -1, 0} }; // 3
+    (*vertices)[23] = { DirectX::XMFLOAT3(+w2, -h2, +d2), col, {0, -1, 0} }; // 7
 
 
     int _indices[36] = {
-        0,1,2,
-        //0,2,1,
-        0,2,3,
-        //0,3,2,
+        0,1,2, // ok
+        0,2,3, // ok
 
-        4,6,5,
-        //4,5,6,
-        4,7,6,
-        //4,6,7,
+        4,6,5, // ok
+        4,7,6, // ok
 
-        4,5,1,
-        4,1,0,
+        8,9,10, // ok
+        8,10,11, // ok
 
-        3,2,6,
-        //3,6,2,
-        3,6,7,
-        //3,7,6,
+        12,13,14, // ok
+        12,14,15, // ok
 
-        1,5,6,
-        1,6,2,
+        16,17,18, // ok
+        16,18,19, // ok
 
-        4,0,3,
-        4,3,7,
+        20,21,22, // ok
+        20,22,23, // ok
     };
 
     *indices = (int*)calloc(36, sizeof(int));

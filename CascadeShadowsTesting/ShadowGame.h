@@ -22,6 +22,13 @@ public:
 
     std::vector<TestCube*> shadowableObjects;
 
+    // camera
+
+    struct Camera_PCB {
+        XMFLOAT3 cam_pos;
+    };
+    Bind::PixelConstantBuffer<Camera_PCB>* cam_pcb;
+
     // Light
 
     LightData lightData;
@@ -30,9 +37,10 @@ public:
     Bind::PixelConstantBuffer<LightData>* light_pcb;
 
     // Shadow
+    UINT smSizeX = 100;
+    UINT smSizeY = 100;
+    //Camera* lightViewCameras[6];
     Camera* lightViewCamera;
-    UINT smSizeX = 400;
-    UINT smSizeY = 400;
     ID3D11Texture2D* shadowTexture;
     ID3D11DepthStencilView* depthDSV;
     ID3D11ShaderResourceView* depthSRV;

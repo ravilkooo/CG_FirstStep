@@ -17,6 +17,7 @@ struct LightData {
 };
 
 struct ShadowTransform {
-    DirectX::XMMATRIX wMat;
-    DirectX::XMMATRIX viewProj;
+    DirectX::XMMATRIX lightView;
+    DirectX::XMMATRIX lightProj;
+    DirectX::XMMATRIX shadowTransform;
 };

@@ -8,9 +8,7 @@ class TestCube :
 public:
     TestCube();
     TestCube(ID3D11Device* device);
-    TestCube(ID3D11Device* device, Bind::TextureB* texture);
     TestCube(ID3D11Device* device, float width, float height, float depth, Vector3 position, Vector4 col);
-    TestCube(ID3D11Device* device, float width, float height, float depth, Vector3 position, Vector4 col, Bind::TextureB* texture);
 
     void Update(float deltaTime) override;
 
@@ -20,8 +18,6 @@ public:
 
     void SetInitTransform(Matrix transformMat);
 
-    // shadow
-    Bind::PixelConstantBuffer<ShadowTransform>* shadowPixelCBuffer;
 private:
     Bind::VertexShader* vertexShaderB = nullptr;
     Matrix initTransform = Matrix::Identity;

@@ -112,8 +112,11 @@ void Renderer::RenderScene(const Scene& scene)
 	totalTime += deltaTime;
 	totalTime = totalTime > 1.0f ? totalTime - 1.0f : totalTime;
 
+	context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
+
 	// 13. At the End of While(!isExitRequested) : Clear BackBuffer
 	float color[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+
 	context->ClearRenderTargetView(renderTargetView, color);
 	context->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0f, 0u);
 
@@ -125,7 +128,6 @@ void Renderer::RenderScene(const Scene& scene)
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1.0f;
 	context->RSSetViewports(1, &viewport);
-	context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
 
 	BindAll();
 

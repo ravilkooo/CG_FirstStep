@@ -3,13 +3,14 @@
 
 namespace Bind
 {
-	TextureB::TextureB(ID3D11Device* device, ID3D11Resource* pTexture, ID3D11ShaderResourceView* pTextureView)
+	TextureB::TextureB(ID3D11Device* device, ID3D11Resource* pTexture, ID3D11ShaderResourceView* pTextureView, UINT slot)
+		: slot(slot)
 	{
 		this->pTexture = pTexture;
 		this->pTextureView = pTextureView;
 	}
-	TextureB::TextureB(ID3D11Device* device, const std::string& filePath, aiTextureType type)
-		: filePath(filePath), type(type)
+	TextureB::TextureB(ID3D11Device* device, const std::string& filePath, aiTextureType type, UINT slot)
+		: slot(slot), filePath(filePath), type(type)
 	{
 		if (StringHelper::GetFileExtension(filePath) == "dds")
 		{
@@ -36,20 +37,22 @@ namespace Bind
 		}
 	}
 
-	TextureB::TextureB(ID3D11Device* device, const SE_Color& color, aiTextureType type)
+	TextureB::TextureB(ID3D11Device* device, const SE_Color& color, aiTextureType type, UINT slot)
+		: slot(slot)
 	{
 		this->Initialize1x1ColorTexture(device, color, type);
 	}
 
-	TextureB::TextureB(ID3D11Device* device, const SE_Color* colorData, UINT width, UINT height, aiTextureType type)
+	TextureB::TextureB(ID3D11Device* device, const SE_Color* colorData, UINT width, UINT height, aiTextureType type, UINT slot)
+		: slot(slot)
 	{
 		this->InitializeColorTexture(device, colorData, width, height, type);
 	}
 
 	void TextureB::Bind(ID3D11DeviceContext* context) noexcept
 	{
-		//context->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf());
-		context->PSSetShaderResources(0, 1u, pTextureView.GetAddressOf());
+		context->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf());
+		//context->PSSetShaderResources(0, 1u, pTextureView.GetAddressOf());
 	}
 
 	bool TextureB::HasAlpha() const noexcept
