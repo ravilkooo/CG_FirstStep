@@ -12,7 +12,9 @@ Renderer::Renderer(DisplayWindow* displayWin)
 	LPCWSTR applicationName = L"SunshineEngine";
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
 
-	this->displayWindow = displayWindow;
+	this->displayWindow = displayWin;
+	screenWidth = displayWin->screenWidth;
+	screenHeight = displayWin->screenHeight;
 
 	// swapChain
 

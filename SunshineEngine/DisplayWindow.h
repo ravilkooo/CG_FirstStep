@@ -11,8 +11,8 @@ class DisplayWindow
 	friend class Game;
 
 public:
-	int screenWidth = 800;
-	int screenHeight = 800;
+	UINT screenWidth = 800;
+	UINT screenHeight = 800;
 	HWND hWnd;
 
 	DisplayWindow();

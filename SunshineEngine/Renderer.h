@@ -53,8 +53,8 @@ private:
     
     DisplayWindow* displayWindow;
 
-    int screenWidth = 800;
-    int screenHeight = 800;
+    UINT screenWidth = 800;
+    UINT screenHeight = 800;
 
     std::chrono::time_point<std::chrono::steady_clock> PrevTime;
     float totalTime;
