@@ -1,20 +1,5 @@
-Texture2D ShadowMap : register(t0);
-SamplerState Sampler : register(s0)
-{
-};
-
-/*SamplerComparisonState samShadow
-{
-    Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-    // Return 0 for points outside the light frustum
-    // to put them in shadow.
-    AddressU = BORDER;
-    AddressV = BORDER;
-    AddressW = BORDER;
-    BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    ComparisonFunc = LESS;
-};*/
-
+Texture2D shadowMap : register(t0);
+SamplerState shadowSampler : register(s0);
 
 struct Material
 {
@@ -48,7 +33,7 @@ struct DirectionalLight
 };
 
 
-void calcDirectLight(float3 wPos, float3 normal, float3 toEye, Material mat, DirectionalLight dirLight,
+void calcDirectionalLight(float3 wPos, float3 normal, float3 toEye, Material mat, DirectionalLight dirLight,
     out float4 dl_ambient,
     out float4 dl_diffuse,
     out float4 dl_spec)
@@ -62,7 +47,7 @@ void calcDirectLight(float3 wPos, float3 normal, float3 toEye, Material mat, Dir
     {
         float3 lightVec = -dirLight.Direction;
         float diffuseFactor = dot(lightVec, normal);
-        [flatten]
+        // [flatten]
         if (diffuseFactor > 0.0f)
         {
             float3 v = reflect(-lightVec, normal);
@@ -94,7 +79,7 @@ void calcPointLight(float3 wPos, float3 normal, float3 toEye, Material mat, Poin
     pl_ambient = mat.Ambient * pointLight.Ambient;
     float diffuseFactor = dot(lightVec, normal);
         
-    [flatten]
+    // [flatten]
     if (diffuseFactor > 0.0f)
     {
         float3 v = reflect(-lightVec, normal);
@@ -121,7 +106,7 @@ struct PS_IN
 
 cbuffer LightCBuf : register(b0) // per frame
 {
-    PointLight pointLight;
+    DirectionalLight directionalLight;
 };
 
 cbuffer CamCBuf : register(b1)
@@ -136,10 +121,11 @@ cbuffer ShadowCBuf : register(b2)
     row_major float4x4 shadowTransform;
 };
 
+static const float SMAP_SIZE = 512.0f;
+static const float SMAP_DX = 1.0f / SMAP_SIZE;
 
 float4 PSMain(PS_IN input) : SV_Target
-{
-    
+{    
     float4 pixelColor = input.col;
     Material mat =
     {
@@ -152,11 +138,11 @@ float4 PSMain(PS_IN input) : SV_Target
     float3 normal = normalize(input.normal);
     float3 toEye = normalize(cam_pos - input.wPos);
     
-    float4 pl_ambient;
-    float4 pl_diffuse;
-    float4 pl_spec;
+    float4 dl_ambient;
+    float4 dl_diffuse;
+    float4 dl_spec;
     
-    calcPointLight(input.wPos, normal, toEye, mat, pointLight, pl_ambient, pl_diffuse, pl_spec);
+    calcDirectionalLight(input.wPos, normal, toEye, mat, directionalLight, dl_ambient, dl_diffuse, dl_spec);
     /*
     calcDirectLight(input.wPos, normal, toEye, mat, dLight, ...);
 
@@ -176,19 +162,40 @@ float4 PSMain(PS_IN input) : SV_Target
     
     if ((shPos.x >= 0) && (shPos.y >= 0) && (shPos.z >= 0) && (shPos.x <= 1) && (shPos.y <= 1) && (shPos.z <= 1))
     {
+        
+        /*
+        float depth = shPos.z;
+        
+        float s0 = shadowMap.Sample(shadowSampler, shPos.xy).r;
+        float s1 = shadowMap.Sample(shadowSampler, shPos.xy + float2(SMAP_DX, 0)).r;
+        float s2 = shadowMap.Sample(shadowSampler, shPos.xy + float2(0, SMAP_DX)).r;
+        float s3 = shadowMap.Sample(shadowSampler, shPos.xy + float2(SMAP_DX, SMAP_DX)).r;
+        // Is the pixel depth <= shadow map value?
+        float result0 = depth <= s0;
+        float result1 = depth <= s1;
+        float result2 = depth <= s2;
+        float result3 = depth <= s3;
+        // Transform to texel space.
+        float2 texelPos = SMAP_SIZE * shPos.xy; // Determine the interpolation amounts.
+        float2 t = frac(texelPos + 0.5);
+        // Interpolate results.
+        float percentLit = lerp(lerp(result0, result1, t.x), lerp(result2, result3, t.x), t.y);
+        return saturate(dl_ambient + dl_diffuse * percentLit + dl_spec * percentLit);
+        // return float4(((floor(shPos.x * SMAP_SIZE) + floor(shPos.y * SMAP_SIZE)) % 2).xxx * percentLit, 1.0f); // DEBUG_MODE
+        */
         // shPos.xy = float2(0.5 * shPos.x + 0.5, -0.5 * shPos.y + 0.5);
-        float shZ = ShadowMap.Sample(Sampler, shPos.xy);
+        float shZ = shadowMap.Sample(shadowSampler, shPos.xy).r;
         if (shZ < shPos.z)
         {
             // float percentLit = 1.0f;
-            // percentLit = ShadowMap.SampleCmpLevelZero(samShadow, shPos.xy, shPos.z).r;
-            return float4(((floor(shPos.x * 100) + floor(shPos.y * 100)) % 2).xxx, 1.0f); // DEBUG_MODE
-            // return saturate(pl_ambient);
+            // percentLit = shadowMap.SampleCmpLevelZero(shadowSampler, shPos.xy, shPos.z).r;
+            return float4(((floor(shPos.x * SMAP_SIZE) + floor(shPos.y * SMAP_SIZE)) % 2).xxx, 1.0f); // DEBUG_MODE
+            // return saturate(dl_ambient);
         }
         else 
-            return saturate(pl_ambient + pl_diffuse + pl_spec);
+            return saturate(dl_ambient + dl_diffuse + dl_spec);
     }
     else 
-        return saturate(pl_ambient + pl_diffuse + pl_spec);
+        return saturate(dl_ambient + dl_diffuse + dl_spec);
     
 }

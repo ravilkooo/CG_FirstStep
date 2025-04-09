@@ -95,8 +95,13 @@ TestCube::TestCube(ID3D11Device* device, float width, float height, float depth,
 
 void TestCube::Update(float deltaTime)
 {
-    worldMat = initTransform * Matrix::CreateTranslation(position);
-
+    //Vector3 new_pos = position;
+    // new_pos = Vector3::Transform(new_pos, Matrix::CreateRotationY(deltaTime * speed));
+    //new_pos.y = position.y;
+    //new_pos.z = position.z;
+    angle += deltaTime * speed;
+    worldMat = initTransform * Matrix::CreateTranslation(position)
+        * Matrix::CreateRotationY(angle);
 
 }
 

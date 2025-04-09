@@ -18,21 +18,31 @@ ShadowGame::ShadowGame()
 
 	renderer = Renderer(&displayWindow);
 	renderer.camera = Camera(winWidth * 1.0f / winHeight);
-	//renderer.camera.SetPosition({ 0, 0, -1 });
-	renderer.camera.SetPosition(lightPos);
-
+	renderer.camera.SetPosition({ 0, 0, 0 });
+	
 	InputDevice::getInstance().OnKeyPressed.AddRaw(this, &ShadowGame::HandleKeyDown);
 	InputDevice::getInstance().MouseMove.AddRaw(this, &ShadowGame::HandleMouseMove);
 
 	// light stuff
-
+	/*
+	lightPos = { 0, 0, -2 };
 	lightData.pointLight.Ambient = { 0.2f, 0.2f, 0.2f, 1 };
 	lightData.pointLight.Diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
 	lightData.pointLight.Specular = { 1.0f, 1.0f, 1.0f, 1.0f };
 	lightData.pointLight.Position = lightPos;
 	lightData.pointLight.Range = 100.0f;
 	lightData.pointLight.Att = { 0.01f, 1.0f, 0.0f };
+	*/
 
+	Vector3 lightDir = { -1, -1, 1 };
+	lightDir.Normalize();
+	lightData.directionalLight = {
+		Vector4(0.1f, 0.1f, 0.1f, 0.0f),
+		Vector4(0.4f, 0.4f, 0.4f, 0.0f),
+		Vector4(0.6f, 0.6f, 0.6f, 0.0f),
+		lightDir,
+		0
+	};
 
 	light_pcb = new Bind::PixelConstantBuffer<LightData>(renderer.GetDevice(), lightData, 0u);
 	renderer.AddPerFrameBind(light_pcb);
@@ -41,8 +51,9 @@ ShadowGame::ShadowGame()
 	renderer.AddPerFrameBind(cam_pcb);
 
 
+
 	// shadow stuff
-	
+	/*
 	// For CubeMap
 	XMFLOAT3 ups[6] = {
 	XMFLOAT3(0.0f, 1.0f, 0.0f), // +X
@@ -61,6 +72,7 @@ ShadowGame::ShadowGame()
 	XMFLOAT3(lightPos.x, lightPos.y, lightPos.z + 1.0f), // +Z
 	XMFLOAT3(lightPos.x, lightPos.y, lightPos.z - 1.0f) // -Z 
 	};
+	*/
 	/*
 	for (size_t i = 0; i < 6; i++) {
 		lightViewCameras[i] = new Camera(smSizeX / smSizeY);
@@ -69,19 +81,31 @@ ShadowGame::ShadowGame()
 		lightViewCameras[i]->SetUp(ups[i]);
 	}
 	*/
-
+	lightPos = -20 * lightDir;
 	lightViewCamera = new Camera(smSizeX / smSizeY);
 	lightViewCamera->SetPosition(lightPos);
-	lightViewCamera->SetTarget(targets[4]);
-	lightViewCamera->SetUp(ups[4]);
+	lightViewCamera->SetTarget(lightPos + lightDir);
+	Vector3 cameraUp = { 0, 1, 0 };
+	cameraUp.Normalize();
+	lightViewCamera->SetUp(cameraUp);
+	lightViewCamera->SwitchProjection();
+	lightViewCamera->SetViewWidth(20.0f);
+	lightViewCamera->SetViewHeight(20.0f);
+	lightViewCamera->SetFarZ(100.0f);
+	
+	renderer.camera.SetPosition(lightPos);
+	renderer.camera.SetTarget(lightPos + lightDir);
+	renderer.camera.SetUp(cameraUp);
+	//renderer.camera.SwitchProjection();
+	renderer.camera.SetViewWidth(4.0f);
+	renderer.camera.SetViewHeight(4.0f);
 
 	smViewport.TopLeftX = 0.0f;
 	smViewport.TopLeftY = 0.0f;
-	smViewport.Width = static_cast<float>(smSizeX);
-	smViewport.Height = static_cast<float>(smSizeY);
+	smViewport.Width = static_cast<float>(512);
+	smViewport.Height = static_cast<float>(512);
 	smViewport.MinDepth = 0.0f;
 	smViewport.MaxDepth = 1.0f;
-
 
 	D3D11_TEXTURE2D_DESC depthDesc = {};
 	depthDesc.Width = smSizeX;
@@ -122,23 +146,43 @@ ShadowGame::ShadowGame()
 	D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
 	rastDesc.CullMode = D3D11_CULL_BACK;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
-	rastDesc.DepthBias = 1000;
+	
+	rastDesc.DepthBias = 50000;
 	rastDesc.DepthBiasClamp = 0.0f;
-	rastDesc.SlopeScaledDepthBias = 1.0f;
+	rastDesc.SlopeScaledDepthBias = 2.0f;
+	
 	shadowRast = new Bind::Rasterizer(renderer.GetDevice(), rastDesc);
 
-	
 	renderer.AddPerFrameBind(new Bind::TextureB(renderer.GetDevice(), shadowTexture, depthSRV, 0u));
+
+	D3D11_SAMPLER_DESC shadowSamplerDesc;
+	shadowSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	shadowSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	shadowSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	shadowSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	shadowSamplerDesc.MipLODBias = 0.0f;
+	shadowSamplerDesc.MaxAnisotropy = 1;
+	shadowSamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	shadowSamplerDesc.BorderColor[0] = 0;
+	shadowSamplerDesc.BorderColor[1] = 0;
+	shadowSamplerDesc.BorderColor[2] = 0;
+	shadowSamplerDesc.BorderColor[3] = 0;
+	shadowSamplerDesc.MinLOD = 0;
+	shadowSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	renderer.AddPerFrameBind(new Bind::Sampler(renderer.GetDevice(), shadowSamplerDesc, 0u));
+
 
 	TestCube* _tc = new TestCube(renderer.GetDevice(), 0.2, 0.2, 0.2, { 0,0,0 }, { 1,0,0,1 });
 	_tc->SetInitTransform(Matrix::CreateFromYawPitchRoll(XM_PIDIV4, XM_PIDIV4, 0));
 	scene.AddNode(_tc);
 
-	TestCube* _tc_2 = new TestCube(renderer.GetDevice(), 0.2f, 0.2f, 0.2f, { 0.5f, 0.0f, 0.0f }, { 0.9f, 0.7f, 0.5f, 1.0f });
+	TestCube* _tc_2 = new TestCube(renderer.GetDevice(), 0.2f, 0.2f, 0.2f, { 0.5f, 0.5f, -0.3f }, { 0.9f, 0.7f, 0.5f, 1.0f });
 	_tc_2->SetInitTransform(Matrix::CreateFromYawPitchRoll(XM_PIDIV2 * 0.4, XM_PIDIV4 * 0.12, 0));
+	_tc_2->speed = 3.0f;
 	scene.AddNode(_tc_2);
 
-	TestCube* _tc_3 = new TestCube(renderer.GetDevice(), 10.0f, 10.0f, 1.0f, { 0.0f, 0.0f, 5.0f }, { 0.3f, 0.7f, 0.5f, 1.0f });
+	TestCube* _tc_3 = new TestCube(renderer.GetDevice(), 10.0f, 10.0f, 1.0f, { 0.0f, 0.0f, 3.0f }, { 0.3f, 0.7f, 0.5f, 1.0f });
 	scene.AddNode(_tc_3);
 
 
@@ -249,28 +293,28 @@ void ShadowGame::Render()
 void ShadowGame::HandleKeyDown(Keys key) {
 	if (key == Keys::W)
 	{
-		renderer.camera.MoveForward(deltaTime);
+		renderer.camera.MoveForward(deltaTime*10.0f);
 	}
 	if (key == Keys::S)
 	{
-		renderer.camera.MoveBackward(deltaTime);
+		renderer.camera.MoveBackward(deltaTime*10.0f);
 	}
 	if (key == Keys::A)
 	{
-		renderer.camera.MoveLeft(deltaTime);
+		renderer.camera.MoveLeft(deltaTime*10.0f);
 	}
 	if (key == Keys::D)
 	{
-		renderer.camera.MoveRight(deltaTime);
+		renderer.camera.MoveRight(deltaTime*10.0f);
 	}
 	if (key == Keys::Space)
 	{
-		renderer.camera.MoveUp(deltaTime);
+		renderer.camera.MoveUp(deltaTime*10.0f);
 	}
 
 	if (key == Keys::LeftShift)
 	{
-		renderer.camera.MoveDown(deltaTime);
+		renderer.camera.MoveDown(deltaTime*10.0f);
 	}
 }
 

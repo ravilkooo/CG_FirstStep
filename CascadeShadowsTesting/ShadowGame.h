@@ -33,12 +33,12 @@ public:
 
     LightData lightData;
 
-    Vector3 lightPos = { 0, 0, -2 };
+    Vector3 lightPos;
     Bind::PixelConstantBuffer<LightData>* light_pcb;
 
     // Shadow
-    UINT smSizeX = 100;
-    UINT smSizeY = 100;
+    UINT smSizeX = 512;
+    UINT smSizeY = 512;
     //Camera* lightViewCameras[6];
     Camera* lightViewCamera;
     ID3D11Texture2D* shadowTexture;

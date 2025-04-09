@@ -17,6 +17,8 @@ public:
     Vector3 position = Vector3::Zero;
 
     void SetInitTransform(Matrix transformMat);
+    float speed = 0.0f;
+    float angle = 0.0f;
 
 private:
     Bind::VertexShader* vertexShaderB = nullptr;
