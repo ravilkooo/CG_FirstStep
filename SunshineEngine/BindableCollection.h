@@ -12,6 +12,7 @@
 #include "TransformCBuffer.h"
 #include "ConstantBuffer.h"
 #include "Rasterizer.h"
+#include "Sampler.h"
 
 /*
 Bindables tips

@@ -182,6 +182,7 @@
     <ClInclude Include="InputLayout.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Rasterizer.h" />
+    <ClInclude Include="Sampler.h" />
     <ClInclude Include="SE_Color.h" />
     <ClInclude Include="Delegates.h" />
     <ClInclude Include="DisplayWindow.h" />
@@ -213,6 +214,7 @@
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
+    <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="SE_Color.cpp" />
     <ClCompile Include="Delegates.cpp" />
     <ClCompile Include="DisplayWindow.cpp" />
