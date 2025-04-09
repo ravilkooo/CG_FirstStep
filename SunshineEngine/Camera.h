@@ -29,6 +29,8 @@ public:
     void SetAspectRatio(float aspectRatio);
     void SetNearZ(float nearZ);
     void SetFarZ(float farZ);
+    void SetViewWidth(float viewWidth);
+    void SetViewHeight(float viewHeight);
 
     void Update(float deltaTime, const Matrix targetTransform);
     void Update(float deltaTime, const Matrix targetTransform, Vector3 direction);
@@ -72,6 +74,11 @@ private:
     float orthZ;
 
     float referenceLen;
+
+    // for Orthographic projection
+    float viewWidth;
+    float viewHeight;
+
 
     CAMERA_MODE cameraMode = CAMERA_MODE::FPS;
 

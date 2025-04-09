@@ -62,6 +62,16 @@ void Camera::SetFarZ(float farZ)
     this->farZ = farZ;
 }
 
+void Camera::SetViewWidth(float viewWidth)
+{
+    this->viewWidth = viewWidth;
+}
+
+void Camera::SetViewHeight(float viewHeight)
+{
+    this->viewHeight = viewHeight;
+}
+
 void Camera::Update(float deltaTime, const Matrix targetTransform)
 {
     if (cameraMode == CAMERA_MODE::ORBITAL)
@@ -118,7 +128,7 @@ XMMATRIX Camera::GetProjectionMatrix() const
     if (isPerspective)
         return XMMatrixPerspectiveFovLH(fov, aspectRatio, nearZ, farZ);
     else
-        return XMMatrixOrthographicLH(aspectRatio * 2.0f * tanf(0.5f * fov) * orthZ, 2.0f * tanf(0.5f * fov) * orthZ, nearZ, farZ);
+        return XMMatrixOrthographicLH(viewWidth, viewHeight, nearZ, farZ);
 }
 
 void Camera::MoveForward(float speed)
@@ -282,14 +292,22 @@ void Camera::SwitchProjection() {
         if (isPerspective)
             orbitalDistance = orthZ;
         else
+        {
             orthZ = orbitalDistance;
+            SetViewWidth(aspectRatio * 2.0f * tanf(0.5f * fov) * orthZ);
+            SetViewHeight(2.0f * tanf(0.5f * fov) * orthZ);
+        }
     }
     else if (cameraMode == CAMERA_MODE::FPS)
     {
         if (isPerspective)
             orbitalDistance = orthZ;
         else
+        {
             orthZ = (position - target).Length();
+            SetViewWidth(aspectRatio * 2.0f * tanf(0.5f * fov) * orthZ);
+            SetViewHeight(2.0f * tanf(0.5f * fov) * orthZ);
+        }
     }
 
 }
