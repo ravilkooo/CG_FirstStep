@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -176,12 +176,15 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonVertex.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="DepthStencilState.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="DrawableBase.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />
+    <ClInclude Include="PipelineState.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Rasterizer.h" />
+    <ClInclude Include="RenderPass.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="SE_Color.h" />
     <ClInclude Include="Delegates.h" />
@@ -193,7 +196,6 @@
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsEngine.h" />
-    <ClInclude Include="PipelineState.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
@@ -208,12 +210,15 @@
   <ItemGroup>
     <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DepthStencilState.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="DrawableBase.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
+    <ClCompile Include="PipelineState.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
+    <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="SE_Color.cpp" />
     <ClCompile Include="Delegates.cpp" />
@@ -223,7 +228,6 @@
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
-    <ClCompile Include="PipelineState.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneNode.cpp" />

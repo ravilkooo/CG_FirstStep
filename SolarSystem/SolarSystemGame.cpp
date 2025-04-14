@@ -133,6 +133,13 @@ SolarSystemGame::SolarSystemGame()
 		//std::cout << "f1\n";
 	}
 
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	renderer.AddPerFrameBind(new Bind::DepthStencilState(renderer.GetDevice(), depthStencilDesc));
+
 	InputDevice::getInstance().OnKeyPressed.AddRaw(this, &SolarSystemGame::HandleKeyDown);
 	InputDevice::getInstance().MouseMove.AddRaw(this, &SolarSystemGame::HandleMouseMove);
 }

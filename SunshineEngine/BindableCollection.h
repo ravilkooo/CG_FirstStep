@@ -13,6 +13,7 @@
 #include "ConstantBuffer.h"
 #include "Rasterizer.h"
 #include "Sampler.h"
+#include "DepthStencilState.h"
 
 /*
 Bindables tips

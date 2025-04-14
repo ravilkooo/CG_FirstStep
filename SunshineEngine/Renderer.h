@@ -8,16 +8,40 @@
 #include <directxmath.h>
 
 #include "DisplayWindow.h"
-#include "PipelineState.h"
+// #include "PipelineState.h"
 
 #include "Camera.h"
 
 #include <chrono>
 
 /*
-namespace Bind {
-    class Bindable;
-}*/
+RenderPass (Color, Shadow,..)
+
+
+
+1. PerFrameBindable
+2. PerObjectBindable
+2.1. Base (VertexBuufer, IndexBuffer, ...)
+2.2. Specific for current render pass
+
+RenderPass -?- Drawable
+
+Drawable has Bindables for each RenderPass (Technique)
+
+Drawable {}
+map<string, Technique*> techniques;
+
+RenderPass {}
+string tag;
+
+void Pass() {}
+BindPerFrame();
+for every Drawable obj:
+    obj.BindBase();
+    obj.BindTecnique(RenderPass.GetTag());
+    obj.Draw();
+
+*/
 
 class Renderer
 {
@@ -48,8 +72,6 @@ private:
     ID3D11RenderTargetView* renderTargetView;
 
     D3D_FEATURE_LEVEL featureLevels[1] = { D3D_FEATURE_LEVEL_11_1 };
-
-    PipelineState pipelineState;
     
     DisplayWindow* displayWindow;
 

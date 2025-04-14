@@ -65,8 +65,6 @@ Renderer::Renderer(DisplayWindow* displayWin)
 
 
 	// depth buffer
-	pipelineState = PipelineState(GetDevice(), GetDeviceContext());
-	pipelineState.SetDepthStencilState(true);
 	
 	D3D11_TEXTURE2D_DESC descDepth = {};
 	descDepth.Width = screenWidth;
@@ -92,9 +90,6 @@ Renderer::Renderer(DisplayWindow* displayWin)
 	context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
 
 	camera = Camera();
-
-	// TO-DO: Move to Game [SceneNode.AddBind()]
-	pipelineState.SetRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID); // D3D11_CULL_NONE, D3D11_CULL_BACK, D3D11_FILL_SOLID, D3D11_FILL_WIREFRAME
 
     return;
 }

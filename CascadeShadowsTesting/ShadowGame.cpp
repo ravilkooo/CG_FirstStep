@@ -23,6 +23,13 @@ ShadowGame::ShadowGame()
 	InputDevice::getInstance().OnKeyPressed.AddRaw(this, &ShadowGame::HandleKeyDown);
 	InputDevice::getInstance().MouseMove.AddRaw(this, &ShadowGame::HandleMouseMove);
 
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	renderer.AddPerFrameBind(new Bind::DepthStencilState(renderer.GetDevice(), depthStencilDesc));
+
 	// light stuff
 	/*
 	lightPos = { 0, 0, -2 };
@@ -50,7 +57,9 @@ ShadowGame::ShadowGame()
 	cam_pcb = new Bind::PixelConstantBuffer<Camera_PCB>(renderer.GetDevice(), { renderer.camera.GetPosition() }, 1u);
 	renderer.AddPerFrameBind(cam_pcb);
 
-
+	float cascadeZBounds[5] = {
+		0.1f, 10.0f, 40.0f, 100.0f, 200.0f
+	};
 
 	// shadow stuff
 	/*
@@ -111,7 +120,7 @@ ShadowGame::ShadowGame()
 	depthDesc.Width = smSizeX;
 	depthDesc.Height = smSizeY;
 	depthDesc.MipLevels = 1;
-	depthDesc.ArraySize = 1;
+	depthDesc.ArraySize = 4;
 	depthDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 	depthDesc.SampleDesc.Count = 1;
 	depthDesc.SampleDesc.Quality = 0;
@@ -126,20 +135,20 @@ ShadowGame::ShadowGame()
 	D3D11_DEPTH_STENCIL_VIEW_DESC dViewDesc = { };
 	dViewDesc.Flags = 0;
 	dViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	dViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
 	dViewDesc.Texture2DArray.MipSlice = 0;
 	dViewDesc.Texture2DArray.FirstArraySlice = 0;
-	dViewDesc.Texture2DArray.ArraySize = 1;
+	dViewDesc.Texture2DArray.ArraySize = 4;
 
 	renderer.GetDevice()->CreateDepthStencilView(shadowTexture, &dViewDesc, &depthDSV);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
 	srvDesc.Texture2DArray.MostDetailedMip = 0;
 	srvDesc.Texture2DArray.MipLevels = 1;
 	srvDesc.Texture2DArray.FirstArraySlice = 0;
-	srvDesc.Texture2DArray.ArraySize = 1;
+	srvDesc.Texture2DArray.ArraySize = 4;
 
 	renderer.GetDevice()->CreateShaderResourceView(shadowTexture, &srvDesc, &depthSRV);
 
@@ -185,6 +194,10 @@ ShadowGame::ShadowGame()
 	TestCube* _tc_3 = new TestCube(renderer.GetDevice(), 10.0f, 10.0f, 1.0f, { 0.0f, 0.0f, 3.0f }, { 0.3f, 0.7f, 0.5f, 1.0f });
 	scene.AddNode(_tc_3);
 
+	TestCube* _tc_4 = new TestCube(renderer.GetDevice(), 0.5f, 0.5f, 0.5f, { -1.0f, 1.0f, -0.6f }, { 0.1f, 0.7f, 0.9f, 1.0f });
+	_tc_4->SetInitTransform(Matrix::CreateFromYawPitchRoll(XM_PIDIV2 * 0.3, XM_PIDIV4 * 0.52, 0));
+	_tc_4->speed = 5.0f;
+	scene.AddNode(_tc_4);
 
 	for (auto node : scene.nodes)
 	{
@@ -194,6 +207,7 @@ ShadowGame::ShadowGame()
 	shadowableObjects.push_back(_tc);
 	shadowableObjects.push_back(_tc_2);
 	shadowableObjects.push_back(_tc_3);
+	shadowableObjects.push_back(_tc_4);
 
 	shadowVShader = new Bind::VertexShader(renderer.GetDevice(), L"./Shaders/ShadowMapVShader.hlsl");
 	shadowInpLayout = new Bind::InputLayout(renderer.GetDevice(), _tc->IALayoutInputElements, _tc->numInputElements, shadowVShader->GetBytecode());
@@ -338,9 +352,6 @@ void ShadowGame::BindDsvAndSetNullRenderTarget()
 
 void ShadowGame::DrawSceneToShadowMap() {
 	renderer.GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	UINT stride = sizeof(CommonVertex);
-	UINT offset = 0;
 
 	shadowInpLayout->Bind(renderer.GetDeviceContext());
 	// shadowVBuffer->Bind(renderer.GetDeviceContext());
