@@ -5,6 +5,8 @@
 #include <d3d11.h>
 #include <wrl.h>    
 #include <directxmath.h>
+#include "RenderingSystem.h"
+
 #include "DisplayWindow.h"
 
 #include "Scene.h"
@@ -41,7 +43,7 @@ for every Drawable obj:
 
 */
 
-class Renderer
+class Renderer : public RenderingSystem
 {
     friend class Bindable;
 public:
@@ -51,36 +53,17 @@ public:
 
     void RenderScene(const Scene& scene);
 
-    
-    ID3D11Device* GetDevice();
-    ID3D11DeviceContext* GetDeviceContext();
-    ID3D11Texture2D* GetBackBuffer();
-    void AddPass(RenderPass* pass);
+    void AddPass(RenderPass* pass) override;
 
     void SetMainCamera(Camera* camera);
     Camera* GetMainCamera();
 
-private:
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
-    
-    Microsoft::WRL::ComPtr<ID3D11Device> device;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
-    Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-
-    D3D_FEATURE_LEVEL featureLevels[1] = { D3D_FEATURE_LEVEL_11_1 };
-    
-    DisplayWindow* displayWindow;
-
-    UINT screenWidth = 800;
-    UINT screenHeight = 800;
+protected:
 
     std::chrono::time_point<std::chrono::steady_clock> PrevTime;
     float totalTime;
 
     std::vector<RenderPass*> passes;
-
-    Camera* mainCamera;
-
 };
 
 #endif // RENDERER_H

@@ -5,7 +5,7 @@
 #include "InputHandler.h"
 #include "Scene.h"
 #include "PhysicsEngine.h"
-#include "Renderer.h"
+#include "RenderingSystem.h"
 #include "DisplayWindow.h"
 
 
@@ -15,16 +15,16 @@ public:
     Game();
     virtual ~Game();
 
-    virtual void Run() = 0;
+    virtual void Run();
 
     virtual void Update(float deltaTime) = 0;
-    virtual void Render() = 0;
+    virtual void Render();
 
 
     GameTimer timer;
     Scene scene;
     PhysicsEngine* physEngine;
-    Renderer renderer;
+    RenderingSystem* renderer;
 
     DisplayWindow displayWindow;
 

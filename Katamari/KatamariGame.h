@@ -3,12 +3,16 @@
 
 #include <Game.h>
 
+#include <Renderer.h>
 #include <MainColorPass.h>
 #include <DL_ShadowMapPass.h>
+
+#include <FrustrumWireframe.h>
 
 #include "StickyBall.h"
 #include "Floor.h"
 #include "CollectibleObject.h"
+
 
 
 

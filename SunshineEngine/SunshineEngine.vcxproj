@@ -176,17 +176,20 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonVertex.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="DeferredRenderer.h" />
     <ClInclude Include="DepthStencilState.h" />
     <ClInclude Include="DL_ShadowMapPass.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="DrawableBase.h" />
     <ClInclude Include="FrustrumWireframe.h" />
+    <ClInclude Include="GBuffer.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />
     <ClInclude Include="Lighting.h" />
     <ClInclude Include="MainColorPass.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Rasterizer.h" />
+    <ClInclude Include="RenderingSystem.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="RenderTechnique.h" />
     <ClInclude Include="Sampler.h" />
@@ -214,11 +217,13 @@
   <ItemGroup>
     <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DeferredRenderer.cpp" />
     <ClCompile Include="DepthStencilState.cpp" />
     <ClCompile Include="DL_ShadowMapPass.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="DrawableBase.cpp" />
     <ClCompile Include="FrustrumWireframe.cpp" />
+    <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="MainColorPass.cpp" />

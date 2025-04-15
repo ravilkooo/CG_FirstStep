@@ -1,3 +1,4 @@
+#include "Game.h"
 #include "old_Game.h"
 
 Game::Game(LPCWSTR name)
@@ -212,6 +213,7 @@ void Game::Run()
 		UpdateInternal();
 	}
 }
+
 
 #pragma region TriangleComponent
 

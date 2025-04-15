@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-Renderer::Renderer() : device(nullptr), context(nullptr)
+Renderer::Renderer()
 {
 }
 
@@ -83,20 +83,6 @@ void Renderer::RenderScene(const Scene& scene)
 	swapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
 }
 
-ID3D11Device* Renderer::GetDevice()
-{
-	return device.Get();
-}
-
-ID3D11DeviceContext* Renderer::GetDeviceContext()
-{
-	return context.Get();
-}
-
-ID3D11Texture2D* Renderer::GetBackBuffer()
-{
-	return backBuffer.Get();
-}
 
 void Renderer::AddPass(RenderPass* pass)
 {

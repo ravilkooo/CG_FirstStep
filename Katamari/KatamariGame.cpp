@@ -1,5 +1,4 @@
 #include "KatamariGame.h"
-#include <FrustrumWireframe.h>
 
 KatamariGame::KatamariGame()
 {
@@ -17,10 +16,10 @@ KatamariGame::KatamariGame()
 
 	displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
 
-	renderer = Renderer(&displayWindow);
+	renderer = new Renderer(&displayWindow);
 
-	floor = new Floor(renderer.GetDevice());
-	ball = new StickyBall(renderer.GetDevice());
+	floor = new Floor(renderer->GetDevice());
+	ball = new StickyBall(renderer->GetDevice());
 
 	scene.AddNode(floor);
 	scene.AddNode(ball);
@@ -117,16 +116,16 @@ KatamariGame::KatamariGame()
 	UINT smSizeY = 1024;
 
 	// DL_ShadowMapPass
-	DL_ShadowMapPass* dl_shadowMapPass = new DL_ShadowMapPass(renderer.GetDevice(),
-		renderer.GetDeviceContext(), smSizeX, smSizeY, lightData.dLight);
-	renderer.AddPass(dl_shadowMapPass);
+	DL_ShadowMapPass* dl_shadowMapPass = new DL_ShadowMapPass(renderer->GetDevice(),
+		renderer->GetDeviceContext(), smSizeX, smSizeY, lightData.dLight);
+	renderer->AddPass(dl_shadowMapPass);
 
 	// MainColorPass
 	{
-		MainColorPass* colorPass = new MainColorPass(renderer.GetDevice(), renderer.GetDeviceContext(),
-			renderer.GetBackBuffer(), winWidth, winHeight);
+		MainColorPass* colorPass = new MainColorPass(renderer->GetDevice(), renderer->GetDeviceContext(),
+			renderer->GetBackBuffer(), winWidth, winHeight);
 
-		renderer.SetMainCamera(colorPass->GetCamera());
+		renderer->SetMainCamera(colorPass->GetCamera());
 
 		colorPass->camera.SwitchToFollowMode(ball->position, ball->GetMoveDir(), ball->radius);
 
@@ -136,10 +135,10 @@ KatamariGame::KatamariGame()
 		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
 
-		colorPass->AddPerFrameBind(new Bind::DepthStencilState(renderer.GetDevice(), depthStencilDesc));
+		colorPass->AddPerFrameBind(new Bind::DepthStencilState(renderer->GetDevice(), depthStencilDesc));
 
 		// --- Light ---
-		light_pcb = new Bind::PixelConstantBuffer<LightData>(renderer.GetDevice(), lightData, 0u);
+		light_pcb = new Bind::PixelConstantBuffer<LightData>(renderer->GetDevice(), lightData, 0u);
 		colorPass->AddPerFrameBind(light_pcb);
 
 		// --- Shadow stuff ---
@@ -153,7 +152,7 @@ KatamariGame::KatamariGame()
 		srvDesc.Texture2DArray.FirstArraySlice = 0;
 		srvDesc.Texture2DArray.ArraySize = 4;
 
-		colorPass->AddPerFrameBind(new Bind::TextureB(renderer.GetDevice(), dl_shadowMapPass->GetTexture(), srvDesc, 0u));
+		colorPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), dl_shadowMapPass->GetTexture(), srvDesc, 0u));
 		
 
 		// Sampler of texture. It samples values from texture
@@ -172,7 +171,7 @@ KatamariGame::KatamariGame()
 		shadowSamplerDesc.MinLOD = 0;
 		shadowSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		colorPass->AddPerFrameBind(new Bind::Sampler(renderer.GetDevice(), shadowSamplerDesc, 0u));
+		colorPass->AddPerFrameBind(new Bind::Sampler(renderer->GetDevice(), shadowSamplerDesc, 0u));
 
 		shadowSamplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
 		shadowSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
@@ -188,11 +187,11 @@ KatamariGame::KatamariGame()
 		shadowSamplerDesc.MinLOD = 0;
 		shadowSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		colorPass->AddPerFrameBind(new Bind::Sampler(renderer.GetDevice(), shadowSamplerDesc, 1u));
+		colorPass->AddPerFrameBind(new Bind::Sampler(renderer->GetDevice(), shadowSamplerDesc, 1u));
 
 		// All Cascades (for pixel shader while drawing final scene)
 		cascadesConstantBuffer = new Bind::PixelConstantBuffer<DL_ShadowMapPass::CascadesData>(
-			renderer.GetDevice(), dl_shadowMapPass->cascadesData, 1u);
+			renderer->GetDevice(), dl_shadowMapPass->cascadesData, 1u);
 		colorPass->AddPerFrameBind(cascadesConstantBuffer);
 
 
@@ -212,9 +211,9 @@ KatamariGame::KatamariGame()
 		samplerDesc.MinLOD = 0;
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		colorPass->AddPerFrameBind(new Bind::Sampler(renderer.GetDevice(), samplerDesc, 2u));
+		colorPass->AddPerFrameBind(new Bind::Sampler(renderer->GetDevice(), samplerDesc, 2u));
 
-		renderer.AddPass(colorPass);
+		renderer->AddPass(colorPass);
 	}
 
 	for (size_t i = 0; i < 4; i++)
@@ -225,13 +224,13 @@ KatamariGame::KatamariGame()
 		dl_shadowMapPass->GetFrustrumBoundsZ(i, &nearZ, &farZ);
 		fCam.SetNearZ(nearZ);
 		fCam.SetFarZ(farZ);
-		FrustrumWireframe* fwf = new FrustrumWireframe(renderer.GetDevice(), fCam);
+		FrustrumWireframe* fwf = new FrustrumWireframe(renderer->GetDevice(), fCam);
 		scene.AddNode(fwf);
 	}
 	
 
 	for (SceneNode* node : scene.nodes) {
-		node->camera = renderer.GetMainCamera();
+		node->camera = renderer->GetMainCamera();
 	}
 
 	InputDevice::getInstance().OnKeyPressed.AddRaw(this, &KatamariGame::HandleKeyDown);
@@ -302,26 +301,26 @@ void KatamariGame::Update(float deltaTime)
 			ball->Grow(coll->radius / deltaTime);
 		}
 	}
-	renderer.GetMainCamera()->Update(deltaTime, ball->worldMat, ball->GetMoveDir(), ball->radius);
+	renderer->GetMainCamera()->Update(deltaTime, ball->worldMat, ball->GetMoveDir(), ball->radius);
 
-	//Matrix vpMat = renderer.camera.GetViewMatrix() * renderer.camera.GetProjectionMatrix();
+	//Matrix vpMat = renderer->camera.GetViewMatrix() * renderer->camera.GetProjectionMatrix();
 
 
-	XMFLOAT3 camera_pos = renderer.GetMainCamera()->GetPosition();
+	XMFLOAT3 camera_pos = renderer->GetMainCamera()->GetPosition();
 	for (auto coll : collectibles)
 	{
-		coll->vcb->Update(renderer.GetDeviceContext(),
+		coll->vcb->Update(renderer->GetDeviceContext(),
 			{
 				coll->isAttached ? ball->position : coll->initialPosition
 			}
 		);
-		coll->pcb->Update(renderer.GetDeviceContext(),
+		coll->pcb->Update(renderer->GetDeviceContext(),
 			{
 				camera_pos
 			});
 	}
 
-	ball->pcb->Update(renderer.GetDeviceContext(),
+	ball->pcb->Update(renderer->GetDeviceContext(),
 		{
 			camera_pos
 		});
@@ -350,7 +349,7 @@ void KatamariGame::Update(float deltaTime)
 	}
 	
 
-	light_pcb->Update(renderer.GetDeviceContext(),
+	light_pcb->Update(renderer->GetDeviceContext(),
 		{
 			lightData
 		}
@@ -359,7 +358,7 @@ void KatamariGame::Update(float deltaTime)
 
 
 
-	floor->pcb->Update(renderer.GetDeviceContext(),
+	floor->pcb->Update(renderer->GetDeviceContext(),
 		{
 			camera_pos
 		});
@@ -369,7 +368,7 @@ void KatamariGame::Update(float deltaTime)
 void KatamariGame::Render()
 {
 	// Отрисовка сцены
-	renderer.RenderScene(scene);
+	renderer->RenderScene(scene);
 }
 
 void KatamariGame::SpawnCollectibles()
@@ -380,20 +379,20 @@ void KatamariGame::SpawnCollectibles()
 		float rad = 0.3f;
 		float x = (rand() % 20) - 10.0f;
 		float z = (rand() % 20) - 10.0f;
-		collectibles.push_back(new CollectibleObject(renderer.GetDevice(), rad, DirectX::XMFLOAT3(x, rad, z)));
+		collectibles.push_back(new CollectibleObject(renderer->GetDevice(), rad, DirectX::XMFLOAT3(x, rad, z)));
 	}
 	// загруженные модельки
 	for (int i = 0; i < 10; ++i)
 	{
 		float x = (rand() % 20) - 10.0f;
 		float z = (rand() % 20) - 10.0f;
-		collectibles.push_back(new CollectibleObject(renderer.GetDevice(), "models\\", DirectX::XMFLOAT3(x, 0.3f, z)));
+		collectibles.push_back(new CollectibleObject(renderer->GetDevice(), "models\\", DirectX::XMFLOAT3(x, 0.3f, z)));
 	}
 
 	for (auto coll : collectibles)
 	{
 		scene.AddNode(coll);
-		coll->camera = renderer.GetMainCamera();
+		coll->camera = renderer->GetMainCamera();
 	}
 }
 
@@ -431,5 +430,5 @@ void KatamariGame::HandleKeyDown(Keys key) {
 void KatamariGame::HandleMouseMove(const InputDevice::MouseMoveEventArgs& args)
 {
 	ball->AddTurn(args.Offset.x * 0.1, deltaTime);
-	renderer.GetMainCamera()->RotatePitch(-deltaTime * args.Offset.y * 0.1);
+	renderer->GetMainCamera()->RotatePitch(-deltaTime * args.Offset.y * 0.1);
 }
