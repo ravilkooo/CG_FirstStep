@@ -11,6 +11,8 @@ namespace Bind
         public Bindable
     {
     public:
+        TextureB(ID3D11Device* device, ID3D11Resource* pTexture, D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc,
+            UINT slot = 0u);
         TextureB(ID3D11Device* device, ID3D11Resource* pTexture, ID3D11ShaderResourceView* pTextureView, UINT slot = 0u);
         TextureB(ID3D11Device* device, const std::string& filePath, aiTextureType type, UINT slot = 0u);
         TextureB(ID3D11Device* device, const SE_Color& color, aiTextureType type, UINT slot = 0u);

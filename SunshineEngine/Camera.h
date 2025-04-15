@@ -22,15 +22,27 @@ public:
 
     void SetPosition(Vector3 position);
     Vector3 GetPosition();
+
     void SetTarget(Vector3 target);
+    Vector3 GetTarget();
+
     void SetUp(Vector3 up);
+    Vector3 GetUp();
 
     void SetFOV(float fov);
     void SetAspectRatio(float aspectRatio);
+
     void SetNearZ(float nearZ);
+    float GetNearZ();
+
     void SetFarZ(float farZ);
+    float GetFarZ();
+
     void SetViewWidth(float viewWidth);
+    float GetViewWidth();
+
     void SetViewHeight(float viewHeight);
+    float GetViewHeight();
 
     void Update(float deltaTime, const Matrix targetTransform);
     void Update(float deltaTime, const Matrix targetTransform, Vector3 direction);

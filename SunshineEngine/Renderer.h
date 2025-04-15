@@ -1,16 +1,14 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "Scene.h"
 
 #include <d3d11.h>
-#include <wrl.h>
+#include <wrl.h>    
 #include <directxmath.h>
-
 #include "DisplayWindow.h"
-// #include "PipelineState.h"
 
-#include "Camera.h"
+#include "Scene.h"
+#include "RenderPass.h"
 
 #include <chrono>
 
@@ -53,23 +51,21 @@ public:
 
     void RenderScene(const Scene& scene);
 
-    void DrawNode(SceneNode* node);
-
+    
     ID3D11Device* GetDevice();
     ID3D11DeviceContext* GetDeviceContext();
+    ID3D11Texture2D* GetBackBuffer();
+    void AddPass(RenderPass* pass);
 
-    Camera camera;
+    void SetMainCamera(Camera* camera);
+    Camera* GetMainCamera();
 
-    void AddPerFrameBind(Bind::Bindable* bind);
 private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
-    ID3D11Texture2D* pDepthStencil;
-    ID3D11DepthStencilView* pDSV;
-
+    
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-    ID3D11RenderTargetView* renderTargetView;
 
     D3D_FEATURE_LEVEL featureLevels[1] = { D3D_FEATURE_LEVEL_11_1 };
     
@@ -81,11 +77,10 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> PrevTime;
     float totalTime;
 
-    // TextureManager textureManager;
-    //ID3D11InputLayout* layout;
+    std::vector<RenderPass*> passes;
 
-    std::vector<Bind::Bindable*> perFrameBindables;
-    void BindAll();
+    Camera* mainCamera;
+
 };
 
 #endif // RENDERER_H

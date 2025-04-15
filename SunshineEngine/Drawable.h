@@ -1,13 +1,15 @@
 #pragma once
-#include <vector>
 #include <wrl.h>
 #include <d3d11.h>
 #include <directxmath.h>
 #include <SimpleMath.h>
 #include <assimp/scene.h>
+#include <map>
+
+
 #include "Camera.h"
-#include "Drawable.h"
 #include "CommonVertex.h"
+#include "RenderTechnique.h"
 
 namespace Bind {
     class Bindable;
@@ -31,7 +33,6 @@ public:
 	UINT indicesNum;
 
     virtual void Update(float deltaTime) = 0;
-    void BindAll(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context);
 
     virtual Vector3 GetCenterLocation() = 0;
 
@@ -45,10 +46,9 @@ public:
 
     ID3D11Device* device;
 
-    void AddBind(Bind::Bindable* bind);
-    std::vector<Bind::Bindable*> bindables;
+    std::map<std::string, RenderTechnique*> techniques;
 
-private:
-    virtual const std::vector<Bind::Bindable*>& GetStaticBinds() const noexcept = 0;
-
+    bool HasTechnique(std::string technique);
+    
+    void PassTechnique(std::string technique, Microsoft::WRL::ComPtr<ID3D11DeviceContext> context);
 };

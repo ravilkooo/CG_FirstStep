@@ -353,12 +353,13 @@ void ShadowGame::BindDsvAndSetNullRenderTarget()
 void ShadowGame::DrawSceneToShadowMap() {
 	renderer.GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	shadowInpLayout->Bind(renderer.GetDeviceContext());
 	// shadowVBuffer->Bind(renderer.GetDeviceContext());
-	shadowIBuffer->Bind(renderer.GetDeviceContext());
-	shadowVShader->Bind(renderer.GetDeviceContext());
 	shadowRast->Bind(renderer.GetDeviceContext());
 	shadowTransforms->Bind(renderer.GetDeviceContext());
+	shadowVShader->Bind(renderer.GetDeviceContext());
+	
+	shadowIBuffer->Bind(renderer.GetDeviceContext());
+	shadowInpLayout->Bind(renderer.GetDeviceContext());
 	for (SceneNode* node : scene.nodes) {
 		for (size_t i = 0; i < node->bindables.size(); i++)
 		{

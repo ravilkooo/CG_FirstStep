@@ -3,7 +3,7 @@
 
 float FloorHeightFunc(float3 pos)
 {
-    return (2 * sin(pos.x * 0.5) * cos(pos.z * 0.5) + sin(pos.x * 10.0f) * 0.2) * 0.2;
+    return (sin(pos.x * 0.5) * cos(pos.z * 0.5) + 0 * sin(pos.x * 10.0f) * 0.2) * 0.0;
 }
 
 #endif

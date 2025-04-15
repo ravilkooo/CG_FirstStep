@@ -5,24 +5,17 @@ using namespace Bind;
 
 void Drawable::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) const noexcept {
 	context->DrawIndexed(indicesNum, 0, 0);
-};
-
-void Drawable::AddBind(Bind::Bindable* bind)
-{
-	bindables.push_back(bind);
 }
-
-void Drawable::BindAll(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
+bool Drawable::HasTechnique(std::string technique)
 {
-	for (size_t i = 0; i < bindables.size(); i++)
-	{
-		bindables[i]->Bind(context.Get());
-	}
-	for (size_t i = 0; i < GetStaticBinds().size(); i++)
-	{
-		GetStaticBinds()[i]->Bind(context.Get());
-	}
+	return techniques.find(technique) != techniques.end();
 }
+void Drawable::PassTechnique(std::string technique, Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
+{
+	techniques[technique]->BindAll(context);
+	Draw(context);
+}
+;
 
 DirectX::XMMATRIX Drawable::GetViewMatrix() const
 {

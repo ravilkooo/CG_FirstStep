@@ -1,9 +1,11 @@
 #pragma once
 #include <SceneNode.h>
 #include <ShapeGenerator.h>
-#include <DrawableBase.h>
 
-class StickyBall : public DrawableBase<StickyBall>
+//#include <DrawableBase.h>
+//class StickyBall : public DrawableBase<StickyBall>
+
+class StickyBall : public SceneNode
 {
 public:
     StickyBall();

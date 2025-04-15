@@ -6,9 +6,11 @@
 #include "ShapeGenerator.h"
 #include <StringHelper.h>
 #include <random>
-#include <DrawableBase.h>
 
-class CollectibleObject : public DrawableBase<CollectibleObject>
+// #include <DrawableBase.h>
+//class CollectibleObject : public DrawableBase<CollectibleObject>
+
+class CollectibleObject : public SceneNode
 {
 public:
     CollectibleObject(ID3D11Device* device, const std::string& modelsFolder, const DirectX::XMFLOAT3& position);

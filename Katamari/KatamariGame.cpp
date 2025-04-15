@@ -1,8 +1,5 @@
 #include "KatamariGame.h"
-
-// временно
-#include "DDSTextureLoader.h"
-#include <StringHelper.h>
+#include <FrustrumWireframe.h>
 
 KatamariGame::KatamariGame()
 {
@@ -21,27 +18,25 @@ KatamariGame::KatamariGame()
 	displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
 
 	renderer = Renderer(&displayWindow);
-	renderer.camera = Camera(winWidth * 1.0f / winHeight);
-
-	ball = new StickyBall(renderer.GetDevice());
-	ball->camera = &(renderer.camera);
 
 	floor = new Floor(renderer.GetDevice());
-	floor->camera = &(renderer.camera);
-	scene.AddNode(ball);
+	ball = new StickyBall(renderer.GetDevice());
+
 	scene.AddNode(floor);
+	scene.AddNode(ball);
 
 	SpawnCollectibles();
 
-	renderer.camera.SwitchToFollowMode(ball->position, ball->GetMoveDir(), ball->radius);
 
 	// Light
+	Vector3 lightDir = { 0, -30, 80 };
+	lightDir.Normalize();
 
 	lightData.dLight = {
 		Vector4(0.1f, 0.1f, 0.1f, 0.0f),
 		Vector4(0.4f, 0.4f, 0.4f, 0.0f),
 		Vector4(0.6f, 0.6f, 0.6f, 0.0f),
-		Vector3(-2.0f, -1.0f, -1.0f) / Vector3(-2.0f, -1.0f, -1.0f).Length(),
+		lightDir,
 		0
 	};
 
@@ -65,11 +60,10 @@ KatamariGame::KatamariGame()
 		//std::cout << (i + 1) % 2 * 1.0f << ", " << i / 3 * 1.0f << ", " << (i + 2) % 6 / 3 * 1.0f << "\n";
 	}
 
-	
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> dis(0.0f, 1.0f);
-	
+
 	for (int i = 0; i < 8; i++)
 	{
 		Matrix rotationX = Matrix::CreateRotationX(dis(gen) * XM_2PI);
@@ -102,7 +96,6 @@ KatamariGame::KatamariGame()
 		lightData.pointLights[i + 6].Range = 0.0f;
 		lightData.pointLights[i + 6].Att = { 0.01f, 0.1f, 0.0f };
 	}
-	
 
 	lightData.spotLight = {
 		Vector4(0.1f, 0.1f, 0.1f, 0.0f),
@@ -120,32 +113,126 @@ KatamariGame::KatamariGame()
 	_spotDir.Normalize();
 	lightData.spotLight.Direction = _spotDir;
 
-	light_pcb = new Bind::PixelConstantBuffer<LightData>(renderer.GetDevice(), lightData, 0u);
-	renderer.AddPerFrameBind(light_pcb);
+	UINT smSizeX = 1024;
+	UINT smSizeY = 1024;
 
-	D3D11_SAMPLER_DESC samplerDesc;
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	// DL_ShadowMapPass
+	DL_ShadowMapPass* dl_shadowMapPass = new DL_ShadowMapPass(renderer.GetDevice(),
+		renderer.GetDeviceContext(), smSizeX, smSizeY, lightData.dLight);
+	renderer.AddPass(dl_shadowMapPass);
 
-	renderer.AddPerFrameBind(new Bind::Sampler(renderer.GetDevice(), samplerDesc, 0));
+	// MainColorPass
+	{
+		MainColorPass* colorPass = new MainColorPass(renderer.GetDevice(), renderer.GetDeviceContext(),
+			renderer.GetBackBuffer(), winWidth, winHeight);
 
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
-	depthStencilDesc.DepthEnable = true;
-	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+		renderer.SetMainCamera(colorPass->GetCamera());
 
-	renderer.AddPerFrameBind(new Bind::DepthStencilState(renderer.GetDevice(), depthStencilDesc));
+		colorPass->camera.SwitchToFollowMode(ball->position, ball->GetMoveDir(), ball->radius);
+
+
+		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+		depthStencilDesc.DepthEnable = true;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+		colorPass->AddPerFrameBind(new Bind::DepthStencilState(renderer.GetDevice(), depthStencilDesc));
+
+		// --- Light ---
+		light_pcb = new Bind::PixelConstantBuffer<LightData>(renderer.GetDevice(), lightData, 0u);
+		colorPass->AddPerFrameBind(light_pcb);
+
+		// --- Shadow stuff ---
+		
+		// View texture as Shader resource while using it for shadowing in pixel shader
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+		srvDesc.Texture2DArray.MostDetailedMip = 0;
+		srvDesc.Texture2DArray.MipLevels = 1;
+		srvDesc.Texture2DArray.FirstArraySlice = 0;
+		srvDesc.Texture2DArray.ArraySize = 4;
+
+		colorPass->AddPerFrameBind(new Bind::TextureB(renderer.GetDevice(), dl_shadowMapPass->GetTexture(), srvDesc, 0u));
+		
+
+		// Sampler of texture. It samples values from texture
+		D3D11_SAMPLER_DESC shadowSamplerDesc;
+		shadowSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		shadowSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+		shadowSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+		shadowSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+		shadowSamplerDesc.MipLODBias = 0.0f;
+		shadowSamplerDesc.MaxAnisotropy = 1;
+		shadowSamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		shadowSamplerDesc.BorderColor[0] = 1.0;
+		shadowSamplerDesc.BorderColor[1] = 1.0;
+		shadowSamplerDesc.BorderColor[2] = 1.0;
+		shadowSamplerDesc.BorderColor[3] = 1.0;
+		shadowSamplerDesc.MinLOD = 0;
+		shadowSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		colorPass->AddPerFrameBind(new Bind::Sampler(renderer.GetDevice(), shadowSamplerDesc, 0u));
+
+		shadowSamplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+		shadowSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+		shadowSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+		shadowSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+		shadowSamplerDesc.MipLODBias = 0.0f;
+		shadowSamplerDesc.MaxAnisotropy = 1;
+		shadowSamplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+		shadowSamplerDesc.BorderColor[0] = 1.0;
+		shadowSamplerDesc.BorderColor[1] = 1.0;
+		shadowSamplerDesc.BorderColor[2] = 1.0;
+		shadowSamplerDesc.BorderColor[3] = 1.0;
+		shadowSamplerDesc.MinLOD = 0;
+		shadowSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		colorPass->AddPerFrameBind(new Bind::Sampler(renderer.GetDevice(), shadowSamplerDesc, 1u));
+
+		// All Cascades (for pixel shader while drawing final scene)
+		cascadesConstantBuffer = new Bind::PixelConstantBuffer<DL_ShadowMapPass::CascadesData>(
+			renderer.GetDevice(), dl_shadowMapPass->cascadesData, 1u);
+		colorPass->AddPerFrameBind(cascadesConstantBuffer);
+
+
+		// Textures for objects (skin)
+		D3D11_SAMPLER_DESC samplerDesc;
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.MipLODBias = 0.0f;
+		samplerDesc.MaxAnisotropy = 1;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		samplerDesc.BorderColor[0] = 0;
+		samplerDesc.BorderColor[1] = 0;
+		samplerDesc.BorderColor[2] = 0;
+		samplerDesc.BorderColor[3] = 0;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		colorPass->AddPerFrameBind(new Bind::Sampler(renderer.GetDevice(), samplerDesc, 2u));
+
+		renderer.AddPass(colorPass);
+	}
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		Camera fCam = Camera(*(dl_shadowMapPass->GetFrustrumCamera()));
+
+		float nearZ; float farZ;
+		dl_shadowMapPass->GetFrustrumBoundsZ(i, &nearZ, &farZ);
+		fCam.SetNearZ(nearZ);
+		fCam.SetFarZ(farZ);
+		FrustrumWireframe* fwf = new FrustrumWireframe(renderer.GetDevice(), fCam);
+		scene.AddNode(fwf);
+	}
+	
+
+	for (SceneNode* node : scene.nodes) {
+		node->camera = renderer.GetMainCamera();
+	}
 
 	InputDevice::getInstance().OnKeyPressed.AddRaw(this, &KatamariGame::HandleKeyDown);
 	InputDevice::getInstance().MouseMove.AddRaw(this, &KatamariGame::HandleMouseMove);
@@ -215,12 +302,12 @@ void KatamariGame::Update(float deltaTime)
 			ball->Grow(coll->radius / deltaTime);
 		}
 	}
-	renderer.camera.Update(deltaTime, ball->worldMat, ball->GetMoveDir(), ball->radius);
+	renderer.GetMainCamera()->Update(deltaTime, ball->worldMat, ball->GetMoveDir(), ball->radius);
 
-	Matrix vpMat = renderer.camera.GetViewMatrix() * renderer.camera.GetProjectionMatrix();
+	//Matrix vpMat = renderer.camera.GetViewMatrix() * renderer.camera.GetProjectionMatrix();
 
 
-	XMFLOAT3 camera_pos = renderer.camera.GetPosition();
+	XMFLOAT3 camera_pos = renderer.GetMainCamera()->GetPosition();
 	for (auto coll : collectibles)
 	{
 		coll->vcb->Update(renderer.GetDeviceContext(),
@@ -306,7 +393,7 @@ void KatamariGame::SpawnCollectibles()
 	for (auto coll : collectibles)
 	{
 		scene.AddNode(coll);
-		coll->camera = &(renderer.camera);
+		coll->camera = renderer.GetMainCamera();
 	}
 }
 
@@ -344,5 +431,5 @@ void KatamariGame::HandleKeyDown(Keys key) {
 void KatamariGame::HandleMouseMove(const InputDevice::MouseMoveEventArgs& args)
 {
 	ball->AddTurn(args.Offset.x * 0.1, deltaTime);
-	renderer.camera.RotatePitch(-deltaTime * args.Offset.y * 0.1);
+	renderer.GetMainCamera()->RotatePitch(-deltaTime * args.Offset.y * 0.1);
 }

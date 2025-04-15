@@ -3,6 +3,15 @@
 
 namespace Bind
 {
+	TextureB::TextureB(ID3D11Device* device, ID3D11Resource* pTexture,
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc, UINT slot)
+		: pTexture(pTexture), slot(slot)
+	{
+		auto hr = device->CreateShaderResourceView(pTexture, &srvDesc, &pTextureView);
+		if (FAILED(hr)) {
+			throw std::runtime_error("Failed to create shader resource view from texture generated from color data.");
+		}
+	}
 	TextureB::TextureB(ID3D11Device* device, ID3D11Resource* pTexture, ID3D11ShaderResourceView* pTextureView, UINT slot)
 		: slot(slot)
 	{

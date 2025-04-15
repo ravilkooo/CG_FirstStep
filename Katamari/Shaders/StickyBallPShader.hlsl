@@ -1,6 +1,3 @@
-Texture2D DiffuseMap : register(t0);
-SamplerState Sampler : register(s0);
-
 struct Material
 {
     float4 Ambient;
@@ -33,6 +30,13 @@ struct DirectionalLight
 };
 
 
+struct ShadowTransforms
+{
+    row_major float4x4 lightView;
+    row_major float4x4 lightProj;
+    row_major float4x4 shadowTransform;
+};
+
 struct PS_IN
 {
     float4 pos : SV_POSITION;
@@ -48,10 +52,19 @@ cbuffer LightBuffer : register(b0) // per frame
     PointLight pointLights[14];
 };
 
-cbuffer BallCBuf : register(b1)
+cbuffer CascadeCBuf : register(b1) // per frame
+{
+    ShadowTransforms shTransforms[4];
+    float4 distances;
+};
+
+cbuffer BallCBuf : register(b2)
 {
     float3 cam_pos;
 };
+
+Texture2D DiffuseMap : register(t1);
+SamplerState Sampler : register(s2);
 
 float4 calcDirectLight(float3 wPos, float3 normal, float3 toEye, Material mat, DirectionalLight dirLight)
 {

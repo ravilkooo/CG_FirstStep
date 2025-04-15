@@ -1,5 +1,4 @@
-Texture2D DiffuseMap : register(t0);
-SamplerState Sampler : register(s0);
+;
 
 struct Material
 {
@@ -38,10 +37,13 @@ cbuffer LightBuffer : register(b0) // per frame
     PointLight pointLights[14];
 };
 
-cbuffer CollectibleCBuf : register(b1)
+cbuffer CollectibleCBuf : register(b2)
 {
     float3 cam_pos;
 };
+
+Texture2D DiffuseMap : register(t1);
+SamplerState Sampler : register(s2);
 
 struct PS_IN
 {

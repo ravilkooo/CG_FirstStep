@@ -2,9 +2,15 @@
 #define KATAMARIGAME_H
 
 #include <Game.h>
+
+#include <MainColorPass.h>
+#include <DL_ShadowMapPass.h>
+
 #include "StickyBall.h"
 #include "Floor.h"
 #include "CollectibleObject.h"
+
+
 
 class KatamariGame :
     public Game
@@ -36,6 +42,9 @@ public:
     float pointLightLifeTime[8];
     float lifeTime = 2.0f;
     size_t currPointLightBullet = 0;
+
+    // Shadow
+    Bind::PixelConstantBuffer<DL_ShadowMapPass::CascadesData>* cascadesConstantBuffer;
 };
 
 #endif

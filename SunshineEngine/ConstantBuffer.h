@@ -36,7 +36,7 @@ namespace Bind
 
 		ConstantBuffer(ID3D11Device* device, UINT slot = 0u)
 			:
-			slot(0u)
+			slot(slot)
 		{
 			D3D11_BUFFER_DESC cbd;
 			cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;

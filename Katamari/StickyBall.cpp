@@ -28,70 +28,84 @@ StickyBall::StickyBall(ID3D11Device* device)
 	*/
 	worldMat = Matrix::CreateTranslation(position);
 
-	AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-	AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
-	AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
-	AddBind(new Bind::TextureB(device, "models\\Textures\\pixeleye.dds", aiTextureType_DIFFUSE));
-	vertexShaderB = new Bind::VertexShader(device, L"./Shaders/StickyBallVShader.hlsl");
-	AddBind(vertexShaderB);
-
 	{
-		numInputElements = 4;
-		IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+		RenderTechnique* shadowPass = new RenderTechnique("DL_ShadowMapPass");
+		shadowPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+		shadowPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
+		shadowPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
+		shadowPass->AddBind(new Bind::TransformCBuffer(device, this, 1u));
 
-		IALayoutInputElements[0] =
-			D3D11_INPUT_ELEMENT_DESC{
-				"POSITION",
-				0,
-				DXGI_FORMAT_R32G32B32_FLOAT,
-				0,
-				0,
-				D3D11_INPUT_PER_VERTEX_DATA,
-				0 };
-
-		IALayoutInputElements[1] =
-			D3D11_INPUT_ELEMENT_DESC{
-				"COLOR",
-				0,
-				DXGI_FORMAT_R32G32B32A32_FLOAT,
-				0,
-				D3D11_APPEND_ALIGNED_ELEMENT,
-				D3D11_INPUT_PER_VERTEX_DATA,
-				0 };
-		IALayoutInputElements[2] =
-			D3D11_INPUT_ELEMENT_DESC{
-				"TEXCOORD",
-				0,
-				DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
-				0,
-				D3D11_APPEND_ALIGNED_ELEMENT,
-				D3D11_INPUT_PER_VERTEX_DATA,
-				0 };
-		IALayoutInputElements[3] =
-			D3D11_INPUT_ELEMENT_DESC{
-				"NORMAL",
-				0,
-				DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT,
-				0,
-				D3D11_APPEND_ALIGNED_ELEMENT,
-				D3D11_INPUT_PER_VERTEX_DATA,
-				0 };
-
+		techniques.insert({ "DL_ShadowMapPass", shadowPass });
 	}
+	{
+		RenderTechnique* colorPass = new RenderTechnique("MainColorPass");
 
-	AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
-	AddBind(new Bind::PixelShader(device, L"./Shaders/StickyBallPShader.hlsl"));
+		colorPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+		colorPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
+		colorPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
+		colorPass->AddBind(new Bind::TextureB(device, "models\\Textures\\pixeleye.dds", aiTextureType_DIFFUSE, 1u));
+		vertexShaderB = new Bind::VertexShader(device, L"./Shaders/StickyBallVShader.hlsl");
+		colorPass->AddBind(vertexShaderB);
 
-	AddBind(new Bind::TransformCBuffer(device, this, 0u));
+		{
+			numInputElements = 4;
+			IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 
-	pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(device, ball_pcb, 1u);
-	AddBind(pcb);
+			IALayoutInputElements[0] =
+				D3D11_INPUT_ELEMENT_DESC{
+					"POSITION",
+					0,
+					DXGI_FORMAT_R32G32B32_FLOAT,
+					0,
+					0,
+					D3D11_INPUT_PER_VERTEX_DATA,
+					0 };
 
-	D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
-	rastDesc.CullMode = D3D11_CULL_BACK;
-	rastDesc.FillMode = D3D11_FILL_SOLID;
-	AddBind(new Bind::Rasterizer(device, rastDesc));
+			IALayoutInputElements[1] =
+				D3D11_INPUT_ELEMENT_DESC{
+					"COLOR",
+					0,
+					DXGI_FORMAT_R32G32B32A32_FLOAT,
+					0,
+					D3D11_APPEND_ALIGNED_ELEMENT,
+					D3D11_INPUT_PER_VERTEX_DATA,
+					0 };
+			IALayoutInputElements[2] =
+				D3D11_INPUT_ELEMENT_DESC{
+					"TEXCOORD",
+					0,
+					DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+					0,
+					D3D11_APPEND_ALIGNED_ELEMENT,
+					D3D11_INPUT_PER_VERTEX_DATA,
+					0 };
+			IALayoutInputElements[3] =
+				D3D11_INPUT_ELEMENT_DESC{
+					"NORMAL",
+					0,
+					DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT,
+					0,
+					D3D11_APPEND_ALIGNED_ELEMENT,
+					D3D11_INPUT_PER_VERTEX_DATA,
+					0 };
 
+		}
+
+		colorPass->AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
+		colorPass->AddBind(new Bind::PixelShader(device, L"./Shaders/StickyBallPShader.hlsl"));
+
+		colorPass->AddBind(new Bind::TransformCBuffer(device, this, 0u));
+
+		pcb = new Bind::PixelConstantBuffer<StickyBall::Ball_PCB>(device, ball_pcb, 2u);
+		colorPass->AddBind(pcb);
+
+		D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
+		rastDesc.CullMode = D3D11_CULL_BACK;
+		rastDesc.FillMode = D3D11_FILL_SOLID;
+		colorPass->AddBind(new Bind::Rasterizer(device, rastDesc));
+
+		techniques.insert({ "MainColorPass", colorPass });
+	}
 }
 
 Vector3 StickyBall::GetCenterLocation()
@@ -147,6 +161,8 @@ void StickyBall::Update(float deltaTime)
 	//worldMat = Matrix::CreateScale(radius) * spinTransform * rotTransform * Matrix::CreateTranslation(position);
 	Matrix allRotTransform = Matrix::CreateFromYawPitchRoll(currentRotation, currentSpin, XM_PIDIV2);
 	worldMat = Matrix::CreateScale(radius) * allRotTransform * Matrix::CreateTranslation(position);
+
+	std::cout << "( " << position.x << ", " << position.y << ", " << position.z << " )\n";
 
 
 	//Matrix viewMat = camera->GetViewMatrix();

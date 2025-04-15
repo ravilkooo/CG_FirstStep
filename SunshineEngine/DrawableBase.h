@@ -1,4 +1,5 @@
 #pragma once
+/*
 #include "SceneNode.h"
 #include "Drawable.h"
 
@@ -29,3 +30,4 @@ private:
 
 template<class T>
 std::vector<Bind::Bindable*> DrawableBase<T>::staticBinds;
+*/

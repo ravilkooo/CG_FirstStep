@@ -1,10 +1,11 @@
 #pragma once
 #include <SceneNode.h>
-#include <DrawableBase.h>
 
 #include "KatamariLighting.h"
 
-class Floor : public DrawableBase<Floor>
+//#include <DrawableBase.h>
+//class Floor : public DrawableBase<Floor>
+class Floor : public SceneNode
 {
 public:
     Floor();

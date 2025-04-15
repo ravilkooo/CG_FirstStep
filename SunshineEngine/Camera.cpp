@@ -37,9 +37,19 @@ void Camera::SetTarget(Vector3 target)
     this->target = target;
 }
 
+Vector3 Camera::GetTarget()
+{
+    return target;
+}
+
 void Camera::SetUp(Vector3 up)
 {
     this->up = up;
+}
+
+Vector3 Camera::GetUp()
+{
+    return up;
 }
 
 void Camera::SetFOV(float fov)
@@ -57,9 +67,19 @@ void Camera::SetNearZ(float nearZ)
     this->nearZ = nearZ;
 }
 
+float Camera::GetNearZ()
+{
+    return nearZ;
+}
+
 void Camera::SetFarZ(float farZ)
 {
     this->farZ = farZ;
+}
+
+float Camera::GetFarZ()
+{
+    return farZ;
 }
 
 void Camera::SetViewWidth(float viewWidth)
@@ -67,9 +87,19 @@ void Camera::SetViewWidth(float viewWidth)
     this->viewWidth = viewWidth;
 }
 
+float Camera::GetViewWidth()
+{
+    return viewWidth;
+}
+
 void Camera::SetViewHeight(float viewHeight)
 {
     this->viewHeight = viewHeight;
+}
+
+float Camera::GetViewHeight()
+{
+    return viewHeight;
 }
 
 void Camera::Update(float deltaTime, const Matrix targetTransform)
