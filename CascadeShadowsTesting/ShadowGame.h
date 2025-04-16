@@ -5,6 +5,7 @@
 #include <vector>
 #include <Bindable.h>
 #include "LightShadowStuff.h"
+#include <ForwardRenderer.h>
 
 class ShadowGame :
     public Game

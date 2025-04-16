@@ -1,0 +1,32 @@
+Texture2D DepthMap : register(t0);
+Texture2D NormalMap : register(t1);
+Texture2D AlbedoMap : register(t2);
+SamplerState Sam : register(s0);
+ 
+struct PS_IN
+{
+    float4 pos : SV_POSITION;
+    float3 wPos : POSITION;
+};
+
+static const float4x4 T =
+{
+    0.5f, 0.0f, 0.0f, 0.0f, // row 1
+    0.0f, -0.5f, 0.0f, 0.0f, // row 2
+    0.0f, 0.0f, 1.0f, 0.0f, // row 3
+    0.5f, 0.5f, 0.0f, 1.0f // row 4
+};
+
+const float SMAP_SIZE_X = 1000.0f;
+const float SMAP_SIZE_Y = 800.0f;
+
+float4 PSMain(PS_IN input) : SV_Target
+{
+    float4 uv = mul(float4(input.pos), T);
+    uv = uv / uv.w;
+    float x = input.pos.x / SMAP_SIZE_X; / input.pos.w;
+    float y = input.pos.y / SMAP_SIZE_Y; // input.pos.w;
+    //x = x * 0.5 + 0.5;
+    //y = -y * 0.5 + 0.5;
+    return float4(AlbedoMap.Sample(Sam, float2(x, y)));
+}

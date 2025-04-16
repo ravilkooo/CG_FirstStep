@@ -23,6 +23,7 @@ public:
 
 	virtual void AddPass(RenderPass* pass) = 0;
 
+	Camera* mainCamera;
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
 
@@ -37,6 +38,5 @@ protected:
 	UINT screenWidth = 800;
 	UINT screenHeight = 800;
 
-	Camera* mainCamera;
 };
 

@@ -67,4 +67,5 @@ void MainColorPass::SetCamera(Camera* camera)
 
 void MainColorPass::EndFrame()
 {
+	context->OMSetRenderTargets(0, NULL, NULL);
 }

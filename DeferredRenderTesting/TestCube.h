@@ -1,6 +1,5 @@
 #pragma once
-#include <DrawableBase.h>
-#include "LightShadowStuff.h"
+#include <SceneNode.h>
 
 class TestCube :
     public SceneNode

@@ -61,6 +61,7 @@ void DeferredRenderer::RenderScene(const Scene& scene)
 	for (RenderPass* pass : passes) {
 		pass->StartFrame();
 		pass->Pass(scene);
+		pass->EndFrame();
 	}
 
 	swapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
@@ -68,4 +69,5 @@ void DeferredRenderer::RenderScene(const Scene& scene)
 
 void DeferredRenderer::AddPass(RenderPass* pass)
 {
+	passes.push_back(pass);
 }

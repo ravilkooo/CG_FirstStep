@@ -6,6 +6,7 @@
 #include "RenderingSystem.h"
 #include "DisplayWindow.h"
 #include "GBuffer.h"
+#include "Scene.h"
 
 class DeferredRenderer :
     public RenderingSystem

@@ -7,8 +7,7 @@ TestCube::TestCube()
 {
 }
 
-TestCube::TestCube(ID3D11Device* device)
-    : TestCube(device, 0.2, 0.2, 0.2, { 0,0,0 }, { 1,0,0,1 })
+TestCube::TestCube(ID3D11Device* device) : TestCube(device, 0.2, 0.2, 0.2, { 0,0,0 }, { 1,0,0,1 })
 {
 }
 
@@ -24,14 +23,14 @@ TestCube::TestCube(ID3D11Device* device, float width, float height, float depth,
 
     auto col_2 = XMFLOAT4(0.5f + 0.5f * col.x, 0.5f + 0.5f * col.y, 0.5f + 0.5f * col.z, 1.0f);
 
-
-   {
-        std::cout << "hi2\n";
-        AddStaticBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-        AddStaticBind(new Bind::IndexBuffer(device, indices, indicesNum));
+    // GBufferPass
+    {
+        RenderTechnique* gBufferPass = new RenderTechnique("GBufferPass");
+        gBufferPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+        gBufferPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
         // AddStaticBind(texture);
-        vertexShaderB = new Bind::VertexShader(device, L"./Shaders/CubeShaderVS.hlsl");
-        AddStaticBind(vertexShaderB);
+        vertexShaderB = new Bind::VertexShader(device, L"./Shaders/GBufferShaderVS.hlsl");
+        gBufferPass->AddBind(vertexShaderB);
 
 
         numInputElements = 4;
@@ -75,19 +74,60 @@ TestCube::TestCube(ID3D11Device* device, float width, float height, float depth,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0 };
 
-        AddStaticBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
+        gBufferPass->AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
 
 
-        AddStaticBind(new Bind::PixelShader(device, L"./Shaders/CubeShaderPS.hlsl"));
+        gBufferPass->AddBind(new Bind::PixelShader(device, L"./Shaders/GBufferShaderPS.hlsl"));
 
 
         D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
         rastDesc.CullMode = D3D11_CULL_BACK;
         rastDesc.FillMode = D3D11_FILL_SOLID;
-        AddStaticBind(new Bind::Rasterizer(device, rastDesc));
+        gBufferPass->AddBind(new Bind::Rasterizer(device, rastDesc));
+        gBufferPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
+        gBufferPass->AddBind(new Bind::TransformCBuffer(device, this, 0u));
+
+        techniques.insert({ "GBufferPass", gBufferPass });
     }
-    AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
-    AddBind(new Bind::TransformCBuffer(device, this, 0u));
+    // MainColorPass
+    {
+        RenderTechnique* colorPass = new RenderTechnique("MainColorPass");
+        colorPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+        colorPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
+        // AddStaticBind(texture);
+        vertexShaderB = new Bind::VertexShader(device, L"./Shaders/CubeShaderVS.hlsl");
+        colorPass->AddBind(vertexShaderB);
+
+
+        numInputElements = 1;
+        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+
+        IALayoutInputElements[0] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "POSITION",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                0,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        colorPass->AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
+
+
+        colorPass->AddBind(new Bind::PixelShader(device, L"./Shaders/CubeShaderPS.hlsl"));
+
+
+        D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
+        rastDesc.CullMode = D3D11_CULL_BACK;
+        rastDesc.FillMode = D3D11_FILL_SOLID;
+        colorPass->AddBind(new Bind::Rasterizer(device, rastDesc));
+        colorPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
+        colorPass->AddBind(new Bind::TransformCBuffer(device, this, 0u));
+
+        techniques.insert({ "MainColorPass", colorPass });
+    }
+
 
 }
 

@@ -18,6 +18,12 @@ namespace Bind
 		this->pTexture = pTexture;
 		this->pTextureView = pTextureView;
 	}
+	TextureB::TextureB(ID3D11Device* device, ID3D11ShaderResourceView* pTextureView, UINT slot)
+		: slot(slot)
+	{
+		this->pTexture = nullptr;
+		this->pTextureView = pTextureView;
+	}
 	TextureB::TextureB(ID3D11Device* device, const std::string& filePath, aiTextureType type, UINT slot)
 		: slot(slot), filePath(filePath), type(type)
 	{
