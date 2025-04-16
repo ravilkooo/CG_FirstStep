@@ -16,7 +16,7 @@ ShadowGame::ShadowGame()
 
 	displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
 
-	renderer = Renderer(&displayWindow);
+	renderer = ForwardRenderer(&displayWindow);
 	renderer.camera = Camera(winWidth * 1.0f / winHeight);
 	renderer.camera.SetPosition({ 0, 0, 0 });
 	

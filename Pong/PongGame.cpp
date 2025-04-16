@@ -91,7 +91,7 @@ void PongGame::Initialize()
     displayWindow = DisplayWindow(applicationName, hInstance, 800, 800);
     inputHandler = displayWindow.GetInputHandler();
 
-    renderer = Renderer(&displayWindow);
+    renderer = ForwardRenderer(&displayWindow);
 
     for (auto node : scene.nodes)
     {

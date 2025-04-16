@@ -1,14 +1,11 @@
-#include "Renderer.h"
+#include "ForwardRenderer.h"
 
-Renderer::Renderer()
+ForwardRenderer::ForwardRenderer()
 {
 }
 
-Renderer::Renderer(DisplayWindow* displayWin)
+ForwardRenderer::ForwardRenderer(DisplayWindow* displayWin)
 {
-	PrevTime = std::chrono::steady_clock::now();
-	totalTime = 0;
-
 	LPCWSTR applicationName = L"SunshineEngine";
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
 
@@ -60,20 +57,14 @@ Renderer::Renderer(DisplayWindow* displayWin)
 }
 
 
-Renderer::~Renderer()
+ForwardRenderer::~ForwardRenderer()
 {
 
 }
 
 
-void Renderer::RenderScene(const Scene& scene)
+void ForwardRenderer::RenderScene(const Scene& scene)
 {
-	auto	curTime = std::chrono::steady_clock::now();
-	float	deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - PrevTime).count() / 1000000.0f;
-	PrevTime = curTime;
-	totalTime += deltaTime;
-	totalTime = totalTime > 1.0f ? totalTime - 1.0f : totalTime;
-
 	// Passes
 	for (RenderPass* pass : passes) {
 		pass->StartFrame();
@@ -84,17 +75,17 @@ void Renderer::RenderScene(const Scene& scene)
 }
 
 
-void Renderer::AddPass(RenderPass* pass)
+void ForwardRenderer::AddPass(RenderPass* pass)
 {
 	passes.push_back(pass);
 }
 
-void Renderer::SetMainCamera(Camera* camera)
+void ForwardRenderer::SetMainCamera(Camera* camera)
 {
 	mainCamera = camera;
 }
 
-Camera* Renderer::GetMainCamera()
+Camera* ForwardRenderer::GetMainCamera()
 {
 	return mainCamera;
 }

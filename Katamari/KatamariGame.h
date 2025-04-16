@@ -3,7 +3,7 @@
 
 #include <Game.h>
 
-#include <Renderer.h>
+#include <ForwardRenderer.h>
 #include <MainColorPass.h>
 #include <DL_ShadowMapPass.h>
 

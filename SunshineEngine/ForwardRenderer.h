@@ -43,13 +43,13 @@ for every Drawable obj:
 
 */
 
-class Renderer : public RenderingSystem
+class ForwardRenderer : public RenderingSystem
 {
     friend class Bindable;
 public:
-    Renderer();
-    Renderer(DisplayWindow* displayWin);
-    ~Renderer();
+    ForwardRenderer();
+    ForwardRenderer(DisplayWindow* displayWin);
+    ~ForwardRenderer();
 
     void RenderScene(const Scene& scene);
 
@@ -59,10 +59,6 @@ public:
     Camera* GetMainCamera();
 
 protected:
-
-    std::chrono::time_point<std::chrono::steady_clock> PrevTime;
-    float totalTime;
-
     std::vector<RenderPass*> passes;
 };
 

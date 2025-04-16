@@ -15,7 +15,7 @@ GravitationGame::GravitationGame()
 
 	displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
 
-	renderer = Renderer(&displayWindow);
+	renderer = ForwardRenderer(&displayWindow);
 	renderer.camera = Camera(winWidth * 1.0f / winHeight);
 
 	float accum_dist = 0.0f;

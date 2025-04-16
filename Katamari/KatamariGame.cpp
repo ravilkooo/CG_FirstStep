@@ -16,7 +16,7 @@ KatamariGame::KatamariGame()
 
 	displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
 
-	renderer = new Renderer(&displayWindow);
+	renderer = new ForwardRenderer(&displayWindow);
 
 	floor = new Floor(renderer->GetDevice());
 	ball = new StickyBall(renderer->GetDevice());

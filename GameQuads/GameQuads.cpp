@@ -21,7 +21,7 @@ GameQuads::GameQuads()
     displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
 
 
-    renderer = Renderer(&displayWindow);
+    renderer = ForwardRenderer(&displayWindow);
 
 
     for (auto node : scene.nodes)

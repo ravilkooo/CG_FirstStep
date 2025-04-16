@@ -122,7 +122,7 @@ SolarSystemGame::SolarSystemGame()
 	displayWindow = DisplayWindow(this, applicationName, hInstance, winWidth, winHeight);
 	// inputHandler = displayWindow.GetInputHandler();
 
-	renderer = Renderer(&displayWindow);
+	renderer = ForwardRenderer(&displayWindow);
 	renderer.camera = Camera(winWidth * 1.0f / winHeight);
 
 	focusedBody = moon;
