@@ -64,3 +64,7 @@ void MainColorPass::SetCamera(Camera* camera)
 {
 	this->camera = *camera;
 }
+
+void MainColorPass::EndFrame()
+{
+}

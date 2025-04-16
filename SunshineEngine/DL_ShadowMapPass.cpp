@@ -171,6 +171,10 @@ void DL_ShadowMapPass::Pass(const Scene& scene)
 	context->OMSetRenderTargets(0, NULL, NULL);
 }
 
+void DL_ShadowMapPass::EndFrame()
+{
+}
+
 ID3D11Texture2D* DL_ShadowMapPass::GetTexture()
 {
 	return shadowTexture;

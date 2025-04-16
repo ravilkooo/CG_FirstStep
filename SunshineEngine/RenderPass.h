@@ -13,6 +13,7 @@ public:
 	std::string GetTechnique();
 	virtual void Pass(const Scene& scene);
 	virtual void StartFrame() = 0;
+	virtual void EndFrame() = 0;
 
 	void AddPerFrameBind(Bind::Bindable* bind);
 	void BindAllPerFrame();

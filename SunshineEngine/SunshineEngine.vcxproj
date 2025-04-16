@@ -183,6 +183,7 @@
     <ClInclude Include="DrawableBase.h" />
     <ClInclude Include="FrustrumWireframe.h" />
     <ClInclude Include="GBuffer.h" />
+    <ClInclude Include="GBufferPass.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />
     <ClInclude Include="Lighting.h" />
@@ -203,7 +204,7 @@
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsEngine.h" />
-    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShapeGenerator.h" />
@@ -224,6 +225,7 @@
     <ClCompile Include="DrawableBase.cpp" />
     <ClCompile Include="FrustrumWireframe.cpp" />
     <ClCompile Include="GBuffer.cpp" />
+    <ClCompile Include="GBufferPass.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="MainColorPass.cpp" />
@@ -240,7 +242,7 @@
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
-    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ForwardRenderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShapeGenerator.cpp" />

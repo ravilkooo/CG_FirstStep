@@ -43,9 +43,11 @@ private:
 	float cascadeBounds[5] = { 0.1f, 10.0f, 30.0f, 80.0f, 200.0f };
 	float frustrumBias = 10.0f;
 
-	// Inherited via RenderPass
 	void StartFrame() override;
+	void EndFrame() override;
 	void Pass(const Scene& scene) override;
+
+
 
 };
 

@@ -7,7 +7,8 @@ class GBuffer
 public:
 	// Depth
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthBuffer;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pDepthRTV;
+	//Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pDepthRTV;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthDSV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pDepthSRV;
 
 	// Normal
@@ -15,6 +16,11 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pNormalRTV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pNormalSRV;
 
+
+	// Albedo
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pAlbedoBuffer;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pAlbedoRTV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pAlbedoSRV;
 
 	// --- Light ---
 	
