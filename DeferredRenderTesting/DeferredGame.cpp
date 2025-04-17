@@ -32,6 +32,15 @@ DeferredGame::DeferredGame()
 
 		renderer->AddPass(gBufferPass);
 	}
+	LightPass* gLightPass;
+	{
+		gLightPass = new LightPass(renderer->GetDevice(), renderer->GetDeviceContext(),
+			renderer->GetBackBuffer(), winWidth, winHeight, gBufferPass->pGBuffer);
+
+		gLightPass->SetCamera(gBufferPass->GetCamera());
+
+		renderer->AddPass(gLightPass);
+	}
 	// MainColorPass
 	{
 		MainColorPass* colorPass = new MainColorPass(renderer->GetDevice(), renderer->GetDeviceContext(),

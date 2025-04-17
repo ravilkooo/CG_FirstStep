@@ -1,4 +1,6 @@
 #pragma once
+#include <stdexcept>
+
 #include "RenderPass.h"
 #include "Camera.h"
 #include "GBuffer.h"
@@ -11,6 +13,7 @@ public:
         UINT screenWidth, UINT screenHeight, GBuffer* pGBuffer);
 
     void StartFrame() override;
+    void Pass(const Scene& scene) override;
     void EndFrame() override;
 
     Camera* GetCamera();
@@ -23,5 +26,8 @@ public:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
 
     GBuffer* pGBuffer;
+
+    ID3D11RenderTargetView* gBufferRTV;
+    D3D11_VIEWPORT viewport;
 };
 

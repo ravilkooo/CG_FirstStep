@@ -41,7 +41,7 @@ private:
 
 	//float cascadeBounds[5] = { 0.1f, 10.0f, 30.0f, 10.0f, 40.0f };
 	float cascadeBounds[5] = { 0.1f, 10.0f, 30.0f, 80.0f, 200.0f };
-	float FrustumBias = 10.0f;
+	float frustumBias = 10.0f;
 
 	void StartFrame() override;
 	void EndFrame() override;

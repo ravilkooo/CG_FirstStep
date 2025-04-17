@@ -91,7 +91,7 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 
 	for (size_t i = 0; i < 4; i++)
 	{
-		lightViewCamera->SetNearZ(cascadeBounds[i] - (i > 0 ? frustrumBias : 0));
+		lightViewCamera->SetNearZ(cascadeBounds[i] - (i > 0 ? frustumBias : 0));
 		lightViewCamera->SetFarZ(cascadeBounds[i + 1]);
 
 		cascadesData.cascades[i] = {
