@@ -16,14 +16,23 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pNormalRTV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pNormalSRV;
 
-
 	// Albedo
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pAlbedoBuffer;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pAlbedoRTV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pAlbedoSRV;
 
+	// Specular (Intensity; Power)
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pSpecularBuffer;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pSpecularRTV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pSpecularSRV;
+
 	// --- Light ---
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pLightBuffer;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pLightRTV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pLightSRV;
 	
+
+	// Don't need it
 	// Diffuse
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDiffuseLightBuffer;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pDiffuseLightRTV;

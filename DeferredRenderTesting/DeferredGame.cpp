@@ -1,5 +1,4 @@
 #include "DeferredGame.h"
-#include "TestCube.h"
 
 DeferredGame::DeferredGame()
 {
@@ -40,13 +39,13 @@ DeferredGame::DeferredGame()
 
 		colorPass->SetCamera(renderer->GetMainCamera());
 
-		gBufferPass->gbuffer->pDepthSRV;
-		gBufferPass->gbuffer->pNormalSRV;
-		gBufferPass->gbuffer->pAlbedoSRV;
+		gBufferPass->pGBuffer->pDepthSRV;
+		gBufferPass->pGBuffer->pNormalSRV;
+		gBufferPass->pGBuffer->pAlbedoSRV;
 
-		colorPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->gbuffer->pDepthSRV.Get(), 0u));
-		colorPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->gbuffer->pNormalSRV.Get(), 1u));
-		colorPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->gbuffer->pAlbedoSRV.Get(), 2u));
+		colorPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->pGBuffer->pDepthSRV.Get(), 0u));
+		colorPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->pGBuffer->pNormalSRV.Get(), 1u));
+		colorPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->pGBuffer->pAlbedoSRV.Get(), 2u));
 
 		// Usual sampler for all SRV
 		D3D11_SAMPLER_DESC samplerDesc;

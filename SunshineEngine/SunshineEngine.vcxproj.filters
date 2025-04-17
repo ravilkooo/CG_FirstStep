@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Renderer">
       <UniqueIdentifier>{0f5a2c9d-39aa-4acb-b663-be845ea7b2f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\LightObject">
+      <UniqueIdentifier>{8602d0a8-c632-4a4e-8d70-8a46f3bc09f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\LightObject">
+      <UniqueIdentifier>{09427390-5141-43d4-ab73-219f9db11594}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -138,9 +144,6 @@
     <ClInclude Include="DepthStencilState.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="Lighting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrustrumWireframe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -160,6 +163,27 @@
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="GBufferPass.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="LightObject.h">
+      <Filter>Header Files\LightObject</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Header Files\LightObject</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Header Files\LightObject</Filter>
+    </ClInclude>
+    <ClInclude Include="AmbientLight.h">
+      <Filter>Header Files\LightObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Header Files\LightObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightPass.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -270,6 +294,24 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="GBufferPass.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="LightObject.cpp">
+      <Filter>Source Files\LightObject</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Source Files\LightObject</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Source Files\LightObject</Filter>
+    </ClCompile>
+    <ClCompile Include="AmbientLight.cpp">
+      <Filter>Source Files\LightObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLight.cpp">
+      <Filter>Source Files\LightObject</Filter>
+    </ClCompile>
+    <ClCompile Include="LightPass.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>

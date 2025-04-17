@@ -43,7 +43,7 @@ MainColorPass::MainColorPass(ID3D11Device* device, ID3D11DeviceContext* context,
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1.0f;
 
-	camera = Camera(screenWidth * 1.0f / screenHeight);
+	camera = new Camera(screenWidth * 1.0f / screenHeight);
 }
 
 void MainColorPass::StartFrame()
@@ -57,12 +57,12 @@ void MainColorPass::StartFrame()
 
 Camera* MainColorPass::GetCamera()
 {
-	return &camera;
+	return camera;
 }
 
 void MainColorPass::SetCamera(Camera* camera)
 {
-	this->camera = *camera;
+	this->camera = camera;
 }
 
 void MainColorPass::EndFrame()

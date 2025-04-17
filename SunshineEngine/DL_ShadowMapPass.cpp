@@ -180,12 +180,12 @@ ID3D11Texture2D* DL_ShadowMapPass::GetTexture()
 	return shadowTexture;
 }
 
-Camera* DL_ShadowMapPass::GetFrustrumCamera()
+Camera* DL_ShadowMapPass::GetFrustumCamera()
 {
 	return lightViewCamera;
 }
 
-void DL_ShadowMapPass::GetFrustrumBoundsZ(int i, float* nearZ, float* farZ)
+void DL_ShadowMapPass::GetFrustumBoundsZ(int i, float* nearZ, float* farZ)
 {
 	*nearZ = cascadeBounds[i];
 	*farZ = cascadeBounds[i + 1];

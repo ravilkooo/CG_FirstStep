@@ -13,7 +13,6 @@ TestCube::TestCube(ID3D11Device* device) : TestCube(device, 0.2, 0.2, 0.2, { 0,0
 
 TestCube::TestCube(ID3D11Device* device, float width, float height, float depth, Vector3 position, Vector4 col)
 {
-    std::cout << "hi1\n";
     //this->device = device;
     this->position = position;
 

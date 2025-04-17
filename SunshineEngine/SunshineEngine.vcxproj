@@ -171,6 +171,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AmbientLight.h" />
     <ClInclude Include="Bindable.h" />
     <ClInclude Include="BindableCollection.h" />
     <ClInclude Include="Camera.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DeferredRenderer.h" />
     <ClInclude Include="DepthStencilState.h" />
+    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="DL_ShadowMapPass.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="DrawableBase.h" />
@@ -187,8 +189,11 @@
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />
     <ClInclude Include="Lighting.h" />
+    <ClInclude Include="LightObject.h" />
+    <ClInclude Include="LightPass.h" />
     <ClInclude Include="MainColorPass.h" />
     <ClInclude Include="PixelShader.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="RenderingSystem.h" />
     <ClInclude Include="RenderPass.h" />
@@ -208,6 +213,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShapeGenerator.h" />
+    <ClInclude Include="SpotLight.h" />
     <ClInclude Include="StringHelper.h" />
     <ClInclude Include="TextureB.h" />
     <ClInclude Include="Topology.h" />
@@ -216,10 +222,12 @@
     <ClInclude Include="VertexShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AmbientLight.cpp" />
     <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DeferredRenderer.cpp" />
     <ClCompile Include="DepthStencilState.cpp" />
+    <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="DL_ShadowMapPass.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="DrawableBase.cpp" />
@@ -228,8 +236,11 @@
     <ClCompile Include="GBufferPass.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
+    <ClCompile Include="LightObject.cpp" />
+    <ClCompile Include="LightPass.cpp" />
     <ClCompile Include="MainColorPass.cpp" />
     <ClCompile Include="PixelShader.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="RenderTechnique.cpp" />
@@ -246,6 +257,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShapeGenerator.cpp" />
+    <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="StringHelper.cpp" />
     <ClCompile Include="TextureB.cpp" />
     <ClCompile Include="Topology.cpp" />

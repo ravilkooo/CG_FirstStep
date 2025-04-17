@@ -4,6 +4,8 @@
 #include <GBufferPass.h>
 #include <MainColorPass.h>
 
+#include "TestCube.h"
+
 class DeferredGame :
     public Game
 {

@@ -18,7 +18,7 @@ public:
 
     Camera* GetCamera();
     void SetCamera(Camera* camera);
-    Camera camera;
+    Camera* camera;
 
     UINT screenWidth = 800;
     UINT screenHeight = 800;
@@ -26,11 +26,11 @@ public:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
 
     //ID3D11RenderTargetView* renderTargetView;
-    ID3D11RenderTargetView* gBufferRTVs[2];
+    ID3D11RenderTargetView* gBufferRTVs[3];
     D3D11_VIEWPORT viewport;
     //ID3D11Texture2D* pDepthStencil;
     //ID3D11DepthStencilView* pDSV;
-    GBuffer* gbuffer;
+    GBuffer* pGBuffer;
 
 };
 

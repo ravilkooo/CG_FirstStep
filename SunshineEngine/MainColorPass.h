@@ -17,7 +17,7 @@ public:
 
     Camera* GetCamera();
     void SetCamera(Camera* camera);
-    Camera camera;
+    Camera* camera;
 protected:
     UINT screenWidth = 800;
     UINT screenHeight = 800;

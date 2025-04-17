@@ -341,3 +341,66 @@ void Camera::SwitchProjection() {
     }
 
 }
+
+Camera::FrustumPlanes Camera::GetFrustumPlanes()
+{
+    Matrix mat = GetViewMatrix() * GetProjectionMatrix();
+    FrustumPlanes planes;
+
+    // Левая плоскость
+    planes.Left = XMVectorSet(mat._14 + mat._11, mat._24 + mat._21, mat._34 + mat._31, mat._44 + mat._41);
+    planes.Left = DirectX::XMPlaneNormalize(planes.Left);
+
+    // Правая плоскость
+    planes.Right = XMVectorSet(mat._14 - mat._11, mat._24 - mat._21, mat._34 - mat._31, mat._44 - mat._41);
+    planes.Right = DirectX::XMPlaneNormalize(planes.Right);
+
+    // Верхняя плоскость
+    planes.Top = XMVectorSet(mat._14 - mat._12, mat._24 - mat._22, mat._34 - mat._32, mat._44 - mat._42);
+    planes.Top = DirectX::XMPlaneNormalize(planes.Top);
+
+    // Нижняя плоскость
+    planes.Bottom = XMVectorSet(mat._14 + mat._12, mat._24 + mat._22, mat._34 + mat._32, mat._44 + mat._42);
+    planes.Bottom = DirectX::XMPlaneNormalize(planes.Bottom);
+
+    // Ближняя плоскость
+    planes.Near = XMVectorSet(mat._14 + mat._13, mat._24 + mat._23, mat._34 + mat._33, mat._44 + mat._43);
+    planes.Near = DirectX::XMPlaneNormalize(planes.Near);
+
+    // Дальняя плоскость
+    planes.Far = XMVectorSet(mat._14 - mat._13, mat._24 - mat._23, mat._34 - mat._33, mat._44 - mat._43);
+    planes.Far = DirectX::XMPlaneNormalize(planes.Far);
+
+    return planes;
+}
+
+Camera::FrustumCorners Camera::GetFrustumCorners()
+{
+    FrustumCorners corners;
+    
+    Matrix viewProjMatrix = GetViewMatrix() * GetProjectionMatrix();
+    XMMATRIX invViewProj = XMMatrixInverse(nullptr, viewProjMatrix);
+
+    XMVECTOR ndcCorners[8] = {
+        XMVectorSet(-1, -1, 0, 1),
+        XMVectorSet(1, -1, 0, 1),
+        XMVectorSet(-1, 1, 0, 1),
+        XMVectorSet(1, 1, 0, 1),
+        XMVectorSet(-1, -1, 1, 1),
+        XMVectorSet(1, -1, 1, 1),
+        XMVectorSet(-1, 1, 1, 1),
+        XMVectorSet(1, 1, 1, 1)
+    };
+
+    for (int i = 0; i < 8; ++i) {
+        XMVECTOR worldPos = XMVector3TransformCoord(ndcCorners[i], invViewProj);
+        if (i < 4) {
+            corners.Near[i] = worldPos;
+        }
+        else {
+            corners.Far[i - 4] = worldPos;
+        }
+    }
+
+    return corners;
+}

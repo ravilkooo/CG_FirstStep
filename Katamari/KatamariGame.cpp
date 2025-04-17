@@ -127,7 +127,7 @@ KatamariGame::KatamariGame()
 
 		renderer->SetMainCamera(colorPass->GetCamera());
 
-		colorPass->camera.SwitchToFollowMode(ball->position, ball->GetMoveDir(), ball->radius);
+		colorPass->camera->SwitchToFollowMode(ball->position, ball->GetMoveDir(), ball->radius);
 
 
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};

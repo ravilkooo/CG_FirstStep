@@ -71,6 +71,23 @@ public:
 
     void SwitchProjection();
 
+    struct FrustumPlanes {
+        XMVECTOR Left;
+        XMVECTOR Right;
+        XMVECTOR Top;
+        XMVECTOR Bottom;
+        XMVECTOR Near;
+        XMVECTOR Far;
+    };
+
+    FrustumPlanes GetFrustumPlanes();
+
+    struct FrustumCorners {
+        XMVECTOR Near[4];
+        XMVECTOR Far[4];
+    };
+    FrustumCorners GetFrustumCorners();
+
 private:
     Vector3 position;
     Vector3 target;

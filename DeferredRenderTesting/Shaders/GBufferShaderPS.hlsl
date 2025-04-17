@@ -10,7 +10,7 @@ struct PSOutput
 {
     float4 Normal : SV_Target0;
     float4 Albedo : SV_Target1;
-    //float4 Specular : SV_Target2;
+    float2 Specular : SV_Target2;
 };
 
 PSOutput PSMain(PS_IN input)
@@ -18,5 +18,8 @@ PSOutput PSMain(PS_IN input)
     PSOutput output;
     output.Normal = float4(normalize(input.normal), 1.0);
     output.Albedo = input.col;
+    output.Specular = float2(
+        saturate(dot(input.col.xyz, float(1).xxx).x * 2),
+        10);
     return output;
 }
