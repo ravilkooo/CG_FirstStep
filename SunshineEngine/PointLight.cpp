@@ -1,9 +1,13 @@
 #include "PointLight.h"
 
 PointLight::PointLight(ID3D11Device* device, Vector3 position,
-    float range, Vector3 att, Vector4 ambient, Vector4 diffuse, Vector4 specular)
+    float range, Vector3 att, Vector4 ambient,
+    Vector4 diffuse, Vector4 specular)
 {
-    this->ambient;
+    float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att.y;
+    range = max(range, (8.0f * sqrtf(c) + 1.0f));
+
+    this->ambient = ambient;
     pointLightData = {
         diffuse, specular, position, range,
         att, 0.0f
@@ -50,8 +54,10 @@ PointLight::PointLight(ID3D11Device* device, Vector3 position,
         lightPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
         lightPass->AddBind(new Bind::TransformCBuffer(device, this, 0u));
 
-        pointLightPBuffer = new Bind::PixelConstantBuffer<PointLightPCB>(device, pointLightData, 0u);
+        pointLightPBuffer = new Bind::PixelConstantBuffer<PointLightPCB>(device, pointLightData, 1u);
         lightPass->AddBind(pointLightPBuffer);
+        //std::cout << sizeof(pointLightData) << "\n";
+        //std::cout << sizeof(pointLightData) + (16 - (sizeof(pointLightData) % 16)) % 16 << "\n";
 
         techniques.insert({ "LightPass", lightPass });
     }
@@ -105,7 +111,7 @@ D3D11_RASTERIZER_DESC PointLight::GetRasterizerDesc(LightObject::LightPosition l
     return rasterDesc;
 }
 
-LightObject::LightPosition PointLight::GetFrustumPosition(Camera* camera)
+LightObject::LightPosition PointLight::GetLightPositionInFrustum(Camera* camera)
 {
     if (IsFrustumInsideOfLight(camera))
         return LightPosition::FILL;
@@ -125,6 +131,8 @@ LightObject::LightPosition PointLight::GetFrustumPosition(Camera* camera)
         // Расстояние от центра сферы до плоскости
         float distance = XMVectorGetX(XMPlaneDotCoord(planesArray[i], lightPosition));
 
+        //std::cout << distance << ", ";
+
         // Если расстояние меньше -radius, сфера полностью вне плоскости
         if (distance <= -pointLightData.Range) {
             return LightPosition::OUTSIDE;
@@ -141,7 +149,7 @@ LightObject::LightPosition PointLight::GetFrustumPosition(Camera* camera)
         }
 
         // Если пересекает хотя бы одну плоскость, но не полностью вне
-        if (abs(distance) < pointLightData.Range) {
+        if (distance < 0) {
             isOutside = true;
         }
     }
@@ -154,7 +162,7 @@ LightObject::LightPosition PointLight::GetFrustumPosition(Camera* camera)
         return LightPosition::BEHIND_NEAR_PLANE;
     }
 
-    return isOutside ? LightPosition::INSIDE : LightPosition::OUTSIDE;
+    return isOutside ? LightPosition::OUTSIDE : LightPosition::INSIDE;
 
 }
 
@@ -172,4 +180,12 @@ bool PointLight::IsFrustumInsideOfLight(Camera* camera)
         if (distance > pointLightData.Range) return false;
     }
     return true;
+}
+
+void PointLight::Update(float deltaTime) {
+    return;
+}
+
+Vector3 PointLight::GetCenterLocation() {
+    return pointLightData.Position;
 }

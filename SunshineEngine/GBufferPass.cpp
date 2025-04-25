@@ -11,34 +11,79 @@ GBufferPass::GBufferPass(ID3D11Device* device, ID3D11DeviceContext* context, ID3
 
 	// --- MRT ---
 
-	// Depth Texture
-	D3D11_TEXTURE2D_DESC depthDesc = {};
-	depthDesc.Width = screenWidth;
-	depthDesc.Height = screenHeight;
-	depthDesc.MipLevels = 1;
-	depthDesc.ArraySize = 1;
-	depthDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-	depthDesc.SampleDesc.Count = 1;
-	depthDesc.SampleDesc.Quality = 0;
-	depthDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
-	depthDesc.MiscFlags = 0;
-	device->CreateTexture2D(&depthDesc, nullptr, pGBuffer->pDepthBuffer.GetAddressOf());
+	// Depth Texture for DS
+	D3D11_TEXTURE2D_DESC depthDSDesc = {};
+	depthDSDesc.Width = screenWidth;
+	depthDSDesc.Height = screenHeight;
+	depthDSDesc.MipLevels = 1;
+	depthDSDesc.ArraySize = 1;
+	depthDSDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	depthDSDesc.SampleDesc.Count = 1;
+	depthDSDesc.SampleDesc.Quality = 0;
+	depthDSDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthDSDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	depthDSDesc.MiscFlags = 0;
+	device->CreateTexture2D(&depthDSDesc, nullptr, pGBuffer->pDepthBufferDS.GetAddressOf());
 	// Depth DSV
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
 	descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0u;
-	device->CreateDepthStencilView(pGBuffer->pDepthBuffer.Get(), &descDSV, pGBuffer->pDepthDSV.GetAddressOf());
-	// Depth DSV
+	device->CreateDepthStencilView(pGBuffer->pDepthBufferDS.Get(), &descDSV, pGBuffer->pDepthDSV.GetAddressOf());
+	
+	/*
+	// Depth Texture for SR
+	D3D11_TEXTURE2D_DESC depthSRDesc = {};
+	depthSRDesc.Width = screenWidth;
+	depthSRDesc.Height = screenHeight;
+	depthSRDesc.MipLevels = 1;
+	depthSRDesc.ArraySize = 1;
+	depthSRDesc.Format = DXGI_FORMAT_R16_UNORM;
+	depthSRDesc.SampleDesc.Count = 1;
+	depthSRDesc.SampleDesc.Quality = 0;
+	depthSRDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthSRDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	depthSRDesc.MiscFlags = 0;
+	device->CreateTexture2D(&depthSRDesc, nullptr, pGBuffer->pDepthBufferSR.GetAddressOf());
+	// Depth SRV
 	D3D11_SHADER_RESOURCE_VIEW_DESC descSRV = {};
-	descSRV.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	descSRV.Format = DXGI_FORMAT_R16_UNORM;
 	descSRV.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	descSRV.Texture2DArray.MostDetailedMip = 0;
 	descSRV.Texture2DArray.MipLevels = 1;
 	descSRV.Texture2DArray.FirstArraySlice = 0;
 	descSRV.Texture2DArray.ArraySize = 1;
-	device->CreateShaderResourceView(pGBuffer->pDepthBuffer.Get(), &descSRV, pGBuffer->pDepthSRV.GetAddressOf());
+	device->CreateShaderResourceView(pGBuffer->pDepthBufferSR.Get(), &descSRV, pGBuffer->pDepthSRV.GetAddressOf());
+
+	HRESULT hr = device->CreateRenderTargetView(pGBuffer->pDepthBufferSR.Get(), nullptr, pGBuffer->pDepthRTV.GetAddressOf());
+	if (FAILED(hr))
+		throw std::runtime_error("Failed to create Render Target View");
+	*/
+	
+	// WorldPos Texture
+	D3D11_TEXTURE2D_DESC worldPosDesc = {};
+	worldPosDesc.Width = screenWidth;
+	worldPosDesc.Height = screenHeight;
+	worldPosDesc.MipLevels = 1;
+	worldPosDesc.ArraySize = 1;
+	worldPosDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; // World Position
+	worldPosDesc.SampleDesc.Count = 1;
+	worldPosDesc.Usage = D3D11_USAGE_DEFAULT;
+	worldPosDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	device->CreateTexture2D(&worldPosDesc, nullptr, pGBuffer->pWorldPosBuffer.GetAddressOf());
+	// WorldPos SRV
+	D3D11_SHADER_RESOURCE_VIEW_DESC descSRV = {};
+	descSRV.Format = worldPosDesc.Format;
+	descSRV.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	descSRV.Texture2DArray.MostDetailedMip = 0;
+	descSRV.Texture2DArray.MipLevels = 1;
+	descSRV.Texture2DArray.FirstArraySlice = 0;
+	descSRV.Texture2DArray.ArraySize = 1;
+	device->CreateShaderResourceView(pGBuffer->pWorldPosBuffer.Get(), &descSRV, pGBuffer->pWorldPosSRV.GetAddressOf());
+	// WorldPos RTV
+	HRESULT hr = device->CreateRenderTargetView(pGBuffer->pWorldPosBuffer.Get(), nullptr, pGBuffer->pWorldPosRTV.GetAddressOf());
+	if (FAILED(hr))
+		throw std::runtime_error("Failed to create Render Target View");
 
 	// Normal Texture
 	D3D11_TEXTURE2D_DESC normalDesc = {};
@@ -61,7 +106,7 @@ GBufferPass::GBufferPass(ID3D11Device* device, ID3D11DeviceContext* context, ID3
 	descSRV.Texture2DArray.ArraySize = 1;
 	device->CreateShaderResourceView(pGBuffer->pNormalBuffer.Get(), &descSRV, pGBuffer->pNormalSRV.GetAddressOf());
 	// Normal RTV
-	HRESULT hr = device->CreateRenderTargetView(pGBuffer->pNormalBuffer.Get(), nullptr, pGBuffer->pNormalRTV.GetAddressOf());
+	hr = device->CreateRenderTargetView(pGBuffer->pNormalBuffer.Get(), nullptr, pGBuffer->pNormalRTV.GetAddressOf());
 	if (FAILED(hr))
 		throw std::runtime_error("Failed to create Render Target View");
 
@@ -119,6 +164,7 @@ GBufferPass::GBufferPass(ID3D11Device* device, ID3D11DeviceContext* context, ID3
 	gBufferRTVs[0] = pGBuffer->pNormalRTV.Get(); 
 	gBufferRTVs[1] = pGBuffer->pAlbedoRTV.Get();
 	gBufferRTVs[2] = pGBuffer->pSpecularRTV.Get();
+	//gBufferRTVs[3] = pGBuffer->pWorldPosRTV.Get();
 
 	// Viewport
 	viewport = {};
@@ -136,11 +182,13 @@ void GBufferPass::StartFrame()
 {
 	context->OMSetRenderTargets(3, gBufferRTVs, pGBuffer->pDepthDSV.Get());
 	float colorBlack[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float colorWhite[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float colorNone[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float colorFar[] = { 10000.0f, 10000.0f, 10000.0f, 1.0f };
 	context->ClearRenderTargetView(gBufferRTVs[0], colorBlack);
 	context->ClearRenderTargetView(gBufferRTVs[1], colorBlack);
 	context->ClearRenderTargetView(gBufferRTVs[2], colorNone);
-	context->ClearDepthStencilView(pGBuffer->pDepthDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+	//context->ClearRenderTargetView(gBufferRTVs[3], colorFar);
 	context->RSSetViewports(1, &viewport);
 }
 
@@ -156,7 +204,10 @@ void GBufferPass::SetCamera(Camera* camera)
 
 void GBufferPass::EndFrame()
 {
+	//context->CopyResource(pGBuffer->pDepthBufferSR.Get(), pGBuffer->pDepthBufferDS.Get());
 	//ID3D11ShaderResourceView* nullSRVs[] = { nullptr, nullptr, nullptr, nullptr };
-	context->PSSetShaderResources(0, NULL, NULL);
-	context->OMSetRenderTargets(0, NULL, NULL);
+	//context->PSSetShaderResources(0, NULL, NULL);
+	ID3D11RenderTargetView* nullRTVs[] = { nullptr, nullptr, nullptr };
+	ID3D11DepthStencilView* nullDSVs[] = { nullptr };
+	context->OMSetRenderTargets(3, nullRTVs, *nullDSVs);
 }

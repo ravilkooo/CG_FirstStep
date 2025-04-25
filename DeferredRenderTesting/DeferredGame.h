@@ -6,7 +6,9 @@
 #include <MainColorPass.h>
 
 #include <PointLight.h>
+#include <DirectionalLight.h>
 #include "TestCube.h"
+#include <FullScreenQuad.h>
 
 class DeferredGame :
     public Game

@@ -49,7 +49,7 @@ MainColorPass::MainColorPass(ID3D11Device* device, ID3D11DeviceContext* context,
 void MainColorPass::StartFrame()
 {
 	context->OMSetRenderTargets(1u, &renderTargetView, pDSV);
-	float color[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
 	context->ClearRenderTargetView(renderTargetView, color);
 	context->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0f, 0u);
 	context->RSSetViewports(1, &viewport);
@@ -67,5 +67,8 @@ void MainColorPass::SetCamera(Camera* camera)
 
 void MainColorPass::EndFrame()
 {
-	context->OMSetRenderTargets(0, NULL, NULL);
+	
+	ID3D11ShaderResourceView* nullSRVs[] = { nullptr, nullptr, nullptr };
+	//context->PSSetShaderResources(0, 3, nullSRVs);
+	context->OMSetRenderTargets(0, nullptr, nullptr);
 }

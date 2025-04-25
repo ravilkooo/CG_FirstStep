@@ -6,11 +6,21 @@ class GBuffer
 {
 public:
 	// Depth
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthBuffer;
-	//Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pDepthRTV;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthBufferDS;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthDSV;
+	
+	/*
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthBufferSR;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pDepthRTV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pDepthSRV;
+	*/
 
+	// World Position
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pWorldPosBuffer;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pWorldPosRTV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pWorldPosSRV;
+
+	
 	// Normal
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pNormalBuffer;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pNormalRTV;

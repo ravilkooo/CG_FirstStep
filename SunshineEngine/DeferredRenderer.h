@@ -19,7 +19,7 @@ public:
     void RenderScene(const Scene& scene) override;
     void AddPass(RenderPass* pass) override;
 
-    GBuffer gBuffer;
+    //GBuffer gBuffer;
 
     std::vector<RenderPass*> passes;
 };
