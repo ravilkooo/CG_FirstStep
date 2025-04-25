@@ -26,7 +26,7 @@ public:
         return rasterDesc;
     };
 
-    virtual LightPosition GetLightPositionInFrustum(Camera* camera) { return LightPosition::FILL; };
+    virtual LightPosition GetFrustumPosition(Camera* camera) { return LightPosition::FILL; };
     virtual bool IsFrustumInsideOfLight(Camera* camera) { return true; };
 };
 

@@ -1,7 +1,6 @@
-//Texture2D DepthMap : register(t0);
-Texture2D NormalMap : register(t0);
-Texture2D AlbedoMap : register(t1);
-Texture2D LightMap : register(t2);
+Texture2D DepthMap : register(t0);
+Texture2D NormalMap : register(t1);
+Texture2D AlbedoMap : register(t2);
 SamplerState Sam : register(s0);
  
 struct PS_IN
@@ -27,8 +26,7 @@ float4 PSMain(PS_IN input) : SV_Target
     uv = uv / uv.w;
     float x = input.pos.x / SMAP_SIZE_X;
     float y = input.pos.y / SMAP_SIZE_Y;
-    return float4(LightMap.Sample(Sam, float2(x, y)).rgb, 1.0f);
-    //return float4(AlbedoMap.Sample(Sam, float2(x, y)).rgb, 1.0f);
+    return float4(AlbedoMap.Sample(Sam, float2(x, y)).rgb, 1.0f);
     //return float4(NormalMap.Sample(Sam, float2(x, y)).rgb, 1.0f);
     /*
     float3 normal;

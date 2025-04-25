@@ -218,10 +218,10 @@ KatamariGame::KatamariGame()
 
 	for (size_t i = 0; i < 4; i++)
 	{
-		Camera fCam = Camera(*(dl_shadowMapPass->GetFrustumCamera()));
+		Camera fCam = Camera(*(dl_shadowMapPass->GetFrustrumCamera()));
 
 		float nearZ; float farZ;
-		dl_shadowMapPass->GetFrustumBoundsZ(i, &nearZ, &farZ);
+		dl_shadowMapPass->GetFrustrumBoundsZ(i, &nearZ, &farZ);
 		fCam.SetNearZ(nearZ);
 		fCam.SetFarZ(farZ);
 		FrustrumWireframe* fwf = new FrustrumWireframe(renderer->GetDevice(), fCam);

@@ -2,7 +2,6 @@
 
 #include "Bindable.h"
 
-#include "BlendState.h"
 #include "Topology.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"

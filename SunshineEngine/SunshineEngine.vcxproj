@@ -174,7 +174,6 @@
     <ClInclude Include="AmbientLight.h" />
     <ClInclude Include="Bindable.h" />
     <ClInclude Include="BindableCollection.h" />
-    <ClInclude Include="BlendState.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonVertex.h" />
     <ClInclude Include="ConstantBuffer.h" />
@@ -185,12 +184,10 @@
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="DrawableBase.h" />
     <ClInclude Include="FrustrumWireframe.h" />
-    <ClInclude Include="FullScreenQuad.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GBufferPass.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />
-    <ClInclude Include="LightCollection.h" />
     <ClInclude Include="Lighting.h" />
     <ClInclude Include="LightObject.h" />
     <ClInclude Include="LightPass.h" />
@@ -227,7 +224,6 @@
   <ItemGroup>
     <ClCompile Include="AmbientLight.cpp" />
     <ClCompile Include="Bindable.cpp" />
-    <ClCompile Include="BlendState.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DeferredRenderer.cpp" />
     <ClCompile Include="DepthStencilState.cpp" />
@@ -236,7 +232,6 @@
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="DrawableBase.cpp" />
     <ClCompile Include="FrustrumWireframe.cpp" />
-    <ClCompile Include="FullScreenQuad.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="GBufferPass.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />

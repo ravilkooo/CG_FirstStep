@@ -59,7 +59,6 @@ void DeferredRenderer::RenderScene(const Scene& scene)
 {
 	// Passes
 	for (RenderPass* pass : passes) {
-		context->ClearState();
 		pass->StartFrame();
 		pass->Pass(scene);
 		pass->EndFrame();

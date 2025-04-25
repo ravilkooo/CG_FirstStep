@@ -1,6 +1,5 @@
 #pragma once
 #include "Bindable.h"
-#include "iostream"
 
 namespace Bind
 {
@@ -13,9 +12,9 @@ namespace Bind
 		virtual void Update(ID3D11DeviceContext* context, const C& consts) {
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			context->Map(pConstantBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mappedResource);
-			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16)) % 16); // aligned size
+			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16))); // aligned size
 			context->Unmap(pConstantBuffer, 0);
-			//context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
+			context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 		}
 
 		ConstantBuffer(ID3D11Device* device, const C& consts, UINT slot = 0u)
@@ -27,7 +26,7 @@ namespace Bind
 			cbd.Usage = D3D11_USAGE_DYNAMIC;
 			cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			cbd.MiscFlags = 0u;
-			cbd.ByteWidth = sizeof(consts) + (16 - (sizeof(consts) % 16)) % 16;  // aligned size
+			cbd.ByteWidth = sizeof(consts) + (16 - (sizeof(consts) % 16));  // aligned size
 			cbd.StructureByteStride = 0u;
 
 			D3D11_SUBRESOURCE_DATA InitData = {};
@@ -44,7 +43,7 @@ namespace Bind
 			cbd.Usage = D3D11_USAGE_DYNAMIC;
 			cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			cbd.MiscFlags = 0u;
-			cbd.ByteWidth = sizeof(C) + (16 - (sizeof(C) % 16)) % 16; // aligned size
+			cbd.ByteWidth = sizeof(C) + (16 - (sizeof(C) % 16)); // aligned size
 			cbd.StructureByteStride = 0u;
 			device->CreateBuffer(&cbd, nullptr, &pConstantBuffer);
 		}
@@ -64,9 +63,9 @@ namespace Bind
 		void Update(ID3D11DeviceContext* context, const C& consts) override {
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			context->Map(pConstantBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mappedResource);
-			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16)) % 16); // aligned size
+			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16))); // aligned size
 			context->Unmap(pConstantBuffer, 0);
-			//context->VSSetConstantBuffers(slot, 1u, &pConstantBuffer);
+			context->VSSetConstantBuffers(slot, 1u, &pConstantBuffer);
 		}
 	};
 
@@ -85,9 +84,9 @@ namespace Bind
 		void Update(ID3D11DeviceContext* context, const C& consts) override {
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 			context->Map(pConstantBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mappedResource);
-			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16)) % 16); // aligned size
+			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16))); // aligned size
 			context->Unmap(pConstantBuffer, 0);
-			//context->PSSetConstantBuffers(slot, 1u, &pConstantBuffer);
+			context->PSSetConstantBuffers(slot, 1u, &pConstantBuffer);
 		}
 	};
 }

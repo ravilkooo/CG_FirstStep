@@ -89,7 +89,6 @@ TestCube::TestCube(ID3D11Device* device, float width, float height, float depth,
         techniques.insert({ "GBufferPass", gBufferPass });
     }
     // MainColorPass
-    /*
     {
         RenderTechnique* colorPass = new RenderTechnique("MainColorPass");
         colorPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
@@ -127,7 +126,7 @@ TestCube::TestCube(ID3D11Device* device, float width, float height, float depth,
 
         techniques.insert({ "MainColorPass", colorPass });
     }
-    */
+
 
 }
 
