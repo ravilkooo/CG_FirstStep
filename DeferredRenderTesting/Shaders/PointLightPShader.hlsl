@@ -1,6 +1,7 @@
 Texture2D NormalMap : register(t0);
 Texture2D AlbedoMap : register(t1);
-Texture2D WorldPosMap : register(t2);
+Texture2D SpecularMap : register(t2);
+Texture2D WorldPosMap : register(t3);
 SamplerState Sam : register(s0);
 
 struct PointLight
@@ -86,7 +87,7 @@ float4 PSMain(PS_IN input) : SV_Target
     Material mat =
     {
         float4(AlbedoMap.Sample(Sam, float2(x, y)).rgb, 1.0f),
-        float2(0.1, 10)
+        float2(SpecularMap.Sample(Sam, float2(x, y)).rg)
     };
     
     float4 pl_diffuse;

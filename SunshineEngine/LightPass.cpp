@@ -134,6 +134,26 @@ void LightPass::Pass(const Scene& scene)
 			context->RSSetState(nullptr);
 			continue;
 		}
+		AmbientLight* al = dynamic_cast<AmbientLight*>(node);
+		if (al) {
+			LightObject::LightPosition lightPos = al->GetLightPositionInFrustum(GetCamera());
+			auto dsDesc = al->GetDepthStencilDesc(lightPos);
+			auto rastDesc = al->GetRasterizerDesc(lightPos);
+
+			ID3D11RasterizerState* rasterState;
+			ID3D11DepthStencilState* depthState;
+			device->CreateRasterizerState(&rastDesc, &rasterState);
+			device->CreateDepthStencilState(&dsDesc, &depthState);
+
+			context->OMSetDepthStencilState(depthState, 0);
+			context->RSSetState(rasterState);
+
+			node->PassTechnique(techniqueTag, GetDeviceContext());
+
+			context->OMSetDepthStencilState(nullptr, 0);
+			context->RSSetState(nullptr);
+			continue;
+		}
 		else {
 			continue;
 		}

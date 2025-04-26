@@ -40,7 +40,8 @@ DeferredGame::DeferredGame()
 
 		gLightPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->pGBuffer->pNormalSRV.Get(), 0u));
 		gLightPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->pGBuffer->pAlbedoSRV.Get(), 1u));
-		gLightPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->pGBuffer->pWorldPosSRV.Get(), 2u));
+		gLightPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->pGBuffer->pSpecularSRV.Get(), 2u));
+		gLightPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), gBufferPass->pGBuffer->pWorldPosSRV.Get(), 3u));
 
 		// Usual sampler for all SRV
 		D3D11_SAMPLER_DESC samplerDesc;
@@ -120,6 +121,9 @@ DeferredGame::DeferredGame()
 	DirectionalLight* _dl_1 = new DirectionalLight(renderer->GetDevice(), { 5.0f, 5.5f, -5.0f }, { -1.0f, -1.0f, 1.0f },
 		{ 0.2f, 0.2f, 0.7f, 1 }, { 0.2f, 0.2f, 0.7f, 1 }, { 0.2f, 0.2f, 0.7f, 1 });
 	scene.AddNode(_dl_1);
+
+	AmbientLight* _al_1 = new AmbientLight(renderer->GetDevice(), { 0.1f, 0.1f, 0.1f, 1.0f });
+	scene.AddNode(_al_1);
 
 	FullScreenQuad* fsq = new FullScreenQuad(renderer->GetDevice());
 	scene.AddNode(fsq);

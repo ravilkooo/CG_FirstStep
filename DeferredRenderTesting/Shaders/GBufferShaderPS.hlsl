@@ -20,7 +20,7 @@ PSOutput PSMain(PS_IN input)
     output.Normal = float4(normalize(input.normal), 1.0);
     output.Albedo = input.col;
     output.Specular = float2(
-        saturate(dot(input.col.xyz, float(1).xxx).x * 2),
+        saturate(dot(input.col.xyz, float(1).xxx).x) * 0.5,
         10);
     output.WorldPos = float4(input.wPos, 1.0f);
     return output;
