@@ -67,8 +67,8 @@ void MainColorPass::SetCamera(Camera* camera)
 
 void MainColorPass::EndFrame()
 {
-	ID3D11ShaderResourceView* nullSRVs[] = { nullptr, nullptr, nullptr };
-	context->PSSetShaderResources(0, 3, nullSRVs);
+	ID3D11ShaderResourceView* nullSRVs[] = { nullptr };
+	context->PSSetShaderResources(0, 1, nullSRVs);
 	ID3D11RenderTargetView* nullRTVs[] = { nullptr };
 	context->OMSetRenderTargets(1, nullRTVs, nullptr);
 	//context->OMSetRenderTargets(0, NULL, NULL);

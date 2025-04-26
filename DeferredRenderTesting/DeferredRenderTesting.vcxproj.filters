@@ -58,5 +58,11 @@
     <FxCompile Include="Shaders\DirectionalLightVShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\MainColorPassPS.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\MainColorPassVS.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

@@ -185,7 +185,6 @@ void GBufferPass::SetCamera(Camera* camera)
 
 void GBufferPass::EndFrame()
 {
-	//ID3D11ShaderResourceView* nullSRVs[] = { nullptr, nullptr, nullptr, nullptr };
 	//context->PSSetShaderResources(0, NULL, NULL);
 	//context->OMSetRenderTargets(0, NULL, NULL);
 	ID3D11RenderTargetView* nullRTVs[] = { nullptr, nullptr, nullptr, nullptr };

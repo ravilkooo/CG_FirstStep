@@ -147,6 +147,10 @@ void LightPass::Pass(const Scene& scene)
 
 void LightPass::EndFrame()
 {
+	//ID3D11ShaderResourceView* nullSRVs[] = { nullptr, nullptr, nullptr, nullptr };
+
+	ID3D11ShaderResourceView* nullSRVs[] = { nullptr, nullptr, nullptr, nullptr };
+	context->PSSetShaderResources(0, 4, nullSRVs);
 	//context->PSSetShaderResources(0, NULL, NULL);
 	context->OMSetRenderTargets(0, NULL, NULL);
 }

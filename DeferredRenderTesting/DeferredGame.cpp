@@ -121,6 +121,9 @@ DeferredGame::DeferredGame()
 		{ 0.2f, 0.2f, 0.7f, 1 }, { 0.2f, 0.2f, 0.7f, 1 }, { 0.2f, 0.2f, 0.7f, 1 });
 	scene.AddNode(_dl_1);
 
+	FullScreenQuad* fsq = new FullScreenQuad(renderer->GetDevice());
+	scene.AddNode(fsq);
+
 	for (SceneNode* node : scene.nodes) {
 		node->camera = renderer->GetMainCamera();
 	}
