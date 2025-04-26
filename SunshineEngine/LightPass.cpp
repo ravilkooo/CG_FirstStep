@@ -1,11 +1,12 @@
 #include "LightPass.h"
 
 LightPass::LightPass(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11Texture2D* backBuffer,
-	UINT screenWidth, UINT screenHeight, GBuffer* pGBuffer)
+	UINT screenWidth, UINT screenHeight, GBuffer* pGBuffer, Camera* camera)
 	:
 	RenderPass("LightPass", device, context)
 {
 	this->pGBuffer = pGBuffer;
+	this->camera = camera;
 
 	D3D11_TEXTURE2D_DESC lightDesc = {};
 	lightDesc.Width = screenWidth;
@@ -42,7 +43,23 @@ LightPass::LightPass(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11T
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1.0f;
 
-	camera = new Camera(screenWidth * 1.0f / screenHeight);
+	camPCB = new Bind::PixelConstantBuffer<CamPCB>(device,
+		{ XMMatrixIdentity(), XMMatrixIdentity(),
+		(XMFLOAT3)camera->GetPosition(), 0 },
+		0u);
+	AddPerFrameBind(camPCB);
+
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	AddPerFrameBind(new Bind::BlendState(device, blendDesc));
 }
 
 void LightPass::StartFrame()
@@ -50,8 +67,16 @@ void LightPass::StartFrame()
 	context->OMSetRenderTargets(1, &gBufferRTV, pGBuffer->pDepthDSV.Get());
 	float colorBlack[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	context->ClearRenderTargetView(gBufferRTV, colorBlack);
-	context->ClearDepthStencilView(pGBuffer->pDepthDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+	//context->ClearDepthStencilView(pGBuffer->pDepthDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 	context->RSSetViewports(1, &viewport);
+
+	XMFLOAT3 camPos = camera->GetPosition();
+	XMMATRIX vMatInverse = DirectX::XMMatrixTranspose(XMMatrixInverse(nullptr,
+		camera->GetViewMatrix()));
+	XMMATRIX pMatInverse = DirectX::XMMatrixTranspose(XMMatrixInverse(nullptr,
+		camera->GetProjectionMatrix()));
+	// camera->GetProjectionMatrix()
+	camPCB->Update(GetDeviceContext(), { vMatInverse, pMatInverse, camPos, 0 });
 }
 
 void LightPass::Pass(const Scene& scene)
@@ -63,6 +88,56 @@ void LightPass::Pass(const Scene& scene)
 			continue;
 		// Turn off depth write
 		// Prepare Lights (depthstencil desc and rast desc) and bind (depthstencil and rast)
+		PointLight* pl = dynamic_cast<PointLight*>(node);
+		if (pl) {
+			LightObject::LightPosition lightPos = pl->GetLightPositionInFrustum(GetCamera());
+			if (lightPos == LightObject::LightPosition::BEHIND_NEAR_PLANE
+				|| lightPos == LightObject::LightPosition::INSIDE
+				|| lightPos == LightObject::LightPosition::INTERSECT_FAR_PLANE
+				|| lightPos == LightObject::LightPosition::FILL)
+			{
+				auto dsDesc = pl->GetDepthStencilDesc(lightPos);
+				auto rastDesc = pl->GetRasterizerDesc(lightPos);
+
+				ID3D11RasterizerState* rasterState;
+				ID3D11DepthStencilState* depthState;
+				device->CreateRasterizerState(&rastDesc, &rasterState);
+				device->CreateDepthStencilState(&dsDesc, &depthState);
+
+				context->OMSetDepthStencilState(depthState, 0);
+				context->RSSetState(rasterState);
+
+				node->PassTechnique(techniqueTag, GetDeviceContext());
+
+				context->OMSetDepthStencilState(nullptr, 0);
+				context->RSSetState(nullptr);
+			}
+			continue;
+		}
+		DirectionalLight* dl = dynamic_cast<DirectionalLight*>(node);
+		if (dl) {
+			LightObject::LightPosition lightPos = dl->GetLightPositionInFrustum(GetCamera());
+			auto dsDesc = dl->GetDepthStencilDesc(lightPos);
+			auto rastDesc = dl->GetRasterizerDesc(lightPos);
+
+			ID3D11RasterizerState* rasterState;
+			ID3D11DepthStencilState* depthState;
+			device->CreateRasterizerState(&rastDesc, &rasterState);
+			device->CreateDepthStencilState(&dsDesc, &depthState);
+
+			context->OMSetDepthStencilState(depthState, 0);
+			context->RSSetState(rasterState);
+
+			node->PassTechnique(techniqueTag, GetDeviceContext());
+
+			context->OMSetDepthStencilState(nullptr, 0);
+			context->RSSetState(nullptr);
+			continue;
+		}
+		else {
+			continue;
+		}
+
 
 		node->PassTechnique(techniqueTag, GetDeviceContext());
 
@@ -72,7 +147,7 @@ void LightPass::Pass(const Scene& scene)
 
 void LightPass::EndFrame()
 {
-	context->PSSetShaderResources(0, NULL, NULL);
+	//context->PSSetShaderResources(0, NULL, NULL);
 	context->OMSetRenderTargets(0, NULL, NULL);
 }
 

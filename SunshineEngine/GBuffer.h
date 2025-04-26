@@ -7,9 +7,13 @@ class GBuffer
 public:
 	// Depth
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthBuffer;
-	//Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pDepthRTV;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthDSV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pDepthSRV;
+
+	// World Position
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pWorldPosBuffer;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pWorldPosRTV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pWorldPosSRV;
 
 	// Normal
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pNormalBuffer;
@@ -33,20 +37,19 @@ public:
 	
 
 	// Don't need it
+	/*
 	// Diffuse
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDiffuseLightBuffer;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pDiffuseLightRTV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pDiffuseLightSRV;
-
 	// Specular
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pSpecularLightBuffer;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pSpecularLightRTV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pSpecularLightSRV;
-
 	// Ambient
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pAmbientLightBuffer;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pAmbientLightRTV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pAmbientLightSRV;
-
+	*/
 };
 

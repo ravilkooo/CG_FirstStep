@@ -25,11 +25,9 @@ public:
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
 
-    //ID3D11RenderTargetView* renderTargetView;
-    ID3D11RenderTargetView* gBufferRTVs[3];
+
+    ID3D11RenderTargetView* gBufferRTVs[4];
     D3D11_VIEWPORT viewport;
-    //ID3D11Texture2D* pDepthStencil;
-    //ID3D11DepthStencilView* pDSV;
     GBuffer* pGBuffer;
 
 };

@@ -14,7 +14,7 @@ namespace Bind
 			context->Map(pConstantBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mappedResource);
 			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16))); // aligned size
 			context->Unmap(pConstantBuffer, 0);
-			context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
+			//context->VSSetConstantBuffers(0u, 1u, &pConstantBuffer);
 		}
 
 		ConstantBuffer(ID3D11Device* device, const C& consts, UINT slot = 0u)
@@ -65,7 +65,7 @@ namespace Bind
 			context->Map(pConstantBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mappedResource);
 			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16))); // aligned size
 			context->Unmap(pConstantBuffer, 0);
-			context->VSSetConstantBuffers(slot, 1u, &pConstantBuffer);
+			//context->VSSetConstantBuffers(slot, 1u, &pConstantBuffer);
 		}
 	};
 
@@ -86,7 +86,7 @@ namespace Bind
 			context->Map(pConstantBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mappedResource);
 			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16))); // aligned size
 			context->Unmap(pConstantBuffer, 0);
-			context->PSSetConstantBuffers(slot, 1u, &pConstantBuffer);
+			//context->PSSetConstantBuffers(slot, 1u, &pConstantBuffer);
 		}
 	};
 }

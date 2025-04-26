@@ -11,6 +11,7 @@ struct PSOutput
     float4 Normal : SV_Target0;
     float4 Albedo : SV_Target1;
     float2 Specular : SV_Target2;
+    float4 WorldPos : SV_Target3;
 };
 
 PSOutput PSMain(PS_IN input)
@@ -21,5 +22,6 @@ PSOutput PSMain(PS_IN input)
     output.Specular = float2(
         saturate(dot(input.col.xyz, float(1).xxx).x * 2),
         10);
+    output.WorldPos = float4(input.wPos, 1.0f);
     return output;
 }

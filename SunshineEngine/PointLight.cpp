@@ -4,6 +4,10 @@ PointLight::PointLight(ID3D11Device* device, Vector3 position,
     float range, Vector3 att, Vector4 ambient, Vector4 diffuse, Vector4 specular)
 {
     this->ambient;
+
+    float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att.y;
+    range = max(range, (8.0f * sqrtf(c) + 1.0f));
+
     pointLightData = {
         diffuse, specular, position, range,
         att, 0.0f
@@ -50,7 +54,7 @@ PointLight::PointLight(ID3D11Device* device, Vector3 position,
         lightPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
         lightPass->AddBind(new Bind::TransformCBuffer(device, this, 0u));
 
-        pointLightPBuffer = new Bind::PixelConstantBuffer<PointLightPCB>(device, pointLightData, 0u);
+        pointLightPBuffer = new Bind::PixelConstantBuffer<PointLightPCB>(device, pointLightData, 1u);
         lightPass->AddBind(pointLightPBuffer);
 
         techniques.insert({ "LightPass", lightPass });
@@ -105,7 +109,7 @@ D3D11_RASTERIZER_DESC PointLight::GetRasterizerDesc(LightObject::LightPosition l
     return rasterDesc;
 }
 
-LightObject::LightPosition PointLight::GetFrustumPosition(Camera* camera)
+LightObject::LightPosition PointLight::GetLightPositionInFrustum(Camera* camera)
 {
     if (IsFrustumInsideOfLight(camera))
         return LightPosition::FILL;
@@ -172,4 +176,12 @@ bool PointLight::IsFrustumInsideOfLight(Camera* camera)
         if (distance > pointLightData.Range) return false;
     }
     return true;
+}
+
+void PointLight::Update(float deltaTime) {
+    return;
+}
+
+Vector3 PointLight::GetCenterLocation() {
+    return pointLightData.Position;
 }

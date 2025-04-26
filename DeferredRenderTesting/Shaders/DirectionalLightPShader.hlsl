@@ -3,15 +3,15 @@ Texture2D AlbedoMap : register(t1);
 Texture2D WorldPosMap : register(t2);
 SamplerState Sam : register(s0);
 
-struct PointLight
+struct DirectionalLight
 {
     float4 Diffuse;
     float4 Specular;
     float3 Position;
-    float Range;
-
-    float3 Att;
-    float pad;
+    float pad1;
+    
+    float3 Direction;
+    float pad2;
 };
 
 struct CameraData
@@ -35,44 +35,36 @@ cbuffer CameraBuffer : register(b0) // per object
 
 cbuffer LightBuffer : register(b1) // per frame
 {
-    PointLight pointLight1;
+    DirectionalLight directionalLight;
 };
 
-void calcPointLight(float3 wPos, float3 normal, float3 toEye, Material mat,
-    PointLight pointLight,
-    out float4 pl_diffuse,
-    out float4 pl_spec)
+void calcDirectionalLight(float3 wPos, float3 normal, float3 toEye, Material mat,
+    DirectionalLight dirLight,
+    out float4 dl_diffuse,
+    out float4 dl_spec)
 {
-    //pl_ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    pl_diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    pl_spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    dl_diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    dl_spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
-    float3 lightVec = pointLight.Position - wPos;
-    float d = length(lightVec);
-       
-    if (d > pointLight.Range)
-        return;
-    lightVec /= d;
-    float diffuseFactor = dot(lightVec, normal);
-        
-    [flatten]
-    if (diffuseFactor > 0.0f)
     {
-        float3 v = reflect(-lightVec, normal);
-        float specFactor = pow(max(dot(v, toEye), 0.0f), mat.Specular.y);
-        pl_diffuse = diffuseFactor * mat.Diffuse * pointLight.Diffuse;
-        pl_spec = pl_diffuse * mat.Specular.x;
+        float3 lightVec = -dirLight.Direction;
+        float diffuseFactor = dot(lightVec, normal);
+        
+        [flatten]
+        if (diffuseFactor > 0.0f)
+        {
+            float3 v = reflect(-lightVec, normal);
+            float specFactor = pow(max(dot(v, toEye), 0.0f), mat.Specular.y);
+            dl_diffuse = diffuseFactor * mat.Diffuse * dirLight.Diffuse;
+            dl_spec = dl_diffuse * mat.Specular.x;
+        }
     }
-
-    float att = 1.0f / dot(pointLight.Att, float3(1.0f, d, d * d));
-    pl_diffuse *= att;
-    pl_spec *= att;
 }
 
 struct PS_IN
 {
     float4 pos : SV_POSITION;
-    float3 wPos : POSITION;
+    float2 tex : TEXCOORD;
 };
 
 static const float SMAP_SIZE_X = 1000.0f;
@@ -89,8 +81,8 @@ float4 PSMain(PS_IN input) : SV_Target
         float2(0.1, 10)
     };
     
-    float4 pl_diffuse;
-    float4 pl_spec;
+    float4 dl_diffuse;
+    float4 dl_spec;
     
     float4 normal = float4(NormalMap.Sample(Sam, float2(x, y)).rgb, 1.0f);
     /*
@@ -106,9 +98,9 @@ float4 PSMain(PS_IN input) : SV_Target
     float3 toEye = normalize(camData.camPos - pixelWorldPos.xyz);
     //toEye = float3(1, 0, 0);
     
-    calcPointLight(pixelWorldPos.xyz, normal.xyz, toEye, mat, pointLight1,
-        pl_diffuse, pl_spec);
+    calcDirectionalLight(pixelWorldPos.xyz, normal.xyz, toEye, mat, directionalLight,
+        dl_diffuse, dl_spec);
     
-    return saturate(pl_diffuse + pl_spec);
+    return saturate(dl_diffuse + dl_spec);
     //return float4(1.0f, 1.0f, 0.0f, 0.5f);
 }
