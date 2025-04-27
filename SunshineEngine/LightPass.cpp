@@ -154,6 +154,26 @@ void LightPass::Pass(const Scene& scene)
 			context->RSSetState(nullptr);
 			continue;
 		}
+		SpotLight* sl = dynamic_cast<SpotLight*>(node);
+		if (sl) {
+			LightObject::LightPosition lightPos = sl->GetLightPositionInFrustum(GetCamera());
+			auto dsDesc = sl->GetDepthStencilDesc(lightPos);
+			auto rastDesc = sl->GetRasterizerDesc(lightPos);
+
+			ID3D11RasterizerState* rasterState;
+			ID3D11DepthStencilState* depthState;
+			device->CreateRasterizerState(&rastDesc, &rasterState);
+			device->CreateDepthStencilState(&dsDesc, &depthState);
+
+			context->OMSetDepthStencilState(depthState, 0);
+			context->RSSetState(rasterState);
+
+			node->PassTechnique(techniqueTag, GetDeviceContext());
+
+			context->OMSetDepthStencilState(nullptr, 0);
+			context->RSSetState(nullptr);
+			continue;
+		}
 		else {
 			continue;
 		}

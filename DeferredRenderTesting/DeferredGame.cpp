@@ -102,7 +102,7 @@ DeferredGame::DeferredGame()
 	_tc_2->speed = 3.0f;
 	scene.AddNode(_tc_2);
 
-	TestCube* _tc_3 = new TestCube(renderer->GetDevice(), 10.0f, 10.0f, 1.0f, { 0.0f, 0.0f, 3.0f }, { 0.3f, 0.7f, 0.5f, 1.0f });
+	TestCube* _tc_3 = new TestCube(renderer->GetDevice(), 10.0f, 10.0f, 1.0f, { 0.0f, 0.0f, 3.0f }, { 1.0f, 0.7f, 0.5f, 1.0f });
 	scene.AddNode(_tc_3);
 
 	TestCube* _tc_4 = new TestCube(renderer->GetDevice(), 0.5f, 0.5f, 0.5f, { -1.0f, 1.0f, -0.6f }, { 0.1f, 0.7f, 0.9f, 1.0f });
@@ -111,11 +111,11 @@ DeferredGame::DeferredGame()
 	scene.AddNode(_tc_4);
 
 	PointLight* _pl_1 = new PointLight(renderer->GetDevice(), { -0.5f, 0.5f, -0.2f }, 3.0f, { 0.01f, 1.5f, 0.0f },
-		{ 0.1, 0, 0, 1 }, { 1, 0, 0, 1 }, { 1, 0, 0, 16 });
+		{ 0.1, 0, 0, 1 }, { 1, 0, 0, 1 }, { 1, 0, 0, 1 });
 	scene.AddNode(_pl_1);
 
 	PointLight* _pl_2 = new PointLight(renderer->GetDevice(), { 1.0f, 0.5f, -0.4f }, 5.4f, { 0.01f, 1.0f, 0.0f },
-		{ 0, 0.1, 0, 1 }, { 0, 1, 0, 1 }, { 0, 1, 0, 16 });
+		{ 0, 0.1, 0, 1 }, { 0, 1, 0, 1 }, { 0, 1, 0, 1 });
 	scene.AddNode(_pl_2);
 
 	DirectionalLight* _dl_1 = new DirectionalLight(renderer->GetDevice(), { 5.0f, 5.5f, -5.0f }, { -1.0f, -1.0f, 1.0f },
@@ -124,6 +124,11 @@ DeferredGame::DeferredGame()
 
 	AmbientLight* _al_1 = new AmbientLight(renderer->GetDevice(), { 0.1f, 0.1f, 0.1f, 1.0f });
 	scene.AddNode(_al_1);
+
+	SpotLight* _sl_1 = new SpotLight(renderer->GetDevice(), { -2.0f, 2.0, -2.0f }, 5.0f, { 0.0f, 0.0f, 1.0f },
+		10, { 0.01f, 1.0f, 0.0f },
+		{ 0, 0.1, 0, 1 }, { 0, 1, 0, 1 }, { 0, 1, 0, 1 });
+	scene.AddNode(_sl_1);
 
 	FullScreenQuad* fsq = new FullScreenQuad(renderer->GetDevice());
 	scene.AddNode(fsq);

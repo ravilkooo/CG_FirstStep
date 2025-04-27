@@ -179,6 +179,7 @@ bool PointLight::IsFrustumInsideOfLight(Camera* camera)
 }
 
 void PointLight::Update(float deltaTime) {
+    worldMat = Matrix::CreateTranslation(GetCenterLocation());
     return;
 }
 

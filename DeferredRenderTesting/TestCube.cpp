@@ -44,7 +44,6 @@ TestCube::TestCube(ID3D11Device* device, float width, float height, float depth,
                 0,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0 };
-
         IALayoutInputElements[1] =
             D3D11_INPUT_ELEMENT_DESC{
                 "COLOR",

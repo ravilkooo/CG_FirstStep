@@ -2,6 +2,7 @@
 #include "LightObject.h"
 
 #include "ShapeGenerator.h"
+//#include <DirectXCollision.h>
 
 #include <d3d11.h>
 #include <directxmath.h>
