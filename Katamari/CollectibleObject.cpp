@@ -11,7 +11,7 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, float radius, const D
 
 
     {
-        RenderTechnique* shadowPass = new RenderTechnique("MainColorPass");
+        RenderTechnique* shadowPass = new RenderTechnique("DL_ShadowMapPass");
         shadowPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
         shadowPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
         shadowPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));

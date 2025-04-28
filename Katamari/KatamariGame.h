@@ -38,9 +38,9 @@ public:
     void HandleKeyDown(Keys key);
     void HandleMouseMove(const InputDevice::MouseMoveEventArgs& args);
 
-    Bind::PixelConstantBuffer<LightData>* light_pcb;
+    Bind::PixelConstantBuffer<LightData_old>* light_pcb;
 
-    LightData lightData;
+    LightData_old lightData;
     XMFLOAT3 pointLightColors[8];
     XMFLOAT3 pointLightDirections[8];
     float pointLightLifeTime[8];
