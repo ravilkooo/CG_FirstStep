@@ -6,7 +6,7 @@ PointLight::PointLight(ID3D11Device* device, Vector3 position,
     this->ambient;
 
     float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att.y;
-    range = max(range, (8.0f * sqrtf(c) + 1.0f));
+    range = max(range, (16.0f * sqrtf(c) + 1.0f)); // range = max(range, (8.0f * sqrtf(c) + 1.0f));
 
     pointLightData = {
         diffuse, specular, position, range,

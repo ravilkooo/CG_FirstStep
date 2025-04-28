@@ -125,8 +125,8 @@ DeferredGame::DeferredGame()
 	AmbientLight* _al_1 = new AmbientLight(renderer->GetDevice(), { 0.1f, 0.1f, 0.1f, 1.0f });
 	scene.AddNode(_al_1);
 
-	SpotLight* _sl_1 = new SpotLight(renderer->GetDevice(), { -2.0f, 2.0, -2.0f }, 5.0f, { 0.0f, 0.0f, 1.0f },
-		10, { 0.01f, 1.0f, 0.0f },
+	_sl_1 = new SpotLight(renderer->GetDevice(), { -2.0f, 2.0, -2.0f }, 5.0f, { 0.0f, 0.0f, 1.0f },
+		20, { 0.01f, 1.0f, 0.0f },
 		{ 0, 0.1, 0, 1 }, { 0, 1, 0, 1 }, { 0, 1, 0, 1 });
 	scene.AddNode(_sl_1);
 
@@ -144,6 +144,8 @@ DeferredGame::~DeferredGame()
 
 void DeferredGame::Update(float deltaTime)
 {
+	_sl_1->spotLightData.Direction = Vector3::Transform(_sl_1->spotLightData.Direction, Matrix::CreateRotationY(deltaTime));
+	_sl_1->spotLightPBuffer->Update(renderer->GetDeviceContext(), _sl_1->spotLightData);
 	physEngine->Update(deltaTime);
 }
 

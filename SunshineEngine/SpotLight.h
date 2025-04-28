@@ -35,7 +35,7 @@ public:
 
     Vector4 ambient;
 
-    Bind::PixelConstantBuffer<SpotLightPCB>* SpotLightPBuffer;
+    Bind::PixelConstantBuffer<SpotLightPCB>* spotLightPBuffer;
 
     D3D11_DEPTH_STENCIL_DESC GetDepthStencilDesc(LightObject::LightPosition lightPos) override;
     D3D11_RASTERIZER_DESC GetRasterizerDesc(LightObject::LightPosition lightPos) override;

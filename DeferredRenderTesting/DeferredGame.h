@@ -8,6 +8,7 @@
 #include <LightCollection.h>
 #include "TestCube.h"
 #include <FullScreenQuad.h>
+#define DEBUG_LIGHT_OBJECTS
 
 class DeferredGame :
     public Game
@@ -21,5 +22,6 @@ public:
 
     void HandleKeyDown(Keys key);
     void HandleMouseMove(const InputDevice::MouseMoveEventArgs& args);
+    SpotLight* _sl_1;
 };
 

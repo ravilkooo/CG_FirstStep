@@ -7,7 +7,7 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
     this->ambient;
 
     float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att.y;
-    range = max(range, (8.0f * sqrtf(c) + 1.0f));
+    range = max(range, (16.0f * sqrtf(c) + 1.0f)); // range = max(range, (8.0f * sqrtf(c) + 1.0f));
 
     spotLightData = {
         diffuse, specular, position, range,
@@ -17,10 +17,58 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
 
     float coneAngle = acosf(powf(256.0f, -1.0f / spot));
     width = 2 * range * sinf(coneAngle);
-    depth = range * cosf(coneAngle);
+    depth = range;
     
     CreateSimpleCubeMesh(width, width, depth, diffuse, &vertices, &verticesNum, &indices, &indicesNum);
 
+#ifdef DEBUG_LIGHT_OBJECTS
+    {
+        RenderTechnique* gBufferPass = new RenderTechnique("GBufferPass");
+        gBufferPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+        gBufferPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
+        // AddStaticBind(texture);
+        Bind::VertexShader* vertexShaderB = new Bind::VertexShader(device, L"./Shaders/GBufferShaderVS.hlsl");
+        gBufferPass->AddBind(vertexShaderB);
+
+
+        numInputElements = 2;
+        IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
+
+        IALayoutInputElements[0] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "POSITION",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                0,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+        IALayoutInputElements[1] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "COLOR",
+                0,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+
+        gBufferPass->AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
+
+
+        gBufferPass->AddBind(new Bind::PixelShader(device, L"./Shaders/GBufferShaderPS.hlsl"));
+
+
+        D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
+        rastDesc.CullMode = D3D11_CULL_NONE;
+        rastDesc.FillMode = D3D11_FILL_WIREFRAME;
+        gBufferPass->AddBind(new Bind::Rasterizer(device, rastDesc));
+        gBufferPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
+        gBufferPass->AddBind(new Bind::TransformCBuffer(device, this, 0u));
+
+        techniques.insert({ "GBufferPass", gBufferPass });
+    }
+#endif // DEBUG_LIGHT_OBJECTS
     // LightPass
     {
         RenderTechnique* lightPass = new RenderTechnique("LightPass");
@@ -58,8 +106,8 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
         lightPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
         lightPass->AddBind(new Bind::TransformCBuffer(device, this, 0u));
 
-        SpotLightPBuffer = new Bind::PixelConstantBuffer<SpotLightPCB>(device, spotLightData, 1u);
-        lightPass->AddBind(SpotLightPBuffer);
+        spotLightPBuffer = new Bind::PixelConstantBuffer<SpotLightPCB>(device, spotLightData, 1u);
+        lightPass->AddBind(spotLightPBuffer);
 
         techniques.insert({ "LightPass", lightPass });
     }
