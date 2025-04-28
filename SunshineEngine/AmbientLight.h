@@ -9,11 +9,11 @@ public:
 
     struct AmbientLightPCB {
         XMFLOAT4 Ambient;
-    } AmbientLightData;
+    } ambientLightData;
 
     Vector4 ambient;
 
-    Bind::PixelConstantBuffer<AmbientLightPCB>* AmbientLightPBuffer;
+    Bind::PixelConstantBuffer<AmbientLightPCB>* ambientLightPBuffer;
 
     D3D11_DEPTH_STENCIL_DESC GetDepthStencilDesc(LightObject::LightPosition lightPos) override;
     D3D11_RASTERIZER_DESC GetRasterizerDesc(LightObject::LightPosition lightPos) override;
@@ -23,6 +23,8 @@ public:
 
     void Update(float deltaTime) override;
     Vector3 GetCenterLocation() override;
+
+    void UpdateBuffers(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override;
 };
 
 

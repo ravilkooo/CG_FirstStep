@@ -23,5 +23,7 @@ public:
     void HandleKeyDown(Keys key);
     void HandleMouseMove(const InputDevice::MouseMoveEventArgs& args);
     SpotLight* _sl_1;
+    float currTime = 0.0f;
+    DirectionalLight* _dl_1;
 };
 

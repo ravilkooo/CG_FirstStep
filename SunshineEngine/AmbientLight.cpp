@@ -3,7 +3,7 @@
 AmbientLight::AmbientLight(ID3D11Device* device, Vector4 ambient)
 {
     this->ambient = ambient;
-    AmbientLightData = {
+    ambientLightData = {
         ambient
     };
 
@@ -30,8 +30,8 @@ AmbientLight::AmbientLight(ID3D11Device* device, Vector4 ambient)
         rastDesc.FillMode = D3D11_FILL_SOLID;
         lightPass->AddBind(new Bind::Rasterizer(device, rastDesc));
         */
-        AmbientLightPBuffer = new Bind::PixelConstantBuffer<AmbientLightPCB>(device, AmbientLightData, 1u);
-        lightPass->AddBind(AmbientLightPBuffer);
+        ambientLightPBuffer = new Bind::PixelConstantBuffer<AmbientLightPCB>(device, ambientLightData, 1u);
+        lightPass->AddBind(ambientLightPBuffer);
         //std::cout << sizeof(AmbientLightData) << "\n";
         //std::cout << sizeof(AmbientLightData) + (16 - (sizeof(AmbientLightData) % 16)) % 16 << "\n";
 
@@ -73,5 +73,10 @@ void AmbientLight::Update(float deltaTime)
 Vector3 AmbientLight::GetCenterLocation()
 {
     return Vector3::Zero;
+}
+
+void AmbientLight::UpdateBuffers(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
+{
+    ambientLightPBuffer->Update(context.Get(), ambientLightData);
 }
 

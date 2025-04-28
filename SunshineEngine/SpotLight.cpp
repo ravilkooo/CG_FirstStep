@@ -240,3 +240,8 @@ void SpotLight::Update(float deltaTime) {
 Vector3 SpotLight::GetCenterLocation() {
     return spotLightData.Position;
 }
+
+void SpotLight::UpdateBuffers(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
+{
+    spotLightPBuffer->Update(context.Get(), spotLightData);
+}

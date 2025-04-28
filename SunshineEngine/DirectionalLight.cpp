@@ -4,7 +4,7 @@ DirectionalLight::DirectionalLight(ID3D11Device* device, Vector3 position,
     Vector3 direction, Vector4 ambient,
     Vector4 diffuse, Vector4 specular)
 {
-    position.Normalize();
+    direction.Normalize();
     this->ambient = ambient;
     directionalLightData = {
         diffuse, specular, position, 0.0f,
@@ -77,5 +77,10 @@ void DirectionalLight::Update(float deltaTime)
 Vector3 DirectionalLight::GetCenterLocation()
 {
     return directionalLightData.Position;
+}
+
+void DirectionalLight::UpdateBuffers(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
+{
+    directionalLightPBuffer->Update(context.Get(), directionalLightData);
 }
 

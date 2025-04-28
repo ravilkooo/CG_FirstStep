@@ -38,4 +38,6 @@ public:
 
     void Update(float deltaTime) override;
     Vector3 GetCenterLocation() override;
+
+    void UpdateBuffers(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) override;
 };

@@ -88,37 +88,20 @@ void LightPass::Pass(const Scene& scene)
 			continue;
 		// Turn off depth write
 		// Prepare Lights (depthstencil desc and rast desc) and bind (depthstencil and rast)
-		PointLight* pl = dynamic_cast<PointLight*>(node);
-		if (pl) {
-			LightObject::LightPosition lightPos = pl->GetLightPositionInFrustum(GetCamera());
-			if (lightPos == LightObject::LightPosition::BEHIND_NEAR_PLANE
-				|| lightPos == LightObject::LightPosition::INSIDE
-				|| lightPos == LightObject::LightPosition::INTERSECT_FAR_PLANE
-				|| lightPos == LightObject::LightPosition::FILL)
-			{
-				auto dsDesc = pl->GetDepthStencilDesc(lightPos);
-				auto rastDesc = pl->GetRasterizerDesc(lightPos);
+		LightObject* lObj = dynamic_cast<LightObject*>(node);
+		if (lObj) {
+			lObj->UpdateBuffers(context);
+			LightObject::LightPosition lightPos = lObj->GetLightPositionInFrustum(GetCamera());
 
-				ID3D11RasterizerState* rasterState;
-				ID3D11DepthStencilState* depthState;
-				device->CreateRasterizerState(&rastDesc, &rasterState);
-				device->CreateDepthStencilState(&dsDesc, &depthState);
-
-				context->OMSetDepthStencilState(depthState, 0);
-				context->RSSetState(rasterState);
-
-				node->PassTechnique(techniqueTag, GetDeviceContext());
-
-				context->OMSetDepthStencilState(nullptr, 0);
-				context->RSSetState(nullptr);
-			}
-			continue;
-		}
-		DirectionalLight* dl = dynamic_cast<DirectionalLight*>(node);
-		if (dl) {
-			LightObject::LightPosition lightPos = dl->GetLightPositionInFrustum(GetCamera());
-			auto dsDesc = dl->GetDepthStencilDesc(lightPos);
-			auto rastDesc = dl->GetRasterizerDesc(lightPos);
+			/*
+			if (dynamic_cast<PointLight*>(node)) {
+				if (lightPos == LightObject::LightPosition::BEHIND_NEAR_PLANE
+					|| lightPos == LightObject::LightPosition::INSIDE
+					|| lightPos == LightObject::LightPosition::INTERSECT_FAR_PLANE
+					|| lightPos == LightObject::LightPosition::FILL)
+				*/
+			auto dsDesc = lObj->GetDepthStencilDesc(lightPos);
+			auto rastDesc = lObj->GetRasterizerDesc(lightPos);
 
 			ID3D11RasterizerState* rasterState;
 			ID3D11DepthStencilState* depthState;
@@ -132,56 +115,11 @@ void LightPass::Pass(const Scene& scene)
 
 			context->OMSetDepthStencilState(nullptr, 0);
 			context->RSSetState(nullptr);
-			continue;
-		}
-		AmbientLight* al = dynamic_cast<AmbientLight*>(node);
-		if (al) {
-			LightObject::LightPosition lightPos = al->GetLightPositionInFrustum(GetCamera());
-			auto dsDesc = al->GetDepthStencilDesc(lightPos);
-			auto rastDesc = al->GetRasterizerDesc(lightPos);
 
-			ID3D11RasterizerState* rasterState;
-			ID3D11DepthStencilState* depthState;
-			device->CreateRasterizerState(&rastDesc, &rasterState);
-			device->CreateDepthStencilState(&dsDesc, &depthState);
-
-			context->OMSetDepthStencilState(depthState, 0);
-			context->RSSetState(rasterState);
-
-			node->PassTechnique(techniqueTag, GetDeviceContext());
-
-			context->OMSetDepthStencilState(nullptr, 0);
-			context->RSSetState(nullptr);
-			continue;
-		}
-		SpotLight* sl = dynamic_cast<SpotLight*>(node);
-		if (sl) {
-			LightObject::LightPosition lightPos = sl->GetLightPositionInFrustum(GetCamera());
-			auto dsDesc = sl->GetDepthStencilDesc(lightPos);
-			auto rastDesc = sl->GetRasterizerDesc(lightPos);
-
-			ID3D11RasterizerState* rasterState;
-			ID3D11DepthStencilState* depthState;
-			device->CreateRasterizerState(&rastDesc, &rasterState);
-			device->CreateDepthStencilState(&dsDesc, &depthState);
-
-			context->OMSetDepthStencilState(depthState, 0);
-			context->RSSetState(rasterState);
-
-			node->PassTechnique(techniqueTag, GetDeviceContext());
-
-			context->OMSetDepthStencilState(nullptr, 0);
-			context->RSSetState(nullptr);
-			continue;
 		}
 		else {
 			continue;
 		}
-
-
-		node->PassTechnique(techniqueTag, GetDeviceContext());
-
-		// Unbind perobject stuff (depthstencil and rast)
 	}
 }
 

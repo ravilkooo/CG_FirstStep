@@ -28,5 +28,7 @@ public:
 
     virtual LightPosition GetLightPositionInFrustum(Camera* camera) { return LightPosition::FILL; };
     virtual bool IsFrustumInsideOfLight(Camera* camera) { return true; };
+
+    virtual void UpdateBuffers(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) = 0;
 };
 

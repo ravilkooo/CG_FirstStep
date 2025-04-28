@@ -186,3 +186,8 @@ void PointLight::Update(float deltaTime) {
 Vector3 PointLight::GetCenterLocation() {
     return pointLightData.Position;
 }
+
+void PointLight::UpdateBuffers(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
+{
+    pointLightPBuffer->Update(context.Get(), pointLightData);
+}
