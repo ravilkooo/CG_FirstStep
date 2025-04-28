@@ -9,7 +9,7 @@ class DL_ShadowMapPass :
 {
 public:
     DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* context,
-        UINT mapWidth, UINT mapHeight, DirectionalLight dlight);
+        UINT mapWidth, UINT mapHeight, DirectionalLight_old dlight);
 
 	ID3D11Texture2D* GetTexture();
 	Camera* GetFrustumCamera();

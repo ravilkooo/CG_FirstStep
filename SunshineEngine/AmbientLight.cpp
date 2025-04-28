@@ -21,8 +21,8 @@ AmbientLight::AmbientLight(ID3D11Device* device, Vector4 ambient)
         lightPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP));
         lightPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
         // AddStaticBind(texture);
-        lightPass->AddBind(new Bind::VertexShader(device, L"./Shaders/AmbientLightVShader.hlsl"));
-        lightPass->AddBind(new Bind::PixelShader(device, L"./Shaders/AmbientLightPShader.hlsl"));
+        lightPass->AddBind(new Bind::VertexShader(device, L"./Shaders/LightPass/AmbientLightVShader.hlsl"));
+        lightPass->AddBind(new Bind::PixelShader(device, L"./Shaders/LightPass/AmbientLightPShader.hlsl"));
 
         /*
         D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});

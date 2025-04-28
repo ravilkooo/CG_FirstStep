@@ -3,7 +3,7 @@
 #include <d3d11.h>
 #include <directxmath.h>
 
-struct DirectionalLight
+struct DirectionalLight_old
 {
 	DirectX::XMFLOAT4 Ambient;
 	DirectX::XMFLOAT4 Diffuse;
@@ -13,7 +13,7 @@ struct DirectionalLight
 	float pad;
 };
 
-struct PointLight
+struct PointLight_old
 {
 	DirectX::XMFLOAT4 Ambient;
 	DirectX::XMFLOAT4 Diffuse;
@@ -25,7 +25,7 @@ struct PointLight
 	float pad;
 };
 
-struct SpotLight
+struct SpotLight_old
 {
 	DirectX::XMFLOAT4 Ambient;
 	DirectX::XMFLOAT4 Diffuse;
@@ -40,10 +40,10 @@ struct SpotLight
 	float pad;
 };
 
-struct LightData {
-	DirectionalLight dLight;
-	PointLight pointLights[14];
-	SpotLight spotLight;
+struct LightData_old {
+	DirectionalLight_old dLight;
+	PointLight_old pointLights[14];
+	SpotLight_old spotLight;
 };
 
 /*

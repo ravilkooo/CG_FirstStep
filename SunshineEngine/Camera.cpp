@@ -102,6 +102,16 @@ float Camera::GetViewHeight()
     return viewHeight;
 }
 
+void Camera::SetReferenceLen(float referenceLen)
+{
+    this->referenceLen = min(max(0.2, referenceLen), 100.0f);
+}
+
+float Camera::GetReferenceLen()
+{
+    return referenceLen;
+}
+
 void Camera::Update(float deltaTime, const Matrix targetTransform)
 {
     if (cameraMode == CAMERA_MODE::ORBITAL)
@@ -169,14 +179,15 @@ void Camera::MoveForward(float speed)
     }
     else
     {
-        XMVECTOR forward = XMVectorSubtract(XMLoadFloat3(&target), XMLoadFloat3(&position));
-        forward = XMVector3Normalize(forward);
-        position.x += speed * XMVectorGetX(forward);
-        position.y += speed * XMVectorGetY(forward);
-        position.z += speed * XMVectorGetZ(forward);
-        target.x += speed * XMVectorGetX(forward);
-        target.y += speed * XMVectorGetY(forward);
-        target.z += speed * XMVectorGetZ(forward);
+        //XMVECTOR forward = XMVectorSubtract(XMLoadFloat3(&target), XMLoadFloat3(&position));
+        Vector3 forward = target - position;
+        forward.Normalize();
+        position.x += speed * forward.x;
+        position.y += speed * forward.y;
+        position.z += speed * forward.z;
+        target.x += speed * forward.x;
+        target.y += speed * forward.y;
+        target.z += speed * forward.z;
     }
     if (!isPerspective)
     {
@@ -197,17 +208,20 @@ void Camera::MoveLeft(float speed)
     }
     else
     {
+        /*
         XMVECTOR right = XMVector3Cross(
             XMVectorSubtract(XMLoadFloat3(&target), XMLoadFloat3(&position)),
-            XMLoadFloat3(&up)
+            MLoadFloat3(&up)
         );
-        right = XMVector3Normalize(right);
-        position.x += speed * XMVectorGetX(right);
-        position.y += speed * XMVectorGetY(right);
-        position.z += speed * XMVectorGetZ(right);
-        target.x += speed * XMVectorGetX(right);
-        target.y += speed * XMVectorGetY(right);
-        target.z += speed * XMVectorGetZ(right);
+        */
+        Vector3 right = (target - position).Cross(up);
+        right.Normalize();
+        position.x += speed * right.x;
+        position.y += speed * right.y;
+        position.z += speed * right.z;
+        target.x += speed * right.x;
+        target.y += speed * right.y;
+        target.z += speed * right.z;
     }
 }
 

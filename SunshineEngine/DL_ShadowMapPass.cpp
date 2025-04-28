@@ -1,7 +1,7 @@
 #include "DL_ShadowMapPass.h"
 
 DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* context,
-	UINT mapWidth, UINT mapHeight, DirectionalLight dlight)
+	UINT mapWidth, UINT mapHeight, DirectionalLight_old dlight)
 	:
 	RenderPass("DL_ShadowMapPass", device, context)
 {

@@ -13,6 +13,7 @@ class PointLight :
     public LightObject
 {
 public:
+    PointLight();
     PointLight(ID3D11Device* device, Vector3 position,
         float range, Vector3 att, Vector4 ambient, Vector4 diffuse, Vector4 specular);
 

@@ -25,8 +25,8 @@ DirectionalLight::DirectionalLight(ID3D11Device* device, Vector3 position,
         lightPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP));
         lightPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
         // AddStaticBind(texture);
-        lightPass->AddBind(new Bind::VertexShader(device, L"./Shaders/DirectionalLightVShader.hlsl"));
-        lightPass->AddBind(new Bind::PixelShader(device, L"./Shaders/DirectionalLightPShader.hlsl"));
+        lightPass->AddBind(new Bind::VertexShader(device, L"./Shaders/LightPass/DirectionalLightVShader.hlsl"));
+        lightPass->AddBind(new Bind::PixelShader(device, L"./Shaders/LightPass/DirectionalLightPShader.hlsl"));
 
         /*
         D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});

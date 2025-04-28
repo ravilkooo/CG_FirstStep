@@ -44,6 +44,9 @@ public:
     void SetViewHeight(float viewHeight);
     float GetViewHeight();
 
+    void SetReferenceLen(float referenceLen);
+    float GetReferenceLen();
+
     void Update(float deltaTime, const Matrix targetTransform);
     void Update(float deltaTime, const Matrix targetTransform, Vector3 direction);
     void Update(float deltaTime, const Matrix targetTransform, Vector3 direction, float referenceLen);

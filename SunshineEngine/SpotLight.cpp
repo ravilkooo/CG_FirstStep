@@ -6,8 +6,14 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
 {
     this->ambient;
 
-    float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att.y;
-    range = max(range, (16.0f * sqrtf(c) + 1.0f)); // range = max(range, (8.0f * sqrtf(c) + 1.0f));
+    if (att.z < 0.0001) {
+        float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att.y;
+        range = max(range, (256.0f * c)); // range = max(range, (8.0f * sqrtf(c) + 1.0f));
+    }
+    else {
+        float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att.z;
+        range = max(range, (16.0f * sqrtf(c) + 1.0f)); // range = max(range, (8.0f * sqrtf(c) + 1.0f));
+    }
 
     spotLightData = {
         diffuse, specular, position, range,
@@ -21,13 +27,12 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
     
     CreateSimpleCubeMesh(width, width, depth, diffuse, &vertices, &verticesNum, &indices, &indicesNum);
 
-#ifdef DEBUG_LIGHT_OBJECTS
     {
         RenderTechnique* gBufferPass = new RenderTechnique("GBufferPass");
         gBufferPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
         gBufferPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
         // AddStaticBind(texture);
-        Bind::VertexShader* vertexShaderB = new Bind::VertexShader(device, L"./Shaders/GBufferShaderVS.hlsl");
+        Bind::VertexShader* vertexShaderB = new Bind::VertexShader(device, L"./Shaders/GBufferPass/SpotLightGBufferShaderVS.hlsl");
         gBufferPass->AddBind(vertexShaderB);
 
 
@@ -56,7 +61,7 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
         gBufferPass->AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
 
 
-        gBufferPass->AddBind(new Bind::PixelShader(device, L"./Shaders/GBufferShaderPS.hlsl"));
+        gBufferPass->AddBind(new Bind::PixelShader(device, L"./Shaders/GBufferPass/SpotLightGBufferShaderPS.hlsl"));
 
 
         D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
@@ -68,14 +73,13 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
 
         techniques.insert({ "GBufferPass", gBufferPass });
     }
-#endif // DEBUG_LIGHT_OBJECTS
     // LightPass
     {
         RenderTechnique* lightPass = new RenderTechnique("LightPass");
         lightPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
         lightPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
         // AddStaticBind(texture);
-        Bind::VertexShader* vertexShaderB = new Bind::VertexShader(device, L"./Shaders/SpotLightVShader.hlsl");
+        Bind::VertexShader* vertexShaderB = new Bind::VertexShader(device, L"./Shaders/LightPass/SpotLightVShader.hlsl");
         lightPass->AddBind(vertexShaderB);
 
 
@@ -95,7 +99,7 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
         lightPass->AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
 
 
-        lightPass->AddBind(new Bind::PixelShader(device, L"./Shaders/SpotLightPShader.hlsl"));
+        lightPass->AddBind(new Bind::PixelShader(device, L"./Shaders/LightPass/SpotLightPShader.hlsl"));
 
         /*
         D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
@@ -116,6 +120,13 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
 D3D11_DEPTH_STENCIL_DESC SpotLight::GetDepthStencilDesc(LightObject::LightPosition lightPos)
 {
     D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+    // hot fix
+    {
+        dsDesc.DepthEnable = TRUE;
+        dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+        dsDesc.DepthFunc = D3D11_COMPARISON_GREATER;
+        return dsDesc;
+    }
     if (lightPos == LightPosition::INSIDE) {
         dsDesc.DepthEnable = TRUE;
         dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -142,6 +153,14 @@ D3D11_DEPTH_STENCIL_DESC SpotLight::GetDepthStencilDesc(LightObject::LightPositi
 D3D11_RASTERIZER_DESC SpotLight::GetRasterizerDesc(LightObject::LightPosition lightPos)
 {
     D3D11_RASTERIZER_DESC rasterDesc = {};
+
+    // hot fix
+    {
+        rasterDesc.CullMode = D3D11_CULL_NONE;
+        rasterDesc.FillMode = D3D11_FILL_SOLID;
+        return rasterDesc;
+    }
+
     if (lightPos == LightPosition::INSIDE) {
         rasterDesc.CullMode = D3D11_CULL_FRONT;
         rasterDesc.FillMode = D3D11_FILL_SOLID;

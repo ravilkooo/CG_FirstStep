@@ -3,7 +3,7 @@
 
 namespace Bind {
 
-	TransformCBuffer::TransformCBuffer(ID3D11Device* device, const Drawable* parent, UINT slot)
+	TransformCBuffer::TransformCBuffer(ID3D11Device* device, Drawable* parent, UINT slot)
 		: pParent(parent)
 	{
 		//if (!pVcbuf)

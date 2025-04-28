@@ -1,12 +1,20 @@
 #include "PointLight.h"
 
+PointLight::PointLight() {}
+
 PointLight::PointLight(ID3D11Device* device, Vector3 position,
     float range, Vector3 att, Vector4 ambient, Vector4 diffuse, Vector4 specular)
 {
     this->ambient;
 
-    float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att.y;
-    range = max(range, (16.0f * sqrtf(c) + 1.0f)); // range = max(range, (8.0f * sqrtf(c) + 1.0f));
+    if (att.z < 0.0001) {
+        float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att.y;
+        range = max(range, (256.0f * c)); // range = max(range, (8.0f * sqrtf(c) + 1.0f));
+    }
+    else {
+        float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att.z;
+        range = max(range, (16.0f * sqrtf(c) + 1.0f)); // range = max(range, (8.0f * sqrtf(c) + 1.0f));
+    }
 
     pointLightData = {
         diffuse, specular, position, range,
@@ -23,7 +31,7 @@ PointLight::PointLight(ID3D11Device* device, Vector3 position,
         lightPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
         lightPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
         // AddStaticBind(texture);
-        Bind::VertexShader* vertexShaderB = new Bind::VertexShader(device, L"./Shaders/PointLightVShader.hlsl");
+        Bind::VertexShader* vertexShaderB = new Bind::VertexShader(device, L"./Shaders/LightPass/PointLightVShader.hlsl");
         lightPass->AddBind(vertexShaderB);
 
 
@@ -43,7 +51,7 @@ PointLight::PointLight(ID3D11Device* device, Vector3 position,
         lightPass->AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
 
 
-        lightPass->AddBind(new Bind::PixelShader(device, L"./Shaders/PointLightPShader.hlsl"));
+        lightPass->AddBind(new Bind::PixelShader(device, L"./Shaders/LightPass/PointLightPShader.hlsl"));
 
         /*
         D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});

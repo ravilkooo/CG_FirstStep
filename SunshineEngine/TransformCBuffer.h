@@ -16,11 +16,11 @@ namespace Bind
 			DirectX::XMMATRIX viewProj;
 		};
 	public:
-		TransformCBuffer(ID3D11Device* device, const Drawable* parent, UINT slot = 0u);
+		TransformCBuffer(ID3D11Device* device, Drawable* parent, UINT slot = 0u);
 		void Bind(ID3D11DeviceContext* context) noexcept override;
 	private:
 		// static
 		VertexConstantBuffer<Transforms>* pVcbuf;
-		const Drawable* pParent = nullptr;
+		Drawable* pParent = nullptr;
 	};
 }
