@@ -21,8 +21,10 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
         att, 0.0f
     };
 
-    float coneAngle = acosf(powf(256.0f, -1.0f / spot));
-    width = 2 * range * sinf(coneAngle);
+    //float coneAngle = acosf(powf(256.0f, -1.0f / spot));
+    //width = 2 * range * sinf(coneAngle);
+    float coneAngle = acosf(powf(128.0f, -1.0f / spot));
+    width = range * sinf(coneAngle);
     depth = range;
     
     CreateSimpleCubeMesh(width, width, depth, diffuse, &vertices, &verticesNum, &indices, &indicesNum);

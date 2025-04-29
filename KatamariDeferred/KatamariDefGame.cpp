@@ -100,7 +100,7 @@ KatamariDefGame::KatamariDefGame()
 	// Light
 	_dl_1 = new DirectionalLight(renderer->GetDevice(), { 5.0f, 5.5f, -5.0f }, { 0.0f, -3.0f, 8.0f },
 		//{ 0.0f, 0.0f, 0.0f, 1 }, { 0.0f, 0.0f, 0.0f, 1 }, { 0.0f, 0.0f, 0.0f, 1 });
-		{ 0.1f, 0.1f, 0.1f, 1 }, { 0.4f, 0.4f, 0.4f, 1 }, { 0.6f, 0.6f, 0.6f, 1 });
+		{ 0.1f, 0.1f, 0.1f, 1 }, { 0.3f, 0.3f, 0.3f, 1 }, { 0.5f, 0.5f, 0.5f, 1 });
 	scene.AddNode(_dl_1);
 
 	for (int i = 0; i < 6; i++)

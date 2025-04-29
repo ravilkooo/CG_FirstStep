@@ -64,7 +64,7 @@ void calcSpotLight(float3 wPos, float3 normal, float3 toEye,
         float3 v = reflect(-lightVec, normal);
         float specFactor = pow(max(dot(v, toEye), 0.0f), mat.Specular.y);
         sl_diffuse = diffuseFactor * mat.Diffuse * spotLight.Diffuse;
-        sl_spec = specFactor * float4(mat.Specular.xxx, 1);
+        sl_spec = specFactor * float4(mat.Specular.xxx, 1) * spotLight.Specular;
     }
     
     float spot = pow(max(dot(-lightVec, spotLight.Direction), 0.0f), spotLight.Spot);

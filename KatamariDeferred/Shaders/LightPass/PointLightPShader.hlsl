@@ -62,7 +62,7 @@ void calcPointLight(float3 wPos, float3 normal, float3 toEye, Material mat,
         float3 v = reflect(-lightVec, normal);
         float specFactor = pow(max(dot(v, toEye), 0.0f), mat.Specular.y);
         pl_diffuse = diffuseFactor * mat.Diffuse * pointLight.Diffuse;
-        pl_spec = specFactor * float4(mat.Specular.xxx, 1);
+        pl_spec = specFactor * float4(mat.Specular.xxx, 1) * pointLight.Specular;
     }
 
     float att = 1.0f / dot(pointLight.Att, float3(1.0f, d, d * d));

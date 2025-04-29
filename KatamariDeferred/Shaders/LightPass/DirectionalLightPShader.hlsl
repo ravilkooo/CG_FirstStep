@@ -57,7 +57,7 @@ void calcDirectionalLight(float3 wPos, float3 normal, float3 toEye, Material mat
             float3 v = reflect(-lightVec, normal);
             float specFactor = pow(max(dot(v, toEye), 0.0f), mat.Specular.y);
             dl_diffuse = diffuseFactor * mat.Diffuse * dirLight.Diffuse;
-            dl_spec = specFactor * float4(mat.Specular.xxx, 1);
+            dl_spec = specFactor * float4(mat.Specular.xxx, 1) * dirLight.Specular;
         }
     }
 }
