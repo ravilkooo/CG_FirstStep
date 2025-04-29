@@ -52,5 +52,8 @@
     <FxCompile Include="Shaders\MainColorPassVS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\ParticleVS.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

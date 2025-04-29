@@ -130,6 +130,7 @@ DeferredGame::DeferredGame()
 		{ 0, 0.1, 0, 1 }, { 0, 1, 0, 1 }, { 0, 1, 0, 1 });
 	scene.AddNode(_sl_1);
 
+
 	FullScreenQuad* fsq = new FullScreenQuad(renderer->GetDevice());
 	scene.AddNode(fsq);
 

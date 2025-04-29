@@ -29,16 +29,18 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
     
     CreateSimpleCubeMesh(width, width, depth, diffuse, &vertices, &verticesNum, &indices, &indicesNum);
 
+    // GBufferPass
     {
         RenderTechnique* gBufferPass = new RenderTechnique("GBufferPass");
         gBufferPass->AddBind(new Bind::Topology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
         gBufferPass->AddBind(new Bind::IndexBuffer(device, indices, indicesNum));
+        gBufferPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
         // AddStaticBind(texture);
         Bind::VertexShader* vertexShaderB = new Bind::VertexShader(device, L"./Shaders/GBufferPass/SpotLightGBufferShaderVS.hlsl");
         gBufferPass->AddBind(vertexShaderB);
 
 
-        numInputElements = 2;
+        numInputElements = 4;
         IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 
         IALayoutInputElements[0] =
@@ -59,6 +61,24 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
                 D3D11_APPEND_ALIGNED_ELEMENT,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0 };
+        IALayoutInputElements[2] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "TEXCOORD",
+                0,
+                DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
+        IALayoutInputElements[3] =
+            D3D11_INPUT_ELEMENT_DESC{
+                "NORMAL",
+                0,
+                DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0 };
 
         gBufferPass->AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
 
@@ -70,7 +90,6 @@ SpotLight::SpotLight(ID3D11Device* device, Vector3 position,
         rastDesc.CullMode = D3D11_CULL_NONE;
         rastDesc.FillMode = D3D11_FILL_WIREFRAME;
         gBufferPass->AddBind(new Bind::Rasterizer(device, rastDesc));
-        gBufferPass->AddBind(new Bind::VertexBuffer(device, vertices, verticesNum, sizeof(CommonVertex)));
         gBufferPass->AddBind(new Bind::TransformCBuffer(device, this, 0u));
 
         techniques.insert({ "GBufferPass", gBufferPass });

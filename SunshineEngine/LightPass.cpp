@@ -60,6 +60,94 @@ LightPass::LightPass(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11T
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	AddPerFrameBind(new Bind::BlendState(device, blendDesc));
+
+	// Particle test
+	{
+		particles.resize(numParticles);
+		for (size_t i = 0; i < numParticles; i++)
+		{
+
+			particles[i] = {
+				{3 * cosf(i * XM_2PI * XM_2PI / numParticles), 3 * sinf(i * XM_2PI / numParticles), 0},
+				0.05,
+				{
+					abs(cosf(i * XM_2PI / numParticles)),
+					abs(cosf(i * XM_2PI / numParticles + 1)),
+					abs(cosf(i * XM_2PI / numParticles + 2)),
+					1
+				},
+			};
+		}
+
+		D3D11_BUFFER_DESC particleBufDesc = {};
+		particleBufDesc.ByteWidth = sizeof(Particle) * numParticles;
+		particleBufDesc.Usage = D3D11_USAGE_DYNAMIC;
+		particleBufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		particleBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		particleBufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+		particleBufDesc.StructureByteStride = sizeof(Particle);
+
+		// D3D11_UNORDERED_ACCESS_VIEW_DESC
+
+		/*
+		D3D11_SUBRESOURCE_DATA initDataParticles = {};
+		initDataParticles.pSysMem = &particles;
+		*/
+		GetDevice()->CreateBuffer(&particleBufDesc, nullptr, &particleBuffer);
+
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		GetDeviceContext()->Map(particleBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+		memcpy(mapped.pData, particles.data(), sizeof(Particle)* numParticles);
+		GetDeviceContext()->Unmap(particleBuffer, 0);
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+		srvDesc.Buffer.NumElements = numParticles;
+
+		GetDevice()->CreateShaderResourceView(particleBuffer, &srvDesc, &particleSRV);
+
+
+		struct DrawArgs {
+			UINT IndexCountPerInstance;
+			UINT InstanceCount;
+			UINT StartIndexLocation;
+			INT BaseVertexLocation;
+			UINT StartInstanceLocation;
+		};
+
+		DrawArgs args = {
+			6, // Кол-во индексов на частицу (квад)
+			numParticles, // Кол-во частиц
+			0, 0, 0
+		};
+
+		// Создаем буфер для аргументов
+		D3D11_BUFFER_DESC argsDesc = {};
+		argsDesc.ByteWidth = sizeof(DrawArgs);
+		argsDesc.Usage = D3D11_USAGE_DEFAULT;
+		argsDesc.BindFlags = 0;
+		argsDesc.CPUAccessFlags = 0;
+		argsDesc.MiscFlags = D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS;
+
+
+		D3D11_SUBRESOURCE_DATA initData = {};
+		initData.pSysMem = &args;
+
+		GetDevice()->CreateBuffer(&argsDesc, &initData, &indirectArgsBuffer);
+
+		int indices[6] = {0, 1, 2, 3, 2, 1};
+		ps_ib = new Bind::IndexBuffer(GetDevice(), indices, 6);
+		ps_vs = new Bind::VertexShader(GetDevice(), L"./Shaders/ParticleVS.hlsl");
+		ps_ps = new Bind::PixelShader(GetDevice(), L"./Shaders/ParticleVS.hlsl");
+		auto vs_blob = ps_vs->GetBytecode();
+		
+		D3D11_INPUT_ELEMENT_DESC* IALayoutInputElements = nullptr;
+		ps_ia = new Bind::InputLayout(GetDevice(), IALayoutInputElements, 0, vs_blob);
+		
+		ps_vcb = new Bind::VertexConstantBuffer<XMMATRIX>(GetDevice(), XMMatrixIdentity(), 0u);
+	}
+
 }
 
 void LightPass::StartFrame()
@@ -120,6 +208,56 @@ void LightPass::Pass(const Scene& scene)
 		else {
 			continue;
 		}
+	}
+
+	// Particle test
+	{
+		currTime += 0.08;
+		for (size_t i = 0; i < numParticles; i++)
+		{
+			particles[i].Position = { 3 * cosf((i + currTime) * XM_2PI * 6 / numParticles + 0.8), 3 * sinf((i + currTime) * XM_2PI / numParticles), 0 };
+			particles[i].Size = 0.05 + 0.03 * sinf(i * 0.17 + currTime);
+		}
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		GetDeviceContext()->Map(particleBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+		memcpy(mapped.pData, particles.data(), sizeof(Particle) * numParticles);
+		GetDeviceContext()->Unmap(particleBuffer, 0);
+
+
+		ps_ib->Bind(GetDeviceContext());
+		ps_vcb->Update(GetDeviceContext(), Matrix::Identity * camera->GetViewMatrix() * camera->GetProjectionMatrix());
+		ps_vcb->Bind(GetDeviceContext());
+		ps_ia->Bind(GetDeviceContext());
+		ps_vs->Bind(GetDeviceContext());
+		ps_ps->Bind(GetDeviceContext());
+
+		// Привязываем буфер частиц как SRV
+		ID3D11ShaderResourceView* srvs[] = { particleSRV };
+		GetDeviceContext()->VSSetShaderResources(5, 1, srvs);
+
+		// Устанавливаем шейдеры, InputLayout и топологию
+		GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+		dsDesc.DepthEnable = TRUE;
+		dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+		D3D11_RASTERIZER_DESC rasterDesc = {};
+		rasterDesc.CullMode = D3D11_CULL_NONE;
+		rasterDesc.FillMode = D3D11_FILL_SOLID;
+
+		ID3D11RasterizerState* rasterState;
+		ID3D11DepthStencilState* depthState;
+		device->CreateRasterizerState(&rasterDesc, &rasterState);
+		device->CreateDepthStencilState(&dsDesc, &depthState);
+
+		context->OMSetDepthStencilState(depthState, 0);
+		context->RSSetState(rasterState);
+		
+		GetDeviceContext()->DrawIndexedInstancedIndirect(
+			indirectArgsBuffer, // Буфер с аргументами
+			0                  // Смещение в буфере
+		);
 	}
 }
 

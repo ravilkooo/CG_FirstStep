@@ -38,5 +38,25 @@ public:
         float pad;
     } cameraData;
     Bind::PixelConstantBuffer<CamPCB>* camPCB;
+
+private:
+    // particle test
+    struct Particle {
+        DirectX::XMFLOAT3 Position;
+        float Size;
+        DirectX::XMFLOAT4 Color;
+    };
+    UINT numParticles = 1000;
+    std::vector<Particle> particles;
+
+    ID3D11Buffer* particleBuffer;
+    ID3D11ShaderResourceView* particleSRV;
+    ID3D11Buffer* indirectArgsBuffer;
+    Bind::VertexConstantBuffer<XMMATRIX>* ps_vcb;
+    Bind::IndexBuffer* ps_ib;
+    Bind::VertexShader* ps_vs;
+    Bind::PixelShader* ps_ps;
+    Bind::InputLayout* ps_ia;
+    float currTime = 0.0f;
 };
 
