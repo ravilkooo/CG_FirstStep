@@ -32,7 +32,6 @@ DeferredGame::DeferredGame()
 
 		renderer->AddPass(gBufferPass);
 	}
-	LightPass* gLightPass;
 	{
 		gLightPass = new LightPass(renderer->GetDevice(), renderer->GetDeviceContext(),
 			renderer->GetBackBuffer(), winWidth, winHeight, gBufferPass->pGBuffer, gBufferPass->GetCamera());
@@ -130,6 +129,10 @@ DeferredGame::DeferredGame()
 		{ 0, 0.1, 0, 1 }, { 0, 1, 0, 1 }, { 0, 1, 0, 1 });
 	scene.AddNode(_sl_1);
 
+	// patricle test
+#ifdef oldParticlesTest
+	gLightPass->emissionRate = 1;
+#endif
 
 	FullScreenQuad* fsq = new FullScreenQuad(renderer->GetDevice());
 	scene.AddNode(fsq);
@@ -145,11 +148,16 @@ DeferredGame::~DeferredGame()
 
 void DeferredGame::Update(float deltaTime)
 {
+	// particle test
+	gLightPass->particleSystem.Update(deltaTime);
+	//gLightPass->accumulatedTime += deltaTime;
+
 	//_sl_1->spotLightData.Direction = Vector3::Transform(_sl_1->spotLightData.Direction, Matrix::CreateRotationY(deltaTime));
 	currTime += deltaTime;
 	_sl_1->spotLightData.Spot = 15 + 10 * sin(10*currTime);
 	_dl_1->directionalLightData.Direction = Vector3::Transform(_dl_1->directionalLightData.Direction, Matrix::CreateRotationY(5*deltaTime));
 	physEngine->Update(deltaTime);
+
 }
 
 void DeferredGame::Render()
@@ -182,6 +190,14 @@ void DeferredGame::HandleKeyDown(Keys key) {
 	if (key == Keys::LeftShift)
 	{
 		renderer->mainCamera->MoveDown(deltaTime * 10.0f);
+	}
+	if (key == Keys::Q)
+	{
+		gLightPass->particleSystem.DecrementEmissionRate(10);
+	}
+	if (key == Keys::E)
+	{
+		gLightPass->particleSystem.IncrementEmissionRate(10);
 	}
 }
 

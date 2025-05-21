@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Particles">
+      <UniqueIdentifier>{eb4c8e5b-c543-43b6-ae16-c90f9db89fe4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -31,6 +34,9 @@
     </ClInclude>
     <ClInclude Include="TestCube.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\Particles\ParticlesGlobals.h">
+      <Filter>Resource Files\Particles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +60,27 @@
     </FxCompile>
     <FxCompile Include="Shaders\ParticleVS.hlsl">
       <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\EmitParticlesCShader.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\InitSimulateDispatchArgsCShader.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\ResetCShader.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\SimulateParticlesCShader.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\RenderParticles_GS.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\RenderParticles_PS.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\RenderParticles_VS.hlsl">
+      <Filter>Resource Files\Particles</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

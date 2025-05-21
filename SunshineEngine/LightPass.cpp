@@ -1,6 +1,7 @@
 #include "LightPass.h"
 
-LightPass::LightPass(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11Texture2D* backBuffer,
+LightPass::LightPass(ID3D11Device* device, ID3D11DeviceContext* context,
+	ID3D11Texture2D* backBuffer,
 	UINT screenWidth, UINT screenHeight, GBuffer* pGBuffer, Camera* camera)
 	:
 	RenderPass("LightPass", device, context)
@@ -61,12 +62,89 @@ LightPass::LightPass(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11T
 
 	AddPerFrameBind(new Bind::BlendState(device, blendDesc));
 
+	particleSystem = ParticleSystem(device, context);
+	particleSystem.camera = GetCamera();
+
 	// Particle test
+#ifdef oldParticlesTest
 	{
+		{
+			ID3DBlob* emitCSBlob = nullptr;
+			D3DCompileFromFile(L"./Shaders/EmitCS.hlsl", nullptr, nullptr, "CSMain", "cs_5_0", 0, 0, &emitCSBlob, nullptr);
+
+			device->CreateComputeShader(emitCSBlob->GetBufferPointer(), emitCSBlob->GetBufferSize(), nullptr, &emitComputeShader);
+
+
+			ID3DBlob* simCSBlob = nullptr;
+			D3DCompileFromFile(L"./Shaders/SimulateCS.hlsl", nullptr, nullptr, "CSMain", "cs_5_0", 0, 0, &simCSBlob, nullptr);
+
+			device->CreateComputeShader(simCSBlob->GetBufferPointer(), simCSBlob->GetBufferSize(), nullptr, &simulateComputeShader);
+
+
+		}
+
+
+		// Dead List
+		std::vector<uint32_t> deadIndices(numParticles);
+		for (uint32_t i = 0; i < numParticles; ++i) {
+			deadIndices[i] = i;
+		}
+
+		D3D11_BUFFER_DESC desc = {};
+		desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+		desc.ByteWidth = sizeof(uint32_t) * numParticles;
+		desc.StructureByteStride = sizeof(uint32_t);
+		desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+
+		D3D11_SUBRESOURCE_DATA deadInitData = {};
+		deadInitData.pSysMem = deadIndices.data();
+		device->CreateBuffer(&desc, &deadInitData, &deadList);
+		//device->CreateBuffer(&desc, nullptr, &deadList);
+
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;
+		uavDesc.Buffer.NumElements = numParticles;
+		device->CreateUnorderedAccessView(deadList, &uavDesc, &uavDeadList);
+
+		D3D11_BUFFER_DESC cbd;
+		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbd.Usage = D3D11_USAGE_DYNAMIC;
+		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		cbd.MiscFlags = 0u;
+		cbd.ByteWidth = sizeof(XMFLOAT4) + (16 - (sizeof(XMFLOAT4) % 16)); // aligned size
+		cbd.StructureByteStride = 0u;
+
+		device->CreateBuffer(&cbd, nullptr, &emitConstantBuffer);
+
+		/*
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		GetDeviceContext()->Map(deadList, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+		memcpy(mapped.pData, deadIndices.data(), sizeof(uint32_t) * numParticles);
+		GetDeviceContext()->Unmap(deadList, 0);
+		*/
+
+		// Sort List
+		desc = {};
+		desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+		desc.ByteWidth = 2 * sizeof(uint32_t) * numParticles; //
+		desc.StructureByteStride = 2 * sizeof(uint32_t); //
+		desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+		device->CreateBuffer(&desc, nullptr, &sortList); // Для sortList: stride = sizeof(uint2)
+		
+		uavDesc = {};
+		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;
+		uavDesc.Buffer.NumElements = numParticles;
+		device->CreateUnorderedAccessView(sortList, &uavDesc, &uavSortList);
+
+
+		// Particle Pool
 		particles.resize(numParticles);
 		for (size_t i = 0; i < numParticles; i++)
 		{
-
 			particles[i] = {
 				{3 * cosf(i * XM_2PI * XM_2PI / numParticles), 3 * sinf(i * XM_2PI / numParticles), 0},
 				0.05,
@@ -81,32 +159,46 @@ LightPass::LightPass(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11T
 
 		D3D11_BUFFER_DESC particleBufDesc = {};
 		particleBufDesc.ByteWidth = sizeof(Particle) * numParticles;
-		particleBufDesc.Usage = D3D11_USAGE_DYNAMIC;
-		particleBufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		particleBufDesc.Usage = D3D11_USAGE_DEFAULT;
+		particleBufDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
 		particleBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		particleBufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 		particleBufDesc.StructureByteStride = sizeof(Particle);
-
-		// D3D11_UNORDERED_ACCESS_VIEW_DESC
-
-		/*
-		D3D11_SUBRESOURCE_DATA initDataParticles = {};
-		initDataParticles.pSysMem = &particles;
-		*/
-		GetDevice()->CreateBuffer(&particleBufDesc, nullptr, &particleBuffer);
-
-		D3D11_MAPPED_SUBRESOURCE mapped;
-		GetDeviceContext()->Map(particleBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-		memcpy(mapped.pData, particles.data(), sizeof(Particle)* numParticles);
-		GetDeviceContext()->Unmap(particleBuffer, 0);
+		GetDevice()->CreateBuffer(&particleBufDesc, nullptr, &particlePool);
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
 		srvDesc.Buffer.NumElements = numParticles;
+		GetDevice()->CreateShaderResourceView(particlePool, &srvDesc, &particleSRV);
 
-		GetDevice()->CreateShaderResourceView(particleBuffer, &srvDesc, &particleSRV);
+		uavDesc = {};
+		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		uavDesc.Buffer.NumElements = numParticles;
+		device->CreateUnorderedAccessView(particlePool, &uavDesc, &uavParticlePool);
 
+		cbd = {};
+		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbd.Usage = D3D11_USAGE_DYNAMIC;
+		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		cbd.MiscFlags = 0u;
+		cbd.ByteWidth = sizeof(XMFLOAT4) + (16 - (sizeof(XMFLOAT4) % 16)); // aligned size
+		cbd.StructureByteStride = 0u;
+		
+		Vector3 camPos(camera->GetPosition());
+		XMFLOAT4 consts = { camPos.x, camPos.y, camPos.z, 0.016 };
+
+		D3D11_SUBRESOURCE_DATA csInitData = {};
+		csInitData.pSysMem = &consts;
+
+		device->CreateBuffer(&cbd, &csInitData, &cs_cb);
+
+		/*
+		GetDeviceContext()->Map(particlePool, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+		memcpy(mapped.pData, particles.data(), sizeof(Particle) * numParticles);
+		GetDeviceContext()->Unmap(particlePool, 0);
+		*/
 
 		struct DrawArgs {
 			UINT IndexCountPerInstance;
@@ -147,7 +239,7 @@ LightPass::LightPass(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11T
 		
 		ps_vcb = new Bind::VertexConstantBuffer<XMMATRIX>(GetDevice(), XMMatrixIdentity(), 0u);
 	}
-
+#endif
 }
 
 void LightPass::StartFrame()
@@ -210,8 +302,17 @@ void LightPass::Pass(const Scene& scene)
 		}
 	}
 
+
+	ID3D11ShaderResourceView* nullSRVs[] = { nullptr, nullptr, nullptr, nullptr };
+	context->PSSetShaderResources(0, 4, nullSRVs);
+
+	particleSystem.camera = GetCamera();
+	particleSystem.Render();
+
 	// Particle test
+#ifdef oldParticlesTest
 	{
+		/*
 		currTime += 0.08;
 		for (size_t i = 0; i < numParticles; i++)
 		{
@@ -219,11 +320,79 @@ void LightPass::Pass(const Scene& scene)
 			particles[i].Size = 0.05 + 0.03 * sinf(i * 0.17 + currTime);
 		}
 		D3D11_MAPPED_SUBRESOURCE mapped;
-		GetDeviceContext()->Map(particleBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+		GetDeviceContext()->Map(particlePool, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 		memcpy(mapped.pData, particles.data(), sizeof(Particle) * numParticles);
-		GetDeviceContext()->Unmap(particleBuffer, 0);
+		GetDeviceContext()->Unmap(particlePool, 0);
+		*/
+		{
+			// Update cbuffer
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			context->Map(cs_cb, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mappedResource);
+			Vector3 camPos(camera->GetPosition());
+			XMFLOAT4 consts = { camPos.x, camPos.y, camPos.z, 0.016 };
+			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16))); // aligned size
+			context->Unmap(cs_cb, 0);
+		}
+		{
+			UINT clearValue[4] = { 0, 0, 0, 0 };
+			GetDeviceContext()->ClearUnorderedAccessViewUint(uavSortList, clearValue);
+
+			GetDeviceContext()->CSSetShader(simulateComputeShader, nullptr, 0);
+			GetDeviceContext()->CSSetConstantBuffers(0, 1, &cs_cb);
+
+			GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, &uavParticlePool, nullptr);
+			GetDeviceContext()->CSSetUnorderedAccessViews(1, 1, &uavDeadList, nullptr);
+			GetDeviceContext()->CSSetUnorderedAccessViews(2, 1, &uavSortList, nullptr);
+			GetDeviceContext()->Dispatch(numParticles / 64, 1, 1);
 
 
+
+			ID3D11UnorderedAccessView* nullUAV[3] = { nullptr, nullptr, nullptr };
+			GetDeviceContext()->CSSetUnorderedAccessViews(0, 3, nullUAV, nullptr);
+		}
+		{
+
+			// Вычисление количества частиц для эмиссии в этом кадре
+			int numParticlesToEmit = static_cast<int>(accumulatedTime * emissionRate);
+			if (numParticlesToEmit > 0) {
+				accumulatedTime -= numParticlesToEmit / emissionRate;
+				numParticlesToEmit = min(numParticlesToEmit, 20);
+
+				numNewParticles += numParticlesToEmit;
+
+			}
+		}
+
+		if (numNewParticles > 0)
+		{
+			// Emit
+			std::cout << "numNewParticles = " << numNewParticles << "\n";
+
+			EmitConstants consts;
+			consts.numParticlesToEmit = numNewParticles;
+
+			// Обновление константного буфера
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			context->Map(emitConstantBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mappedResource);
+			memcpy(mappedResource.pData, &consts, sizeof(consts) + (16 - (sizeof(consts) % 16))); // aligned size
+			context->Unmap(emitConstantBuffer, 0);
+
+
+			// Привязка буферов
+			GetDeviceContext()->CSSetConstantBuffers(0, 1, &emitConstantBuffer);
+
+			GetDeviceContext()->CSSetShader(emitComputeShader, nullptr, 0);
+
+			GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, &uavParticlePool, nullptr);
+			GetDeviceContext()->CSSetUnorderedAccessViews(1, 1, &uavDeadList, nullptr);
+			GetDeviceContext()->Dispatch(numParticles / 64, 1, 1);
+
+			ID3D11UnorderedAccessView* nullUAV[2] = { nullptr, nullptr };
+			GetDeviceContext()->CSSetUnorderedAccessViews(0, 2, nullUAV, nullptr);
+
+			numNewParticles = 0;
+		}
+		
 		ps_ib->Bind(GetDeviceContext());
 		ps_vcb->Update(GetDeviceContext(), Matrix::Identity * camera->GetViewMatrix() * camera->GetProjectionMatrix());
 		ps_vcb->Bind(GetDeviceContext());
@@ -233,7 +402,7 @@ void LightPass::Pass(const Scene& scene)
 
 		// Привязываем буфер частиц как SRV
 		ID3D11ShaderResourceView* srvs[] = { particleSRV };
-		GetDeviceContext()->VSSetShaderResources(5, 1, srvs);
+		GetDeviceContext()->VSSetShaderResources(4, 1, srvs);
 
 		// Устанавливаем шейдеры, InputLayout и топологию
 		GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -258,15 +427,18 @@ void LightPass::Pass(const Scene& scene)
 			indirectArgsBuffer, // Буфер с аргументами
 			0                  // Смещение в буфере
 		);
+
+		ID3D11ShaderResourceView* nullSRVs[] = { nullptr };
+		context->VSSetShaderResources(4, 1, nullSRVs );
+		GetDeviceContext()->ClearState();
 	}
+#endif
 }
 
 void LightPass::EndFrame()
 {
 	//ID3D11ShaderResourceView* nullSRVs[] = { nullptr, nullptr, nullptr, nullptr };
 
-	ID3D11ShaderResourceView* nullSRVs[] = { nullptr, nullptr, nullptr, nullptr };
-	context->PSSetShaderResources(0, 4, nullSRVs);
 	//context->PSSetShaderResources(0, NULL, NULL);
 	context->OMSetRenderTargets(0, NULL, NULL);
 }

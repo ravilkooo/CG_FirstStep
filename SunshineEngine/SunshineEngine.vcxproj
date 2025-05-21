@@ -195,6 +195,7 @@
     <ClInclude Include="LightObject.h" />
     <ClInclude Include="LightPass.h" />
     <ClInclude Include="MainColorPass.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Rasterizer.h" />
@@ -244,6 +245,7 @@
     <ClCompile Include="LightObject.cpp" />
     <ClCompile Include="LightPass.cpp" />
     <ClCompile Include="MainColorPass.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Rasterizer.cpp" />

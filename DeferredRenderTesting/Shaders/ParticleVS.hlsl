@@ -3,8 +3,11 @@ struct Particle
     float3 Position;
     float Size;
     float4 Color;
+    
+    float3 velocity;
+    float energy;
 };
-StructuredBuffer<Particle> Particles : register(t5);
+StructuredBuffer<Particle> Particles : register(t4);
 
 cbuffer CBuf
 {
@@ -27,9 +30,13 @@ struct VSOutput
 VSOutput VSMain(VSInput input)
 {
     Particle p = Particles[input.InstanceID];
-    
+    // как отрисовывать только живые частицы?
     VSOutput output;
-    
+    if (p.energy < 0)
+    {
+        output.Position = float4(0, 0, -1, 1);
+        return output;
+    }
     // Создаем квад из VertexID
     output.UV = float2(
         (input.VertexID % 3) & 1,

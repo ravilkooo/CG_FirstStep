@@ -37,6 +37,12 @@
     <Filter Include="Source Files\LightObject">
       <UniqueIdentifier>{09427390-5141-43d4-ab73-219f9db11594}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ParticleSystem">
+      <UniqueIdentifier>{c22065f8-601d-4e56-95c1-d7bcee7d7c25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ParticleSystem">
+      <UniqueIdentifier>{77b9c085-6b87-4695-9072-fa402c00a70a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -195,6 +201,9 @@
     <ClInclude Include="LightCollection.h">
       <Filter>Header Files\LightObject</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -328,6 +337,9 @@
     </ClCompile>
     <ClCompile Include="BlendState.cpp">
       <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

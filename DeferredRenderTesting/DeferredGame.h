@@ -25,5 +25,8 @@ public:
     SpotLight* _sl_1;
     float currTime = 0.0f;
     DirectionalLight* _dl_1;
+
+    // Particle test
+    LightPass* gLightPass;
 };
 

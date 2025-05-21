@@ -30,7 +30,8 @@ namespace Bind
 		if (StringHelper::GetFileExtension(filePath) == "dds")
 		{
 			//std::cout << "DDS loaded!!! " << filePath << " :: " << StringHelper::GetFileExtension(filePath) << "\n";
-			HRESULT hr = DirectX::CreateDDSTextureFromFile(device, StringHelper::StringToWide(filePath).c_str(), &pTexture, &pTextureView);
+			HRESULT hr = DirectX::CreateDDSTextureFromFile(device,
+				StringHelper::StringToWide(filePath).c_str(), &pTexture, &pTextureView);
 			if (FAILED(hr))
 			{
 				this->Initialize1x1ColorTexture(device, SE_Colors::UnloadedTextureColor, type);
