@@ -12,7 +12,9 @@ struct Particle
     float lifeSpan;
 
     float mass;
-    float3 padding;
+    float screenSpin;
+    float screenSpinSpeed;
+    float padding;
 };
 
 struct ParticleIndexElement

@@ -1,7 +1,9 @@
 #include "ParticleSystem.h"
 #include "iostream"
 
-ParticleSystem::ParticleSystem(ID3D11Device* device, ID3D11DeviceContext* context)
+ParticleSystem::ParticleSystem(ID3D11Device* device, ID3D11DeviceContext* context,
+	EmitterPointConstantBuffer emitterDesc,
+	SimulateParticlesConstantBuffer simulatorDesc)
 	: m_d3dDevice(device), m_d3dContext(context)
 {
 	// particleBuffer
@@ -153,19 +155,35 @@ ParticleSystem::ParticleSystem(ID3D11Device* device, ID3D11DeviceContext* contex
 	m_d3dDevice->CreateBuffer(&deadListCountConstantBufferDesc, nullptr, &m_deadListCountConstantBuffer);
 	m_d3dDevice->CreateBuffer(&deadListCountConstantBufferDesc, nullptr, &m_aliveListCountConstantBuffer);
 
+	deadListCountConstantBufferDesc.Usage = D3D11_USAGE_STAGING;
+	deadListCountConstantBufferDesc.BindFlags = 0;
+	deadListCountConstantBufferDesc.ByteWidth = sizeof(DeadListCountConstantBuffer);
+	deadListCountConstantBufferDesc.StructureByteStride = sizeof(DeadListCountConstantBuffer);
+	deadListCountConstantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	deadListCountConstantBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	m_d3dDevice->CreateBuffer(&deadListCountConstantBufferDesc, nullptr, &m_deadListCountConstantBuffer_2);
+
+
 	// init simulate dispatch args buffer
 	CD3D11_BUFFER_DESC initSimulateDispatchArgsBufferDesc(sizeof(InitIndirectComputeArgs1DConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	m_d3dDevice->CreateBuffer(&initSimulateDispatchArgsBufferDesc, nullptr, &m_initSimulateDispatchArgsBuffer);
 
 	// Emitter Buffer 
-	m_emitterConstantBufferData = {
-		{ 0, 0, 0, 1 },
-		100,
-		3,
-		{ 0, 0 }
-	};
+	m_emitterConstantBufferData = emitterDesc;
+
 	CD3D11_BUFFER_DESC emitterConstantBufferDesc(sizeof(EmitterPointConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	m_d3dDevice->CreateBuffer(&emitterConstantBufferDesc, nullptr, &m_emitterConstantBuffer);
+
+	// Simulator Buffer 
+	m_simulateParticlesConstantBufferData = simulatorDesc;
+	
+	{
+		CD3D11_BUFFER_DESC simulateParticlesConstantBufferDesc(sizeof(SimulateParticlesConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
+
+		D3D11_SUBRESOURCE_DATA InitData = {};
+		InitData.pSysMem = &m_simulateParticlesConstantBufferData;
+		m_d3dDevice->CreateBuffer(&simulateParticlesConstantBufferDesc, &InitData, &m_simulateParticlesConstantBuffer);
+	}
 
 	// temp
 	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
@@ -178,20 +196,6 @@ ParticleSystem::ParticleSystem(ID3D11Device* device, ID3D11DeviceContext* contex
 
 	device->CreateRasterizerState(&rasterDesc, &rasterState);
 	device->CreateDepthStencilState(&dsDesc, &depthState);
-
-	D3D11_BLEND_DESC blendDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT{});
-	blendDesc.RenderTarget[0].BlendEnable = TRUE;
-	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	FLOAT* blendFactor = NULL;
-	UINT sampleMask = 0xffffffff;
-
-	m_BlendState = new Bind::BlendState(device, blendDesc, blendFactor, sampleMask);
 	
 	D3D11_BUFFER_DESC cbd;
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -342,9 +346,6 @@ ParticleSystem::ParticleSystem(ID3D11Device* device, ID3D11DeviceContext* contex
 			&pInputLayout);
 	}
 
-	//texture = new Bind::TextureB(device, "bubbleBC7.dds", aiTextureType_DIFFUSE, 0u);
-	texture = new Bind::TextureB(device, "bubble24bpp.dds", aiTextureType_DIFFUSE, 0u);
-
 	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -442,8 +443,18 @@ void ParticleSystem::UpdateEmitter(float deltaTime)
 	{
 		float integerPart = 0.0f;
 		float fraction = modf(m_emissionRateAccumulation, &integerPart);
-		m_emitterConstantBufferData.maxSpawn = (UINT)integerPart;
-		m_emissionRateAccumulation = fraction;
+
+		m_d3dContext->CopyStructureCount(m_deadListCountConstantBuffer.Get(), 0, m_deadListUAV.Get());
+		m_d3dContext->CopyResource(m_deadListCountConstantBuffer_2.Get(), m_deadListCountConstantBuffer.Get());
+		//m_deadLi\=stCountConstantBuffer.
+		D3D11_MAPPED_SUBRESOURCE mappedData;
+		m_d3dContext->Map(m_deadListCountConstantBuffer_2.Get(), 0, D3D11_MAP_READ, 0, &mappedData);
+		DeadListCountConstantBuffer* dataView = reinterpret_cast<DeadListCountConstantBuffer*>(mappedData.pData);
+		UINT nbDeadParticles = dataView->nbDeadParticles;
+		m_d3dContext->Unmap(m_deadListCountConstantBuffer_2.Get(), 0);
+		
+		m_emitterConstantBufferData.maxSpawn = (UINT) min(nbDeadParticles, integerPart);
+		m_emissionRateAccumulation = fraction + (integerPart - m_emitterConstantBufferData.maxSpawn);
 	}
 	else
 	{
@@ -527,6 +538,8 @@ void ParticleSystem::Simulate()
 
 	m_d3dContext->CopyStructureCount(m_aliveListCountConstantBuffer.Get(), 0, m_aliveIndexUAV[m_currentAliveBuffer].Get());
 	m_d3dContext->CSSetConstantBuffers(1, 1, m_aliveListCountConstantBuffer.GetAddressOf());
+	
+	m_d3dContext->CSSetConstantBuffers(2, 1, m_simulateParticlesConstantBuffer.GetAddressOf());
 
 	UINT initialCount[] = { (UINT)-1 };
 	m_d3dContext->CSSetUnorderedAccessViews(0, 1, m_indirectDrawArgsUAV.GetAddressOf(), initialCount);
@@ -614,11 +627,11 @@ void ParticleSystem::Draw()
 
 	m_d3dContext->OMSetDepthStencilState(depthState, 0);
 	m_d3dContext->RSSetState(rasterState);
-	m_BlendState->Bind(m_d3dContext.Get());
+	m_blendState->Bind(m_d3dContext.Get());
 
 	//m_d3dContext->PSSetSamplers(0, 1, RenderStatesHelper::LinearClamp().GetAddressOf());
 	//m_d3dContext-> // m_renderParticlePS->setSRV(0, m_particleTexture1SRV);
-	texture->Bind(m_d3dContext.Get());
+	m_texture->Bind(m_d3dContext.Get());
 	textureSampler->Bind(m_d3dContext.Get());
 
 	m_d3dContext->DrawInstancedIndirect(m_indirectDrawArgsBuffer.Get(), 0);
@@ -629,4 +642,25 @@ void ParticleSystem::Draw()
 	m_d3dContext->VSSetShaderResources(0, 2, nullSRVs);
 	m_d3dContext->PSSetShaderResources(0, 1, nullSRVsPS);
 	//m_d3dContext->ClearState();
+}
+
+void ParticleSystem::SetBlendState(Bind::BlendState *newBlendState)
+{
+	m_blendState = newBlendState;
+}
+
+void ParticleSystem::SetTexture(Bind::TextureB* newTexture)
+{
+	m_texture = newTexture;
+}
+
+void ParticleSystem::SetEmitPosition(Vector4 newPosition)
+{
+	m_emitterConstantBufferData.position = newPosition;
+}
+
+void ParticleSystem::SetEmitDir(Vector3 newEmitDir)
+{
+	m_emitterConstantBufferData.rotMatrix =
+		Matrix::CreateFromQuaternion(Quaternion::FromToRotation({ 0,1,0 }, newEmitDir));
 }

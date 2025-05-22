@@ -199,6 +199,8 @@ void main(uint3 id : SV_DispatchThreadID, uint groupId : SV_GroupIndex) //SV_Gro
         
         p.velocity.xyz += acceleration * dt;
         p.position.xyz += p.velocity.xyz * dt;
+        
+        p.screenSpin += p.screenSpinSpeed * dt;
 
         // p.color = normalize(lerp(p.colorStart, p.colorEnd, 1.0 - p.age / p.lifeSpan));
         

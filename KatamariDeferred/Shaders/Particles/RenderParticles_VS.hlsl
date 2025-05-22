@@ -17,6 +17,7 @@ struct GeometryShaderInput
     float  size : TEXCOORD1;
     float4 Color : TEXCOORD2;
     float3 velocity : TEXCOORD3;
+    float screenSpin : TEXCOORD4;
     //float4 Normal : TEXCOORD2;
     //float4 uvSprite : TEXCOORD6; //x,y for x,y and zw for size
     //uint   orientation : TEXCOORD4;
@@ -45,6 +46,8 @@ GeometryShaderInput main(uint vertexId : SV_VertexID)
     //output.size = p.size;
     
     //output.uvSprite = p.uvSprite;
+    
+    output.screenSpin = p.screenSpin;
 
     return output;
 }

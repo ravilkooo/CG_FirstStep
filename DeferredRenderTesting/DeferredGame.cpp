@@ -129,17 +129,52 @@ DeferredGame::DeferredGame()
 		{ 0, 0.1, 0, 1 }, { 0, 1, 0, 1 }, { 0, 1, 0, 1 });
 	scene.AddNode(_sl_1);
 
-	// patricle test
-#ifdef oldParticlesTest
-	gLightPass->emissionRate = 1;
-#endif
-
 	FullScreenQuad* fsq = new FullScreenQuad(renderer->GetDevice());
 	scene.AddNode(fsq);
 
 	for (SceneNode* node : scene.nodes) {
 		node->camera = renderer->GetMainCamera();
 	}
+
+	//Matrix::CreateFromQuaternion(Quaternion::FromToRotation({ 0,1,0 }, { 0,0,1 }));
+	Vector3 emitDir = { 0,0,1 };
+	ParticleSystem::EmitterPointConstantBuffer emitterDesc =
+	{
+		Matrix::CreateFromQuaternion(Quaternion::FromToRotation({ 0,1,0 }, emitDir)),
+		{ 0, 0, 0, 1 },
+		{ 1, 1, 1, 1 },
+		{ 1, 1, 1, 0 },
+		100, 3, 5, 1,
+		0.2, 0.2,
+		0, 3.1415 * 2,
+		3.1415 / 10, 0, { 0, 0 }
+	};
+	ParticleSystem::SimulateParticlesConstantBuffer simulatorDesc = {
+		{ 0, 1, 0, 0 }
+	};
+	gLightPass->particleSystems.push_back(
+		new ParticleSystem(renderer->GetDevice(), renderer->GetDeviceContext(), emitterDesc, simulatorDesc));
+	gLightPass->particleSystems[0]->camera = gLightPass->GetCamera();
+
+	D3D11_BLEND_DESC particleBlendDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT{});
+	particleBlendDesc.RenderTarget[0].BlendEnable = TRUE;
+	particleBlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	particleBlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	particleBlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	particleBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	particleBlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	particleBlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	particleBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	FLOAT* particleBlendFactor = NULL;
+	UINT sampleMask = 0xffffffff;
+	gLightPass->particleSystems[0]->SetBlendState(
+		new Bind::BlendState(renderer->GetDevice(), particleBlendDesc, particleBlendFactor, sampleMask));
+
+	//new Bind::TextureB(device, "bubbleBC7.dds", aiTextureType_DIFFUSE, 0u);
+	gLightPass->particleSystems[0]->SetTexture(
+		new Bind::TextureB(renderer->GetDevice(), "bubble24bpp.dds", aiTextureType_DIFFUSE, 0u));
+
+
 }
 
 DeferredGame::~DeferredGame()
@@ -149,8 +184,10 @@ DeferredGame::~DeferredGame()
 void DeferredGame::Update(float deltaTime)
 {
 	// particle test
-	gLightPass->particleSystem.Update(deltaTime);
+	gLightPass->particleSystems[0]->SetEmitDir(_dl_1->directionalLightData.Direction);
+	gLightPass->particleSystems[0]->Update(deltaTime);
 	//gLightPass->accumulatedTime += deltaTime;
+	
 
 	//_sl_1->spotLightData.Direction = Vector3::Transform(_sl_1->spotLightData.Direction, Matrix::CreateRotationY(deltaTime));
 	currTime += deltaTime;
@@ -193,11 +230,11 @@ void DeferredGame::HandleKeyDown(Keys key) {
 	}
 	if (key == Keys::Q)
 	{
-		gLightPass->particleSystem.DecrementEmissionRate(10);
+		gLightPass->particleSystems[0]->DecrementEmissionRate(10);
 	}
 	if (key == Keys::E)
 	{
-		gLightPass->particleSystem.IncrementEmissionRate(10);
+		gLightPass->particleSystems[0]->IncrementEmissionRate(10);
 	}
 }
 

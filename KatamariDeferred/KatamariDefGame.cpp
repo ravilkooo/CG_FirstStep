@@ -183,6 +183,117 @@ KatamariDefGame::KatamariDefGame()
 	}
 
 
+
+	//Matrix::CreateFromQuaternion(Quaternion::FromToRotation({ 0,1,0 }, { 0,0,1 }));
+	Vector3 emitDir = { 0,0,1 };
+	ParticleSystem::EmitterPointConstantBuffer emitterDesc =
+	{
+		Matrix::CreateFromQuaternion(Quaternion::FromToRotation({ 0,1,0 }, emitDir)),
+		{ 0, 0, 0, 1 },
+		{ 1, 1, 1, 1 },
+		{ 1, 1, 1, 1 },
+		100, 1, 10, 1,
+		0.5, 0.1,
+		0, 3.1415 * 2,
+		3.1415 / 3, 20, { 0, 0 }
+	};
+	ParticleSystem::SimulateParticlesConstantBuffer simulatorDesc = {
+		{ 0, -8, 0, 0 }
+	};
+	dustParticleSystem =
+		new ParticleSystem(renderer->GetDevice(), renderer->GetDeviceContext(), emitterDesc, simulatorDesc);
+	gLightPass->particleSystems.push_back(dustParticleSystem);
+	dustParticleSystem->camera = gLightPass->GetCamera();
+
+	D3D11_BLEND_DESC particleBlendDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT{});
+	particleBlendDesc.RenderTarget[0].BlendEnable = TRUE;
+	particleBlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	particleBlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	particleBlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	particleBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	particleBlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	particleBlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	particleBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	FLOAT* particleBlendFactor = NULL;
+	UINT sampleMask = 0xffffffff;
+	dustParticleSystem->SetBlendState(
+		new Bind::BlendState(renderer->GetDevice(), particleBlendDesc, particleBlendFactor, sampleMask));
+
+	//new Bind::TextureB(device, "bubbleBC7.dds", aiTextureType_DIFFUSE, 0u);
+	dustParticleSystem->SetTexture(
+		new Bind::TextureB(renderer->GetDevice(), "dust.dds", aiTextureType_DIFFUSE, 0u));
+
+	dustParticleSystem->SetEmissionRate(0);
+
+	// Stars Particles
+	emitterDesc =
+	{
+		Matrix::Identity,
+		{ 0, 0, 0, 1 },
+		{ 1, 1, 1, 1 },
+		{ 1, 1, 1, 0.5 },
+		50, 3, 10, 1,
+		0.01, 0.5,
+		0, 3.1415 * 2,
+		3.1415, 0, { 0, 0 }
+	};
+	simulatorDesc = {
+		{ 0, 0, 0, 0 }
+	};
+	starParticleSystem =
+		new ParticleSystem(renderer->GetDevice(), renderer->GetDeviceContext(), emitterDesc, simulatorDesc);
+	gLightPass->particleSystems.push_back(starParticleSystem);
+	starParticleSystem->camera = gLightPass->GetCamera();
+
+	particleBlendDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT{});
+	particleBlendDesc.RenderTarget[0].BlendEnable = TRUE;
+	particleBlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	particleBlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	particleBlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	particleBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	particleBlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	particleBlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	particleBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	starParticleSystem->SetBlendState(
+		new Bind::BlendState(renderer->GetDevice(), particleBlendDesc, particleBlendFactor, sampleMask));
+	starParticleSystem->SetTexture(
+		new Bind::TextureB(renderer->GetDevice(), "primogem.dds", aiTextureType_DIFFUSE, 0u));
+	starParticleSystem->SetEmissionRate(0);
+
+	// Bubble Particles
+	emitterDesc =
+	{
+		Matrix::Identity,
+		{ 0, 40, 0, 1 },
+		{ 1, 1, 1, 1 },
+		{ 1, 1, 1, 0 },
+		100, 8, 8, 1,
+		0.5, 0.5,
+		0, 3.1415 * 2,
+		3.1415 / 10, 0, { 0, 0 }
+	};
+	simulatorDesc = {
+		{ 0, -5, 0, 0 }
+	};
+	bubbleParticleSystem =
+		new ParticleSystem(renderer->GetDevice(), renderer->GetDeviceContext(), emitterDesc, simulatorDesc);
+	gLightPass->particleSystems.push_back(bubbleParticleSystem);
+	bubbleParticleSystem->camera = gLightPass->GetCamera();
+
+	particleBlendDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT{});
+	particleBlendDesc.RenderTarget[0].BlendEnable = TRUE;
+	particleBlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	particleBlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	particleBlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	particleBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	particleBlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	particleBlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	particleBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	bubbleParticleSystem->SetBlendState(
+		new Bind::BlendState(renderer->GetDevice(), particleBlendDesc, particleBlendFactor, sampleMask));
+	bubbleParticleSystem->SetTexture(
+		new Bind::TextureB(renderer->GetDevice(), "bubble24bpp.dds", aiTextureType_DIFFUSE, 0u));
+	bubbleParticleSystem->SetEmissionRate(40);
 }
 
 KatamariDefGame::~KatamariDefGame()
@@ -198,6 +309,26 @@ void KatamariDefGame::Update(float deltaTime)
 	ball->SlowDown(deltaTime);
 	physEngine->Update(deltaTime);
 
+	// particle test
+	Vector3 dustEmitDir = ball->GetMoveDir() +  Vector3(0,1,0);
+	dustEmitDir.Normalize();
+	Vector4 dustEmitPos = Vector4(ball->GetCenterLocation());
+	dustEmitPos.y = 0;
+	dustParticleSystem->SetEmitDir(dustEmitDir);
+	dustParticleSystem->SetEmitPosition(dustEmitPos);
+	dustParticleSystem->SetEmissionRate(40 * sqrt(ball->velocity / ball->maxVelocity));
+	dustParticleSystem->Update(deltaTime);
+	//gLightPass->accumulatedTime += deltaTime;
+
+
+	std::cout << sqrt(ball->radiusGrow * sqrt(ball->radius) * 2) << "\n";
+	starParticleSystem->SetEmitPosition(Vector4(ball->GetCenterLocation()));
+	starParticleSystem->SetEmissionRate(100 * sqrt(ball->radiusGrow * sqrt(ball->radius) * 2));
+	starParticleSystem->Update(deltaTime);
+
+	bubbleFlowDirection = Vector3::Transform(bubbleFlowDirection, Matrix::CreateRotationY(10 * deltaTime));
+	bubbleParticleSystem->SetEmitDir(bubbleFlowDirection);
+	bubbleParticleSystem->Update(deltaTime);
 
 	// Проверка коллизий
 	for (auto coll : collectibles)

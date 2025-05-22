@@ -48,6 +48,10 @@ public:
     float lifeTime = 2.0f;
     size_t currPointLightBullet = 0;
 
+    ParticleSystem* dustParticleSystem;
+    ParticleSystem* starParticleSystem;
+    ParticleSystem* bubbleParticleSystem;
+    Vector3 bubbleFlowDirection = { 1, 0, 0 };
     // Shadow
     //Bind::PixelConstantBuffer<DL_ShadowMapPass::CascadesData>* cascadesConstantBuffer;
 };

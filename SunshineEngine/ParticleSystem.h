@@ -14,45 +14,49 @@
 
 class ParticleSystem
 {
-    // Emmit
-    // indirectDispatchArgs[m_currentAliveBuffer] - count new spawned particles
-    // aliveParticleIndex[m_currentAliveBuffer] - new spawned particles
-
-    // Simulate-Init : Dispatch(1, 1, 1)
-    // m_indirectDispatchArgs[m_currentAliveBuffer] :=
-    //      { m_indirectDispatchArgs / nbThreadGroupX, 1, 1 }
-    // partilces per thread/group?
-    
-
-    // m_aliveListCountConstantBuffer := Counter(m_aliveIndex[m_currentAliveBuffer])
-    
-    // Simulate : DispatchIndirect(m_indirectDispatchArgs[m_currentAliveBuffer])
-    // m_aliveListCountConstantBuffer - as ConstBuffer
-    // m_aliveIndex[m_currentAliveBuffer] - alive particles before simulating
-    // m_aliveIndex[(m_currentAliveBuffer + 1) % 2] - alive particles after simulating
-    // m_indirectDispatchArgs[(m_currentAliveBuffer + 1) % 2] - count alive particles after simulating (args for dispatch m_simulateShader)
-    // m_indirectDrawArgs - count alive particles after simulating (args for drawing)
-
-    // m_aliveListCountConstantBuffer := Counter(m_aliveIndex[(m_currentAliveBuffer + 1) % 2])
-
-    // m_currentAliveBuffer = (m_currentAliveBuffer + 1) % 2;
-    
-    // DrawInstancedIndirect(m_indirectDrawArgs)
-    // m_aliveListCountConstantBuffer - as CB
-    // m_aliveIndex[m_currentAliveBuffer]  - as SRV
-
-
 
 public:
 
     struct Particle {
         DirectX::XMFLOAT4 Position;
         DirectX::XMFLOAT4 Velocity;
-        DirectX::XMFLOAT4 Color;
-        float Size;
+        DirectX::XMFLOAT4 ColorStart;
+        DirectX::XMFLOAT4 ColorEnd;
+
+        float SizeStart;
+        float SizeEnd;
         float Age;
-        float lifeSpan;
+        float LifeSpan;
+        
+        float Mass;
+        float ScreenSpin;
+        float ScreenSpinSpeed;
         float padding;
+    };
+
+
+    struct EmitterPointConstantBuffer
+    {
+        Matrix rotMatrix;
+
+        Vector4 position;
+        Vector4 colorStart;
+        Vector4 colorEnd;
+
+        UINT maxSpawn;
+        float particlesLifeSpan;
+        float particlesBaseSpeed;
+        float particlesMass;
+
+        float particleSizeStart;
+        float particleSizeEnd;
+
+        float longitudeMin;
+        float longitudeMax;
+
+        float latitudeMax;
+        float particleScreenSpinSpeed;
+        UINT padding[2];
     };
 
     struct ParticleIndexElement
@@ -68,7 +72,13 @@ public:
         UINT padding[3];
     };
 
+    struct SimulateParticlesConstantBuffer
+    {
+        Vector4 force;
+    };
+
     int m_maxParticles = 4 * 1024;
+    //int m_maxParticles = 512;
 
 
     Microsoft::WRL::ComPtr<ID3D11Buffer>                m_particleBuffer;
@@ -96,10 +106,13 @@ public:
 
 
     Microsoft::WRL::ComPtr<ID3D11Buffer>                m_deadListCountConstantBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>                m_deadListCountConstantBuffer_2;
     Microsoft::WRL::ComPtr<ID3D11Buffer>                m_aliveListCountConstantBuffer;
 
     ParticleSystem() {};
-    ParticleSystem(ID3D11Device* device, ID3D11DeviceContext* context);
+    ParticleSystem(ID3D11Device* device, ID3D11DeviceContext* context,
+        EmitterPointConstantBuffer emitterDesc,
+        SimulateParticlesConstantBuffer simulatorDesc);
     void LoadCS(LPCWSTR computeFilename, ID3D11ComputeShader* m_computeShader);
     void ResetParticles();
 
@@ -115,6 +128,11 @@ public:
     void IncrementEmissionRate(float deltaEmissionRate) { SetEmissionRate(m_emissionRate + deltaEmissionRate); };
     void DecrementEmissionRate(float deltaEmissionRate) { SetEmissionRate(m_emissionRate - deltaEmissionRate); };
 
+    void SetBlendState(Bind::BlendState* newBlendState);
+    void SetTexture(Bind::TextureB* newTexture);
+
+    void SetEmitPosition(Vector4 newPosition);
+    void SetEmitDir(Vector3 newEmitDir);
 
     Microsoft::WRL::ComPtr<ID3D11ComputeShader>          m_resetCShader;
     Microsoft::WRL::ComPtr<ID3D11ComputeShader>          m_initSimulateDispatchArgsCShader; // pre-simulate
@@ -134,19 +152,14 @@ private:
         UINT padding[3];
     };
 
-    float m_emissionRate = 100.0f;
+    float m_emissionRate = 100.0f;  // tool
     float m_emissionRateAccumulation = 0.0f;
 
-    struct EmitterPointConstantBuffer
-    {
-        Vector4 position;
-        UINT maxSpawn;
-        float particlesLifeSpan;
-        UINT padding[2];
-    };
+    EmitterPointConstantBuffer  m_emitterConstantBufferData;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>    m_emitterConstantBuffer;
 
-    EmitterPointConstantBuffer                         m_emitterConstantBufferData;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>                m_emitterConstantBuffer;
+    SimulateParticlesConstantBuffer  m_simulateParticlesConstantBufferData;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>    m_simulateParticlesConstantBuffer;
 
     inline int align(int value, int alignment) { return (value + (alignment - 1)) & ~(alignment - 1); };
 
@@ -164,7 +177,7 @@ private:
 
     ID3D11RasterizerState* rasterState;
     ID3D11DepthStencilState* depthState;
-    Bind::BlendState* m_BlendState;
+    Bind::BlendState* m_blendState; // tool
     struct TransformsParticles
     {
         DirectX::XMMATRIX viewMat;
@@ -179,8 +192,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D11PixelShader>       m_renderParticlePS;
 
     // texture
-    Bind::TextureB* texture;
+    Bind::TextureB* m_texture;    // tool
     Bind::Sampler* textureSampler;
-    //colorPass->AddBind(new Bind::TextureB(device, "models\\Textures\\basketballskin.dds", aiTextureType_DIFFUSE, 1u));
+
 };
 

@@ -61,7 +61,8 @@ cbuffer emitterPointConstantBuffer : register(b2)
     float longitudeMax;
 
     float latitudeMax;
-    float3 emitterPadding;
+    float particleScreenSpinSpeed;
+    float2 emitterPadding;
 };
 
 ConsumeStructuredBuffer<uint> deadListBuffer : register(u0);
@@ -106,6 +107,8 @@ void main(uint3 id : SV_DispatchThreadID)
         p.age = abs(p.lifeSpan); //abs() so if lifetime is infinite ( < 0.0) it's still has a life
 
         p.mass = particlesMass;
+        p.screenSpin = 0;
+        p.screenSpinSpeed = particleScreenSpinSpeed;
         
         uint index = deadListBuffer.Consume();
         particleList[index] = p;
