@@ -18,8 +18,10 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 	lightViewCamera->SwitchProjection();
 	lightViewCamera->SetViewWidth(100.0f);
 	lightViewCamera->SetViewHeight(100.0f);
+	/*
 	lightViewCamera->SetNearZ(cascadeBounds[2]);
 	lightViewCamera->SetFarZ(cascadeBounds[3]);
+	*/
 
 	// Viewport for rendering z-buffer from light
 	smViewport.TopLeftX = 0.0f;
@@ -89,6 +91,7 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 		0.5f, 0.5f, 0.0f, 1.0f
 	};
 
+	/*
 	for (size_t i = 0; i < 4; i++)
 	{
 		lightViewCamera->SetNearZ(cascadeBounds[i] - (i > 0 ? frustumBias : 0));
@@ -110,7 +113,7 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 	cascadesData.distances.y = cascadeBounds[2];
 	cascadesData.distances.z = cascadeBounds[3];
 	cascadesData.distances.w = cascadeBounds[4];
-
+	*/
 	shadowTransformsConstantBuffer = new Bind::VertexConstantBuffer<ShadowTransformData>(
 		device, cascadesData.cascades[0], 0u);
 	AddPerFrameBind(shadowTransformsConstantBuffer);
@@ -124,6 +127,20 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 	rastDesc.SlopeScaledDepthBias = 2.0f;
 
 	AddPerFrameBind(new Bind::Rasterizer(device, rastDesc));
+}
+
+
+DL_ShadowMapPass::ShadowTransformData DL_ShadowMapPass::GenerateBoundingFrustum(UINT cascadeNum)
+{
+	// для каждого фруструма у камеры меняются следующие настройи:
+	// nearZ - у всех одинаковый (например 0.01)
+	// SetViewWidth - вычисляется по значениям точек (находим right вектор как вект произв Up X Direction)
+	// SetViewHeight - вычисляется по значениям точек
+	// SetPosition - выбираем на уровне вершины фрустума, которая располагается "выше" (в противоположную сторону -) всех остальных вдоль оси направления света, затем отмеряем назад значение nearZ
+	// и выбираем ровно посередине исходя из значений исполььзованных при расчёте SetViewWidth и SetViewHeight
+	// farZ - макс расстояние от SetPosition до вершин фрустума вдоль направление света
+	 
+
 }
 
 void DL_ShadowMapPass::MapCurrentCascadeData()
@@ -168,11 +185,11 @@ void DL_ShadowMapPass::Pass(const Scene& scene)
 		}
 		
 	}
-	context->OMSetRenderTargets(0, NULL, NULL);
 }
 
 void DL_ShadowMapPass::EndFrame()
 {
+	context->OMSetRenderTargets(0, NULL, NULL);
 }
 
 ID3D11Texture2D* DL_ShadowMapPass::GetTexture()

@@ -14,6 +14,7 @@ public:
 	ID3D11Texture2D* GetTexture();
 	Camera* GetFrustumCamera();
 	void GetFrustumBoundsZ(int i, float* nearZ, float* farZ);
+	void SetPlayerCamera(Camera* playerCamera) { this->playerCamera = new Camera(*playerCamera); };
 
 	struct ShadowTransformData
 	{
@@ -25,7 +26,10 @@ public:
 		ShadowTransformData cascades[4];
 		DirectX::XMFLOAT4 distances;
 	} cascadesData;
+
+	ShadowTransformData GenerateBoundingFrustum(UINT cascadeNum);
 private:
+	Camera* playerCamera;
 	Camera* lightViewCamera;
 	UINT mapWidth = 512;
 	UINT mapHeight = 512;

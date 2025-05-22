@@ -16,6 +16,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SolarSystem", "SolarSystem\SolarSystem.vcxproj", "{6F4A4FDB-D964-4FAD-85CA-E912EF5EEA55}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Katamari", "Katamari\Katamari.vcxproj", "{8765F3BA-598B-443A-80CC-3E98A5EF7C0E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B828DBD3-CB52-4EFD-8E34-558518A11AEE} = {B828DBD3-CB52-4EFD-8E34-558518A11AEE}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameQuads", "GameQuads\GameQuads.vcxproj", "{4B973B49-EBA0-4B48-957E-E295FCE551AD}"
 EndProject

@@ -288,6 +288,16 @@ float4 PSMain(PS_IN input) : SV_Target
     
     //float4 spotLightCol = calcSpotLight(input.wPos, normal, toEye, mat , sLight);
     
-    return saturate(dirLightCol + pointLightSum);
+    float4 fColor;
+    if (layer == 0)
+        fColor = float4(1, 0, 0, 1);
+    else if (layer == 1)
+        fColor = float4(0, 1, 0, 1);
+    else if (layer == 2)
+        fColor = float4(0, 0, 1, 1);
+    else
+        fColor = float4(1, 1, 0, 1);
+    
+    return saturate(dirLightCol + pointLightSum) * fColor;
     
 }

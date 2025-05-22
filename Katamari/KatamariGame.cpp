@@ -138,7 +138,7 @@ KatamariGame::KatamariGame()
 		colorPass->AddPerFrameBind(new Bind::DepthStencilState(renderer->GetDevice(), depthStencilDesc));
 
 		// --- Light ---
-		light_pcb = new Bind::PixelConstantBuffer<LightData>(renderer->GetDevice(), lightData, 0u);
+		light_pcb = new Bind::PixelConstantBuffer<LightData_old>(renderer->GetDevice(), lightData, 0u);
 		colorPass->AddPerFrameBind(light_pcb);
 
 		// --- Shadow stuff ---
@@ -152,7 +152,8 @@ KatamariGame::KatamariGame()
 		srvDesc.Texture2DArray.FirstArraySlice = 0;
 		srvDesc.Texture2DArray.ArraySize = 4;
 
-		colorPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), dl_shadowMapPass->GetTexture(), srvDesc, 0u));
+		colorPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(),
+			dl_shadowMapPass->GetTexture(), srvDesc, 0u));
 		
 
 		// Sampler of texture. It samples values from texture
@@ -218,10 +219,10 @@ KatamariGame::KatamariGame()
 
 	for (size_t i = 0; i < 4; i++)
 	{
-		Camera fCam = Camera(*(dl_shadowMapPass->GetFrustrumCamera()));
+		Camera fCam = Camera(*(dl_shadowMapPass->GetFrustumCamera()));
 
 		float nearZ; float farZ;
-		dl_shadowMapPass->GetFrustrumBoundsZ(i, &nearZ, &farZ);
+		dl_shadowMapPass->GetFrustumBoundsZ(i, &nearZ, &farZ);
 		fCam.SetNearZ(nearZ);
 		fCam.SetFarZ(farZ);
 		FrustrumWireframe* fwf = new FrustrumWireframe(renderer->GetDevice(), fCam);
