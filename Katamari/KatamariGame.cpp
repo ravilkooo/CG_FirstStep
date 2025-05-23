@@ -116,7 +116,7 @@ KatamariGame::KatamariGame()
 	UINT smSizeY = 1024;
 
 	// DL_ShadowMapPass
-	DL_ShadowMapPass* dl_shadowMapPass = new DL_ShadowMapPass(renderer->GetDevice(),
+	dl_shadowMapPass = new DL_ShadowMapPass(renderer->GetDevice(),
 		renderer->GetDeviceContext(), smSizeX, smSizeY, lightData.dLight);
 	renderer->AddPass(dl_shadowMapPass);
 
@@ -285,9 +285,11 @@ void KatamariGame::Run()
 
 void KatamariGame::Update(float deltaTime)
 {
-
+	//std::cout << ball->GetCenterLocation().x << ",\t" << ball->GetCenterLocation().y << ",\t" << ball->GetCenterLocation().z << "\n";
 	//std::cout << floor->binds.size() << " " << ball->binds.size() << " " << "\n";
 	// delete this
+	dl_shadowMapPass->SetPlayerCamera(renderer->GetMainCamera());
+	cascadesConstantBuffer->Update(renderer->GetDeviceContext(), dl_shadowMapPass->cascadesData);
 
 	ball->SlowDown(deltaTime);
 	physEngine->Update(deltaTime);
@@ -361,6 +363,7 @@ void KatamariGame::Update(float deltaTime)
 
 	floor->pcb->Update(renderer->GetDeviceContext(),
 		{
+			renderer->GetMainCamera()->GetViewMatrix(),
 			camera_pos
 		});
 
@@ -423,7 +426,6 @@ void KatamariGame::HandleKeyDown(Keys key) {
 		lightData.pointLights[currPointLightBullet + 6].Position = ball->GetCenterLocation();
 		lightData.pointLights[currPointLightBullet + 6].Range = 10.0f;
 		currPointLightBullet = (currPointLightBullet + 1) % 8;
-		std::cout << ball->GetMoveDir().x << ", " << ball->GetMoveDir().z << "\n";
 	}
 }
 

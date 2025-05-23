@@ -78,6 +78,7 @@ cbuffer CascadeCBuf : register(b1) // per frame
 
 cbuffer FloorCBuf : register(b2) // per object
 {
+    row_major float4x4 viewMat;
     float3 cam_pos;
 };
 
@@ -251,17 +252,22 @@ float4 PSMain(PS_IN input) : SV_Target
     
     calcDirectionalLight(input.wPos, normal, toEye, mat, dLight, dl_ambient, dl_diffuse, dl_spec);
     
+    /*
     float4 lightViewPos = mul(float4(input.wPos, 1.0), shTransforms[0].lightView);
     lightViewPos = lightViewPos / lightViewPos.w;
-    
+    */
     
     int layer = 1;
     
     static float cascadeDistances[4] = (float[4]) distances;
     
+    float4 viewPos = mul(float4(input.wPos, 1), viewMat);
+    viewPos /= viewPos.w;
+    
     for (int i = 0; i < 4; ++i)
     {
-        if (lightViewPos.z < cascadeDistances[i])
+        //if (lightViewPos.z < cascadeDistances[i])
+        if (viewPos.z < cascadeDistances[i])
         {
             layer = i;
             break;
@@ -298,6 +304,7 @@ float4 PSMain(PS_IN input) : SV_Target
     else
         fColor = float4(1, 1, 0, 1);
     
-    return saturate(dirLightCol + pointLightSum) * fColor;
+    return saturate(dirLightCol + pointLightSum);
+    //return saturate(dirLightCol + pointLightSum) * fColor;
     
 }

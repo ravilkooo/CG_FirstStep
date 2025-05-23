@@ -1,4 +1,5 @@
 #include "DL_ShadowMapPass.h"
+#include <iostream>
 
 DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* context,
 	UINT mapWidth, UINT mapHeight, DirectionalLight_old dlight)
@@ -7,6 +8,8 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 {
 	this->mapWidth = mapWidth;
 	this->mapHeight = mapHeight;
+
+	this->dlight = dlight;
 
 	lightPos = { 0, 30, -80 };
 	lightViewCamera = new Camera(mapWidth / mapHeight);
@@ -18,10 +21,10 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 	lightViewCamera->SwitchProjection();
 	lightViewCamera->SetViewWidth(100.0f);
 	lightViewCamera->SetViewHeight(100.0f);
-	/*
+	
 	lightViewCamera->SetNearZ(cascadeBounds[2]);
 	lightViewCamera->SetFarZ(cascadeBounds[3]);
-	*/
+	
 
 	// Viewport for rendering z-buffer from light
 	smViewport.TopLeftX = 0.0f;
@@ -91,7 +94,7 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 		0.5f, 0.5f, 0.0f, 1.0f
 	};
 
-	/*
+	
 	for (size_t i = 0; i < 4; i++)
 	{
 		lightViewCamera->SetNearZ(cascadeBounds[i] - (i > 0 ? frustumBias : 0));
@@ -113,7 +116,7 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 	cascadesData.distances.y = cascadeBounds[2];
 	cascadesData.distances.z = cascadeBounds[3];
 	cascadesData.distances.w = cascadeBounds[4];
-	*/
+	
 	shadowTransformsConstantBuffer = new Bind::VertexConstantBuffer<ShadowTransformData>(
 		device, cascadesData.cascades[0], 0u);
 	AddPerFrameBind(shadowTransformsConstantBuffer);
@@ -122,7 +125,7 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 	D3D11_RASTERIZER_DESC rastDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
 	rastDesc.CullMode = D3D11_CULL_NONE;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
-	rastDesc.DepthBias = 100000;
+	rastDesc.DepthBias = 1000000;
 	rastDesc.DepthBiasClamp = 0.0f;
 	rastDesc.SlopeScaledDepthBias = 2.0f;
 
@@ -133,14 +136,123 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 DL_ShadowMapPass::ShadowTransformData DL_ShadowMapPass::GenerateBoundingFrustum(UINT cascadeNum)
 {
 	// для каждого фруструма у камеры меняются следующие настройи:
-	// nearZ - у всех одинаковый (например 0.01)
+	// nearestZ - у всех одинаковый (например 0.01)
 	// SetViewWidth - вычисляется по значениям точек (находим right вектор как вект произв Up X Direction)
 	// SetViewHeight - вычисляется по значениям точек
 	// SetPosition - выбираем на уровне вершины фрустума, которая располагается "выше" (в противоположную сторону -) всех остальных вдоль оси направления света, затем отмеряем назад значение nearZ
 	// и выбираем ровно посередине исходя из значений исполььзованных при расчёте SetViewWidth и SetViewHeight
-	// farZ - макс расстояние от SetPosition до вершин фрустума вдоль направление света
+	// farestZ - макс расстояние от SetPosition до вершин фрустума вдоль направление света
 	 
+	// Получаем крайние точки подфрустумов игрока
+	playerCamera->SetNearZ(cascadeBounds[cascadeNum] - (cascadeNum > 0 ? frustumBias : 0));
+	playerCamera->SetFarZ(cascadeBounds[cascadeNum + 1]);
 
+	Matrix playerViewMat = playerCamera->GetViewMatrix();
+	Matrix playerProjMat = playerCamera->GetProjectionMatrix();
+
+	Matrix viewInverse = playerViewMat.Invert();
+	Matrix projInverse = playerProjMat.Invert();
+
+	Vector3 farLeftPoint, farRightPoint, highestPoint, lowestPoint, nearZPoint, farZPoint;
+	float farLeft, farRight, highest, lowest, nearestZ, farestZ;
+	{
+		Vector4 _v = { 0, 0, 0, 1 };
+		_v = Vector4::Transform(_v, projInverse);
+		_v = Vector4::Transform(_v, viewInverse);
+		_v = _v / _v.w;
+		Vector3 _w = Vector3(_v);
+		farLeftPoint = _w; farRightPoint = _w; highestPoint = _w; lowestPoint = _w; nearZPoint = _w; farZPoint = _w;
+	}
+	
+	Vector3 zDir = Vector3(this->dlight.Direction);
+	zDir.Normalize();
+	Vector3 camUpDir = lightViewCamera->GetUp();
+	camUpDir.Normalize();
+	Vector3 xDir = camUpDir.Cross(zDir);
+	xDir.Normalize();
+	Vector3 yDir = zDir.Cross(xDir);
+	yDir.Normalize();
+
+	for (float i = -1; i < 2; i += 2)
+	{
+		for (float j = -1; j < 2; j +=2)
+		{
+			for (float k = 0; k < 2; k++)
+			{
+				Vector4 _v = { i, j, k, 1 };
+				_v = Vector4::Transform(_v, projInverse);
+				_v = Vector4::Transform(_v, viewInverse);
+				_v = _v / _v.w;
+				if (farRightPoint.Dot(xDir) < Vector3(_v).Dot(xDir)) { farRightPoint = Vector3(_v); }
+				else
+				if (farLeftPoint.Dot(xDir) > Vector3(_v).Dot(xDir)) { farLeftPoint = Vector3(_v); }
+
+				if (highestPoint.Dot(yDir) < Vector3(_v).Dot(yDir)) { highestPoint = Vector3(_v); }
+				else
+				if (lowestPoint.Dot(yDir) > Vector3(_v).Dot(yDir)) { lowestPoint = Vector3(_v); }
+
+				if (farZPoint.Dot(zDir) < Vector3(_v).Dot(zDir)) { farZPoint = Vector3(_v); }
+				else
+				if (nearZPoint.Dot(zDir) > Vector3(_v).Dot(zDir)) { nearZPoint = Vector3(_v); }
+
+
+				//std::cout << _v.x << ",\t" << _v.y << ",\t" << _v.z << "\n";
+			}
+		}
+	}
+	farRight = farRightPoint.Dot(xDir);
+	farLeft = farLeftPoint.Dot(xDir);
+	highest = highestPoint.Dot(yDir);
+	lowest = lowestPoint.Dot(yDir);
+	nearestZ = nearZPoint.Dot(zDir);
+	farestZ = farZPoint.Dot(zDir);
+
+
+	Vector3 newCamPos =
+		(farRight + farLeft) * 0.5 * xDir
+		+ (highest + lowest) * 0.5 * yDir
+		+ (nearestZ - 0.01) * zDir; // -0.01 так как камера немного отдалена от nearZ
+	
+	lightViewCamera->SetPosition(newCamPos);
+	lightViewCamera->SetTarget(newCamPos + dlight.Direction);
+	lightViewCamera->SetNearZ(0.01);
+	lightViewCamera->SetFarZ(farestZ - nearestZ + 0.01);
+	lightViewCamera->SetViewWidth(farRight - farLeft);
+	lightViewCamera->SetViewHeight(highest - lowest);
+
+	{
+		DirectX::XMMATRIX T = {
+			0.5f, 0.0f, 0.0f, 0.0f,
+			0.0f, -0.5f, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			0.5f, 0.5f, 0.0f, 1.0f
+		};
+
+		cascadesData.cascades[cascadeNum] = {
+			lightViewCamera->GetViewMatrix(),
+			lightViewCamera->GetProjectionMatrix(),
+			DirectX::XMMatrixIdentity()
+		};
+
+		cascadesData.cascades[cascadeNum].shadowTransformFull =
+			cascadesData.cascades[cascadeNum].lightView
+			* cascadesData.cascades[cascadeNum].lightProjection
+			* T;
+	}
+
+
+
+	if (cascadeNum == 1) {
+		/*
+		std::cout << "[" << camUpDir.x << ",\t" << camUpDir.y << ",\t" << camUpDir.z << "]\t(";
+		std::cout << xDir.x << ",\t" << xDir.y << ",\t" << xDir.z << ")\t(";
+		std::cout << yDir.x << ",\t" << yDir.y << ",\t" << yDir.z << ")\t(";
+		std::cout << zDir.x << ",\t" << zDir.y << ",\t" << zDir.z << ")\n";
+		//std::cout << farestZ - nearestZ << "\n";
+		*/
+	}
+
+	return cascadesData.cascades[cascadeNum];
 }
 
 void DL_ShadowMapPass::MapCurrentCascadeData()
@@ -171,6 +283,7 @@ void DL_ShadowMapPass::Pass(const Scene& scene)
 		context->ClearDepthStencilView(depthDSV[currCascade], D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 		// Get data for current cascade
+		GenerateBoundingFrustum(currCascade);
 		MapCurrentCascadeData();
 
 		// --- Per Frame ---
@@ -189,6 +302,7 @@ void DL_ShadowMapPass::Pass(const Scene& scene)
 
 void DL_ShadowMapPass::EndFrame()
 {
+
 	context->OMSetRenderTargets(0, NULL, NULL);
 }
 

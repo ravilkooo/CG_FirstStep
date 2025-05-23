@@ -49,6 +49,7 @@ public:
 
     // Shadow
     Bind::PixelConstantBuffer<DL_ShadowMapPass::CascadesData>* cascadesConstantBuffer;
+    DL_ShadowMapPass* dl_shadowMapPass;
 };
 
 #endif

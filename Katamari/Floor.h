@@ -17,6 +17,7 @@ public:
     XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
     struct Floor_PCB {
+        XMMATRIX viewMat;
         XMFLOAT3 cam_pos;
     } floor_pcb;
     Bind::PixelConstantBuffer<Floor_PCB>* pcb;

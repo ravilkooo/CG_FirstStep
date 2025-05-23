@@ -162,7 +162,7 @@ void StickyBall::Update(float deltaTime)
 	Matrix allRotTransform = Matrix::CreateFromYawPitchRoll(currentRotation, currentSpin, XM_PIDIV2);
 	worldMat = Matrix::CreateScale(radius) * allRotTransform * Matrix::CreateTranslation(position);
 
-	std::cout << "( " << position.x << ", " << position.y << ", " << position.z << " )\n";
+	// std::cout << "( " << position.x << ", " << position.y << ", " << position.z << " )\n";
 
 
 	//Matrix viewMat = camera->GetViewMatrix();
