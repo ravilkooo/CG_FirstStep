@@ -97,7 +97,13 @@ SamplerComparisonState samShadow : register(s1)
 
 
 Texture2D DiffuseMap : register(t1);
-SamplerState Sampler : register(s2);
+SamplerState FloorTextureSampler : register(s2);
+
+Texture2D ShadowPictureMap : register(t2);
+SamplerState ShadowPictureSampler : register(s3);
+
+static const float SCREEN_SIZE_X = 1000.0f;
+static const float SCREEN_SIZE_Y = 800.0f;
 
 void calcDirectionalLight(float3 wPos, float3 normal, float3 toEye, Material mat, DirectionalLight dirLight,
     out float4 dl_ambient,
@@ -233,7 +239,7 @@ float CalcShadowFactor(SamplerComparisonState samShadow,
 
 float4 PSMain(PS_IN input) : SV_Target
 {
-    float4 pixelColor = DiffuseMap.Sample(Sampler, input.texCoord);
+    float4 pixelColor = DiffuseMap.Sample(FloorTextureSampler, input.texCoord);
     Material mat = {
         pixelColor,
         pixelColor,
@@ -277,10 +283,19 @@ float4 PSMain(PS_IN input) : SV_Target
     float4 shPos = mul(float4(input.wPos, 1.0), shTransforms[layer].shadowTransform);
     shPos = shPos / shPos.w;
     
+    float4 shadowPictureColor = float4(0, 0, 0, 0);
+    float shadowFactor = 0;
+    
     if ((shPos.x >= 0) && (shPos.y >= 0) && (shPos.z >= 0) && (shPos.x <= 1) && (shPos.y <= 1) && (shPos.z <= 1))
     {
-        float shadowFactor = CalcShadowFactor(samShadow, shadowMap, shPos, layer);
+        shadowFactor = CalcShadowFactor(samShadow, shadowMap, shPos, layer);
+        
         dirLightCol = saturate(dl_ambient + shadowFactor * (dl_diffuse + dl_spec));
+        
+        float x = input.pos.x / SCREEN_SIZE_X;
+        float y = input.pos.y / SCREEN_SIZE_Y;
+        
+        shadowPictureColor = ShadowPictureMap.Sample(ShadowPictureSampler, float2(x, y));
     }
     else
         dirLightCol = saturate(dl_ambient + dl_spec + dl_diffuse);
@@ -304,7 +319,7 @@ float4 PSMain(PS_IN input) : SV_Target
     else
         fColor = float4(1, 1, 0, 1);
     
-    return saturate(dirLightCol + pointLightSum);
+    return saturate(dirLightCol + pointLightSum) * shadowFactor * fColor + shadowPictureColor * (1 - shadowFactor);
     //return saturate(dirLightCol + pointLightSum) * fColor;
     
 }

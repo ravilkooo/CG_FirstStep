@@ -103,41 +103,66 @@ KatamariDefGame::KatamariDefGame()
 		{ 0.1f, 0.1f, 0.1f, 1 }, { 0.3f, 0.3f, 0.3f, 1 }, { 0.5f, 0.5f, 0.5f, 1 });
 	scene.AddNode(_dl_1);
 
-	for (int i = 0; i < 6; i++)
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+	/*
+	for (int i = 0; i < _randomPointLights; i++)
 	{
-		/*
-		(+1)% 2, // 3, (+2) % 6 // 3
-		100
-		001
-		101
-		011
-		110
-		010
-		*/
+		Vector4 col = { dis(gen) * 0.5f + 0.5f, dis(gen) * 0.5f + 0.5f, 1.0f, 1.0f};
+		col.z = 2 - col.x - col.y;
 		pointLights.push_back(new PointLight(
 			renderer->GetDevice(),
-			{ 15.0f * cos(XM_2PI * i / 6.0f), 2.0f, 15.0f * sin(XM_2PI * i / 6.0f) },
+			// { 15.0f * cos(XM_2PI * i / 6.0f), 2.0f, 15.0f * sin(XM_2PI * i / 6.0f) },
+			{ dis(gen) * 100 - 50, dis(gen) * 100 - 50, dis(gen) * 100 - 50 },
 			10.0f,
 			{ 0.01f, 1.0f, 0.0f },
 			{ 0, 0, 0, 1 },
 			// { 0, 0, 0, 1 },
 			// { 0, 0, 0, 1 }
-			{ (i + 1) % 2 * 1.0f, i / 3 * 1.0f, (i + 2) % 6 / 3 * 1.0f, 1 },
-			{ (i + 1) % 2 * 1.0f, i / 3 * 1.0f, (i + 2) % 6 / 3 * 1.0f, 1 }
+			//{ (i + 1) % 2 * 1.0f, i / 3 * 1.0f, (i + 2) % 6 / 3 * 1.0f, 1 },
+			//{ (i + 1) % 2 * 1.0f, i / 3 * 1.0f, (i + 2) % 6 / 3 * 1.0f, 1 }
+			col, col
 		));
+		float rotationX = dis(gen) * XM_2PI;
+		pointLightSpeeds.push_back(Vector3(cos(rotationX), 0, sin(rotationX)));
+		pointLightAccel.push_back(Vector3(sin(rotationX), 0, -cos(rotationX)));
+
 		scene.AddNode(pointLights[i]);
 	}
+	*/
 
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+	PointLight::PointLightPCB* plData =
+		(PointLight::PointLightPCB*) calloc(instancedCnt, sizeof(PointLight::PointLightPCB));
+	PointLightInstanced::PointLightMovement* movementData =
+		(PointLightInstanced::PointLightMovement*)calloc(instancedCnt, sizeof(PointLightInstanced::PointLightMovement));
 
+	for (size_t i = 0; i < instancedCnt; i++)
+	{
+		plData[i] = {
+			{ i * 1.0f / instancedCnt, (i + instancedCnt / 2) % instancedCnt * 1.0f / instancedCnt, 0.0f, 1 },
+			{ i * 1.0f / instancedCnt, (i + instancedCnt / 2) % instancedCnt * 1.0f / instancedCnt, 0.0f, 1 },
+			{ 3 + 30 * cos(i * XM_2PI / instancedCnt), 2, 3 + 30 * sin(i * XM_2PI / instancedCnt)},
+			64,
+			{0.01, 1.0f, 0.0f}, 0.0f
+		};
+
+		plData[i].Diffuse.z = 2 - plData[i].Diffuse.x - plData[i].Diffuse.y;
+		plData[i].Specular.z = 2 - plData[i].Specular.x - plData[i].Specular.y;
+		
+		movementData[i] = {
+			{ cos(i * XM_2PI / instancedCnt), 0, sin(i * XM_2PI / instancedCnt)}, 0,
+			{0,0,0}, 0
+		};
+	}
+	instancedPointLights = new PointLightInstanced(renderer->GetDevice(), instancedCnt, plData, movementData, { 0,0,0,1 }, 32);
+	scene.AddNode(instancedPointLights);
+
+	/*
 	for (int i = 0; i < 8; i++)
 	{
-		Matrix rotationX = Matrix::CreateRotationX(dis(gen) * XM_2PI);
-		Matrix rotationY = Matrix::CreateRotationY(dis(gen) * XM_2PI);
-		Matrix rotationZ = Matrix::CreateRotationZ(dis(gen) * XM_2PI);
-		float _dist = dis(gen) * 2.0f + 5.0f;
+		//float _dist = dis(gen) * 2.0f + 5.0f;
 		Vector3 lightColor = {
 			dis(gen),
 			dis(gen),
@@ -152,13 +177,11 @@ KatamariDefGame::KatamariDefGame()
 			};
 		}
 
-		Matrix rotation = rotationX * rotationY * rotationZ;
-
 		pointLights.push_back(new PointLight(
 			renderer->GetDevice(),
 			{ 0.0f, 0.0f, 0.0f },
 			0.0f,
-			{ 0.01f, 0.1f, 0.0f },
+			{ 0.01f, 1.0f, 0.0f },
 			{ 0, 0, 0, 1 },
 			{ lightColor.x, lightColor.y, lightColor.z, 1.0f },
 			{ lightColor.x, lightColor.y, lightColor.z, 1.0f }
@@ -167,8 +190,9 @@ KatamariDefGame::KatamariDefGame()
 		//pointLightPositions[i] = Vector3::Transform({ _dist, 0.0f, 0.0f }, rotation);
 		pointLightLifeTime[i] = lifeTime * 2.0f;
 
-		scene.AddNode(pointLights[i + 6]);
+		scene.AddNode(pointLights[i + _randomPointLights]);
 	}
+	*/
 
 	_sl_1 = new SpotLight(renderer->GetDevice(), { 0.0f, 15.0f, 0.0f }, 5.0f, { 0.0f, 1.0f, 0.0f },
 		10, { 0.01f, 0.05f, 0.0f },
@@ -195,7 +219,7 @@ KatamariDefGame::KatamariDefGame()
 		100, 1, 10, 1,
 		0.5, 0.1,
 		0, 3.1415 * 2,
-		3.1415 / 3, 20, { 0, 0 }
+		3.1415 / 3, 20, 0, 0
 	};
 	ParticleSystem::SimulateParticlesConstantBuffer simulatorDesc = {
 		{ 0, -8, 0, 0 }
@@ -235,7 +259,7 @@ KatamariDefGame::KatamariDefGame()
 		50, 3, 10, 1,
 		0.01, 0.5,
 		0, 3.1415 * 2,
-		3.1415, 0, { 0, 0 }
+		3.1415, 0, 10, 1
 	};
 	simulatorDesc = {
 		{ 0, 0, 0, 0 }
@@ -270,7 +294,7 @@ KatamariDefGame::KatamariDefGame()
 		100, 8, 8, 1,
 		0.5, 0.5,
 		0, 3.1415 * 2,
-		3.1415 / 10, 0, { 0, 0 }
+		3.1415 / 10, 0, 0, 0
 	};
 	simulatorDesc = {
 		{ 0, -5, 0, 0 }
@@ -321,7 +345,7 @@ void KatamariDefGame::Update(float deltaTime)
 	//gLightPass->accumulatedTime += deltaTime;
 
 
-	std::cout << sqrt(ball->radiusGrow * sqrt(ball->radius) * 2) << "\n";
+	//std::cout << sqrt(ball->radiusGrow * sqrt(ball->radius) * 2) << "\n";
 	starParticleSystem->SetEmitPosition(Vector4(ball->GetCenterLocation()));
 	starParticleSystem->SetEmissionRate(100 * sqrt(ball->radiusGrow * sqrt(ball->radius) * 2));
 	starParticleSystem->Update(deltaTime);
@@ -354,26 +378,56 @@ void KatamariDefGame::Update(float deltaTime)
 		);
 	}
 
-
-
-	for (size_t i = 0; i < 6; i++)
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+	/*
+	for (size_t i = 0; i < _randomPointLights; i++)
 	{
-		pointLights[i]->pointLightData.Position =
-			Vector3::Transform(pointLights[i]->pointLightData.Position,
-				Matrix::CreateRotationY(deltaTime * 1.0f));
+
+		float rotationX = dis(gen) * XM_2PI;
+		//float rotationY = dis(gen) * XM_PI;
+
+		Vector3 da = Vector3(cos(rotationX), 0, sin(rotationX));
+		pointLightAccel[i] += da * deltaTime;
+		pointLightAccel[i].Normalize();
+		pointLightSpeeds[i] += pointLightAccel[i] * deltaTime;
+		pointLightSpeeds[i].Normalize();
+		pointLights[i]->pointLightData.Position = pointLights[i]->pointLightData.Position + 30 * pointLightSpeeds[i] * deltaTime;
+
+		if (pointLights[i]->pointLightData.Position.x > 60)
+			pointLights[i]->pointLightData.Position.x -= 120;
+		else if (pointLights[i]->pointLightData.Position.x < -60)
+			pointLights[i]->pointLightData.Position.x += 120;
+
+		if (pointLights[i]->pointLightData.Position.y > 10)
+			pointLights[i]->pointLightData.Position.y -= 10;
+		else if (pointLights[i]->pointLightData.Position.y < 0)
+			pointLights[i]->pointLightData.Position.y += 10;
+
+		if (pointLights[i]->pointLightData.Position.z > 60)
+			pointLights[i]->pointLightData.Position.z -= 120;
+		else if (pointLights[i]->pointLightData.Position.z < -60)
+			pointLights[i]->pointLightData.Position.z += 120;
 	}
+	*/
+
+	/*
 	for (size_t i = 0; i < 8; i++)
 	{
 		if ((pointLightLifeTime[i] + deltaTime) < lifeTime) {
 			pointLightLifeTime[i] += deltaTime;
-			pointLights[i + 6]->pointLightData.Position =
-				pointLights[i + 6]->pointLightData.Position + pointLightDirections[i] * 20.0f * deltaTime;
-			//lightData.pointLights[i + 6].Diffuse = Vector4(lightData.pointLights[i + 6].Diffuse);
+			pointLights[i + _randomPointLights]->pointLightData.Position =
+				pointLights[i + _randomPointLights]->pointLightData.Position + pointLightDirections[i] * 20.0f * deltaTime;
+			//lightData.pointLights[i + _randomPointLights].Diffuse = Vector4(lightData.pointLights[i + _randomPointLights].Diffuse);
+
 		}
 		else {
-			pointLights[i + 6]->pointLightData.Range = 0.0f;
+			pointLights[i + _randomPointLights]->pointLightData.Range = 0.0f;
 		}
 	}
+	*/
+
 	{
 		Vector3 _spotDir = (ball->GetCenterLocation() + ball->GetMoveDir() * 5.0f)
 			- _sl_1->spotLightData.Position;
@@ -433,18 +487,24 @@ void KatamariDefGame::HandleKeyDown(Keys key) {
 	}
 	if (key == Keys::Space)
 	{
+		/*
 		pointLightLifeTime[currPointLightBullet] = 0.0f;
 		pointLightDirections[currPointLightBullet] = ball->GetMoveDir();
 		//pointLightColors[currPointLightBullet] = { (i + 1) % 2 * 1.0f, i / 3 * 1.0f, (i + 2) % 6 / 3 * 1.0f, 1 };
 
-		pointLights[currPointLightBullet + 6]->pointLightData.Position = ball->GetCenterLocation();
-		Vector4 diffuse = pointLights[currPointLightBullet + 6]->pointLightData.Diffuse;
-		float att = pointLights[currPointLightBullet + 6]->pointLightData.Att.y;
+		pointLights[currPointLightBullet + _randomPointLights]->pointLightData.Position = ball->GetCenterLocation();
+		
+		std::cout << currPointLightBullet + _randomPointLights << " :: " << pointLights[currPointLightBullet + _randomPointLights]->pointLightData.Position.x << "\n";
+		
+		Vector4 diffuse = pointLights[currPointLightBullet + _randomPointLights]->pointLightData.Diffuse;
+		float att = pointLights[currPointLightBullet + _randomPointLights]->pointLightData.Att.y;
 		float c = fmax(fmax(diffuse.x, diffuse.y), diffuse.z) / att;
-		float range = (16.0f * sqrtf(c) + 1.0f);
-		pointLights[currPointLightBullet + 6]->pointLightData.Range = range;
+		float range = 256.0f * c;
+		pointLights[currPointLightBullet + _randomPointLights]->pointLightData.Range = range;
 		currPointLightBullet = (currPointLightBullet + 1) % 8;
-		//std::cout << ball->GetMoveDir().x << ", " << ball->GetMoveDir().z << "\n";
+		
+		std::cout << ball->GetMoveDir().x << ", " << ball->GetMoveDir().z << "\n";
+		*/
 	}
 }
 

@@ -3,7 +3,7 @@
 
 using namespace Bind;
 
-void Drawable::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) const noexcept {
+void Drawable::DrawTechnique(std::string technique, Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) const noexcept {
 	context->DrawIndexed(indicesNum, 0, 0);
 }
 bool Drawable::HasTechnique(std::string technique)
@@ -13,7 +13,7 @@ bool Drawable::HasTechnique(std::string technique)
 void Drawable::PassTechnique(std::string technique, Microsoft::WRL::ComPtr<ID3D11DeviceContext> context)
 {
 	techniques[technique]->BindAll(context);
-	Draw(context);
+	DrawTechnique(technique, context);
 }
 ;
 

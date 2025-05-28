@@ -21,7 +21,7 @@ PointLight::PointLight(ID3D11Device* device, Vector3 position,
         att, 0.0f
     };
 
-    CreateSimpleSphereMesh(range, 10, 5,
+    CreateSimpleSphereMesh(range, 6, 2,
         diffuse,
         &vertices, &verticesNum, &indices, &indicesNum);
 
@@ -39,14 +39,24 @@ PointLight::PointLight(ID3D11Device* device, Vector3 position,
         IALayoutInputElements = (D3D11_INPUT_ELEMENT_DESC*)malloc(numInputElements * sizeof(D3D11_INPUT_ELEMENT_DESC));
 
         IALayoutInputElements[0] =
-            D3D11_INPUT_ELEMENT_DESC{
-                "POSITION",
-                0,
-                DXGI_FORMAT_R32G32B32_FLOAT,
-                0,
-                0,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0 };
+            D3D11_INPUT_ELEMENT_DESC{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+        /*
+        IALayoutInputElements[1] =
+            D3D11_INPUT_ELEMENT_DESC{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+
+        IALayoutInputElements[2] =
+            D3D11_INPUT_ELEMENT_DESC{ "COLOR", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+
+        IALayoutInputElements[3] =
+            D3D11_INPUT_ELEMENT_DESC{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+
+        IALayoutInputElements[4] =
+            D3D11_INPUT_ELEMENT_DESC{ "TEXCOORD", 0, DXGI_FORMAT_R32_FLOAT, 1, 44, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+
+        IALayoutInputElements[3] =
+            D3D11_INPUT_ELEMENT_DESC{ "POSITION", 1, DXGI_FORMAT_R32G32B32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 };
+
+        */
 
         lightPass->AddBind(new Bind::InputLayout(device, IALayoutInputElements, numInputElements, vertexShaderB->GetBytecode()));
 
@@ -71,7 +81,7 @@ PointLight::PointLight(ID3D11Device* device, Vector3 position,
 
 D3D11_DEPTH_STENCIL_DESC PointLight::GetDepthStencilDesc(LightObject::LightPosition lightPos)
 {
-    D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+    D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT{});
     if (lightPos == LightPosition::INSIDE) {
         dsDesc.DepthEnable = TRUE;
         dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -97,7 +107,7 @@ D3D11_DEPTH_STENCIL_DESC PointLight::GetDepthStencilDesc(LightObject::LightPosit
 
 D3D11_RASTERIZER_DESC PointLight::GetRasterizerDesc(LightObject::LightPosition lightPos)
 {
-    D3D11_RASTERIZER_DESC rasterDesc = {};
+    D3D11_RASTERIZER_DESC rasterDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
     if (lightPos == LightPosition::INSIDE) {
         rasterDesc.CullMode = D3D11_CULL_FRONT;
         rasterDesc.FillMode = D3D11_FILL_SOLID;

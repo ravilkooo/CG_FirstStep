@@ -11,10 +11,16 @@ struct Particle
     float age;
     float lifeSpan;
 
-    float mass;
     float screenSpin;
     float screenSpinSpeed;
-    float padding;
+    float worldSpin;
+    float worldSpinSpeed;
+
+    float3 worldSpinAxis;
+    float mass;
+
+    uint orientation;
+    float3 padding;
 };
 
 struct ParticleIndexElement
@@ -22,3 +28,7 @@ struct ParticleIndexElement
     float distance;
     float index;
 };
+
+
+static uint PARTICLE_ORIENTATION_BILLBOARD = 0;
+static uint PARTICLE_ORIENTATION_RANDOM = 1;

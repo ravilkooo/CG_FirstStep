@@ -48,8 +48,9 @@ public:
     size_t currPointLightBullet = 0;
 
     // Shadow
-    Bind::PixelConstantBuffer<DL_ShadowMapPass::CascadesData>* cascadesConstantBuffer;
     DL_ShadowMapPass* dl_shadowMapPass;
+
+    Bind::TextureB* backgroundTexture;
 };
 
 #endif

@@ -4,7 +4,7 @@ Bind::IndexBuffer::IndexBuffer(ID3D11Device* device, const void* data, UINT coun
 	: count(count)
 {
 	D3D11_BUFFER_DESC bd = {};
-	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.Usage = D3D11_USAGE_IMMUTABLE;
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	bd.MiscFlags = 0;

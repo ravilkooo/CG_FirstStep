@@ -130,6 +130,8 @@ DL_ShadowMapPass::DL_ShadowMapPass(ID3D11Device* device, ID3D11DeviceContext* co
 	rastDesc.SlopeScaledDepthBias = 2.0f;
 
 	AddPerFrameBind(new Bind::Rasterizer(device, rastDesc));
+
+	cascadesConstantBuffer = new Bind::PixelConstantBuffer<DL_ShadowMapPass::CascadesData>(device, cascadesData, 1u);
 }
 
 
@@ -145,7 +147,7 @@ DL_ShadowMapPass::ShadowTransformData DL_ShadowMapPass::GenerateBoundingFrustum(
 	 
 	// Получаем крайние точки подфрустумов игрока
 	playerCamera->SetNearZ(cascadeBounds[cascadeNum] - (cascadeNum > 0 ? frustumBias : 0));
-	playerCamera->SetFarZ(cascadeBounds[cascadeNum + 1]);
+	playerCamera->SetFarZ(cascadeBounds[cascadeNum + 1] + frustumBias);
 
 	Matrix playerViewMat = playerCamera->GetViewMatrix();
 	Matrix playerProjMat = playerCamera->GetProjectionMatrix();
@@ -207,16 +209,18 @@ DL_ShadowMapPass::ShadowTransformData DL_ShadowMapPass::GenerateBoundingFrustum(
 	nearestZ = nearZPoint.Dot(zDir);
 	farestZ = farZPoint.Dot(zDir);
 
+	float _nearZ = 0.01;
 
 	Vector3 newCamPos =
 		(farRight + farLeft) * 0.5 * xDir
 		+ (highest + lowest) * 0.5 * yDir
-		+ (nearestZ - 0.01) * zDir; // -0.01 так как камера немного отдалена от nearZ
+		+ (nearestZ - _nearZ) * zDir; // -0.01 так как камера немного отдалена от nearZ
 	
+
 	lightViewCamera->SetPosition(newCamPos);
 	lightViewCamera->SetTarget(newCamPos + dlight.Direction);
-	lightViewCamera->SetNearZ(0.01);
-	lightViewCamera->SetFarZ(farestZ - nearestZ + 0.01);
+	lightViewCamera->SetNearZ(_nearZ);
+	lightViewCamera->SetFarZ(farestZ - nearestZ + _nearZ);
 	lightViewCamera->SetViewWidth(farRight - farLeft);
 	lightViewCamera->SetViewHeight(highest - lowest);
 
@@ -238,18 +242,6 @@ DL_ShadowMapPass::ShadowTransformData DL_ShadowMapPass::GenerateBoundingFrustum(
 			cascadesData.cascades[cascadeNum].lightView
 			* cascadesData.cascades[cascadeNum].lightProjection
 			* T;
-	}
-
-
-
-	if (cascadeNum == 1) {
-		/*
-		std::cout << "[" << camUpDir.x << ",\t" << camUpDir.y << ",\t" << camUpDir.z << "]\t(";
-		std::cout << xDir.x << ",\t" << xDir.y << ",\t" << xDir.z << ")\t(";
-		std::cout << yDir.x << ",\t" << yDir.y << ",\t" << yDir.z << ")\t(";
-		std::cout << zDir.x << ",\t" << zDir.y << ",\t" << zDir.z << ")\n";
-		//std::cout << farestZ - nearestZ << "\n";
-		*/
 	}
 
 	return cascadesData.cascades[cascadeNum];
@@ -302,7 +294,7 @@ void DL_ShadowMapPass::Pass(const Scene& scene)
 
 void DL_ShadowMapPass::EndFrame()
 {
-
+	cascadesConstantBuffer->Update(context.Get(), cascadesData);
 	context->OMSetRenderTargets(0, NULL, NULL);
 }
 

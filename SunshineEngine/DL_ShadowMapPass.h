@@ -52,8 +52,7 @@ private:
 	void StartFrame() override;
 	void EndFrame() override;
 	void Pass(const Scene& scene) override;
-
-
-
+public:
+	Bind::PixelConstantBuffer<DL_ShadowMapPass::CascadesData>* cascadesConstantBuffer;
 };
 

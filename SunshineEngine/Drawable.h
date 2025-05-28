@@ -24,7 +24,7 @@ public:
 
 	DirectX::XMFLOAT3 GetCameraPosition() const;
 
-	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) const noexcept;
+	virtual void DrawTechnique(std::string technique, Microsoft::WRL::ComPtr<ID3D11DeviceContext> context) const noexcept;
 
 	CommonVertex* vertices;
 	UINT verticesNum;

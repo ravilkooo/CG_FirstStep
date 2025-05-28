@@ -198,6 +198,7 @@
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="PointLight.h" />
+    <ClInclude Include="PointLightInstanced.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="RenderingSystem.h" />
     <ClInclude Include="RenderPass.h" />
@@ -248,6 +249,7 @@
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="PointLightInstanced.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="RenderTechnique.cpp" />

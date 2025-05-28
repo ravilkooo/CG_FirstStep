@@ -7,10 +7,11 @@ struct GeometryShaderInput
     float size : TEXCOORD1;
     float4 Color : TEXCOORD2;
     float3 velocity : TEXCOORD3;
-    float screenSpin : TEXCOORD4;
+    float spin : TEXCOORD4;
+    uint   orientation : TEXCOORD5;
+    float3 spinAxis : TEXCOORD6;
     //float4 Normal : TEXCOORD2;
     //float4 uvSprite : TEXCOORD6; //x,y for x,y and zw for size
-    //uint   orientation : TEXCOORD4;
 };
 struct PixelShaderInput
 {
@@ -28,6 +29,23 @@ cbuffer sceneConstantBuffer : register(b0)
     row_major float4x4 view;
     row_major float4x4 proj;
     row_major float4x4 viewProj;
+}
+
+float3x3 angleAxis3x3(float angle, float3 axis)
+{
+    float c, s;
+    sincos(angle, s, c);
+
+    float t = 1 - c;
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+
+    return float3x3(
+        t * x * x + c, t * x * y - s * z, t * x * z + s * y,
+        t * x * y + s * z, t * y * y + c, t * y * z - s * x,
+        t * x * z - s * y, t * y * z + s * x, t * z * z + c
+    );
 }
 
 [maxvertexcount(4)]
@@ -50,11 +68,17 @@ void main(point GeometryShaderInput input[1], inout TriangleStream<PixelShaderIn
     float3 right = float3(1.0, 0.0, 0.0);
     float3 up = float3(0.0, 1.0, 0.0);
     
-    // if (input[0].orientation == PARTICLE_ORIENTATION_BILLBOARD)
+    if (input[0].orientation == PARTICLE_ORIENTATION_BILLBOARD)
     {
         //Camera Plane
-        right = view._m00_m10_m20 * cos(input[0].screenSpin) + view._m01_m11_m21 * sin(input[0].screenSpin);
-        up = -view._m00_m10_m20 * sin(input[0].screenSpin) + view._m01_m11_m21 * cos(input[0].screenSpin);
+        right = view._m00_m10_m20 * cos(input[0].spin) + view._m01_m11_m21 * sin(input[0].spin);
+        up = -view._m00_m10_m20 * sin(input[0].spin) + view._m01_m11_m21 * cos(input[0].spin);
+    }
+    else
+    {
+        float3x3 spinMat = angleAxis3x3(input[0].spin, input[0].spinAxis);
+        right = mul(right, spinMat);
+        up = mul(up, spinMat);
 
     }
 

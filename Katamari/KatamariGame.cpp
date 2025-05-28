@@ -191,9 +191,7 @@ KatamariGame::KatamariGame()
 		colorPass->AddPerFrameBind(new Bind::Sampler(renderer->GetDevice(), shadowSamplerDesc, 1u));
 
 		// All Cascades (for pixel shader while drawing final scene)
-		cascadesConstantBuffer = new Bind::PixelConstantBuffer<DL_ShadowMapPass::CascadesData>(
-			renderer->GetDevice(), dl_shadowMapPass->cascadesData, 1u);
-		colorPass->AddPerFrameBind(cascadesConstantBuffer);
+		colorPass->AddPerFrameBind(dl_shadowMapPass->cascadesConstantBuffer);
 
 
 		// Textures for objects (skin)
@@ -211,8 +209,26 @@ KatamariGame::KatamariGame()
 		samplerDesc.BorderColor[3] = 0;
 		samplerDesc.MinLOD = 0;
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
+		
 		colorPass->AddPerFrameBind(new Bind::Sampler(renderer->GetDevice(), samplerDesc, 2u));
+
+		colorPass->AddPerFrameBind(new Bind::TextureB(renderer->GetDevice(), "PawBgBlue.dds", aiTextureType_DIFFUSE, 2u));
+
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
+		samplerDesc.MipLODBias = 0.0f;
+		samplerDesc.MaxAnisotropy = 1;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		samplerDesc.BorderColor[0] = 0;
+		samplerDesc.BorderColor[1] = 0;
+		samplerDesc.BorderColor[2] = 0;
+		samplerDesc.BorderColor[3] = 0;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		colorPass->AddPerFrameBind(new Bind::Sampler(renderer->GetDevice(), samplerDesc, 3u));
 
 		renderer->AddPass(colorPass);
 	}
@@ -289,7 +305,6 @@ void KatamariGame::Update(float deltaTime)
 	//std::cout << floor->binds.size() << " " << ball->binds.size() << " " << "\n";
 	// delete this
 	dl_shadowMapPass->SetPlayerCamera(renderer->GetMainCamera());
-	cascadesConstantBuffer->Update(renderer->GetDeviceContext(), dl_shadowMapPass->cascadesData);
 
 	ball->SlowDown(deltaTime);
 	physEngine->Update(deltaTime);

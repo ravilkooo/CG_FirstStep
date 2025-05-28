@@ -26,6 +26,7 @@ public:
     float modelRadius = 0.5f;
     bool isAttached = false;
     float appliedScale = 1.0f;
+    Matrix randomInitRotation = Matrix::Identity;
 
     DirectX::XMFLOAT3 initialPosition;
 private:
@@ -45,4 +46,24 @@ public:
     } coll_vcb;
     Bind::PixelConstantBuffer<Collectible_PCB>* pcb;
     Bind::VertexConstantBuffer<Collectible_VCB>* vcb;
+
+private:
+    Matrix GetRandomRotateTransform() {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<float> dis(0.0f, XM_PI * 2);
+
+        float angleX = dis(gen);
+        float angleY = dis(gen);
+        float angleZ = dis(gen);
+
+        Matrix rotationX = Matrix::CreateRotationX(angleX);
+        Matrix rotationY = Matrix::CreateRotationY(angleY);
+        Matrix rotationZ = Matrix::CreateRotationZ(angleZ);
+
+        Matrix rotation = rotationX * rotationY * rotationZ;
+
+        return rotation;
+    }
+
 };

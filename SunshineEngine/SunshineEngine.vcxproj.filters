@@ -202,7 +202,10 @@
       <Filter>Header Files\LightObject</Filter>
     </ClInclude>
     <ClInclude Include="ParticleSystem.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLightInstanced.h">
+      <Filter>Header Files\LightObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -338,8 +341,11 @@
     <ClCompile Include="BlendState.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="PointLightInstanced.cpp">
+      <Filter>Source Files\LightObject</Filter>
+    </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ParticleSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

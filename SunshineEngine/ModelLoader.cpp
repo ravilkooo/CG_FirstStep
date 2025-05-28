@@ -38,8 +38,8 @@ void ModelLoader::LoadModel(const std::string& path, SceneNode* rootNode, UINT a
 
 	const auto pMesh = pModel->mMeshes[0];
 
-	std::cout << (((attrFlags & ModelLoader::VertexAttrFlags::NORMAL))) << "\n";
-	std::cout << (((attrFlags & ModelLoader::VertexAttrFlags::NORMAL) != 0) ? aiProcess_GenNormals : 0x0) << "\n";
+	//std::cout << (((attrFlags & ModelLoader::VertexAttrFlags::NORMAL))) << "\n";
+	//std::cout << (((attrFlags & ModelLoader::VertexAttrFlags::NORMAL) != 0) ? aiProcess_GenNormals : 0x0) << "\n";
 	for (unsigned i = 0; i < pMesh->mNumVertices; i++)
 	{
 		(rootNode->vertices)[vertexIdx++] = {

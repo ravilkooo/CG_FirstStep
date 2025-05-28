@@ -17,10 +17,11 @@ struct GeometryShaderInput
     float  size : TEXCOORD1;
     float4 Color : TEXCOORD2;
     float3 velocity : TEXCOORD3;
-    float screenSpin : TEXCOORD4;
+    float spin : TEXCOORD4;
+    uint   orientation : TEXCOORD5;
+    float3 spinAxis : TEXCOORD6;
     //float4 Normal : TEXCOORD2;
     //float4 uvSprite : TEXCOORD6; //x,y for x,y and zw for size
-    //uint   orientation : TEXCOORD4;
 };
 
 GeometryShaderInput main(uint vertexId : SV_VertexID)
@@ -40,14 +41,23 @@ GeometryShaderInput main(uint vertexId : SV_VertexID)
     output.Color = normalize(lerp(p.colorStart, p.colorEnd, 1.0 - p.age / p.lifeSpan));
     //output.Color.a *= (1 - alpha);
     //output.Normal = p.normal;
-
-    //output.orientation = p.orientation;
+   
     output.size = p.sizeStart + alpha * (p.sizeEnd - p.sizeStart);
     //output.size = p.size;
     
     //output.uvSprite = p.uvSprite;
     
-    output.screenSpin = p.screenSpin;
+    output.orientation = p.orientation;
+    if (p.orientation == PARTICLE_ORIENTATION_RANDOM)
+    {
+        output.spin = p.worldSpin;
+        output.spinAxis = p.worldSpinAxis;
+
+    }
+    else
+    {
+        output.spin = p.screenSpin;
+    }
 
     return output;
 }

@@ -16,6 +16,15 @@
     <Filter Include="Resource Files\LightPass">
       <UniqueIdentifier>{22cc697a-926b-44dd-8e09-4404e76b9879}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Particles">
+      <UniqueIdentifier>{788685c7-bc33-4648-bdfe-c7a682414d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\PointLightCS">
+      <UniqueIdentifier>{e92932ca-9568-4b4e-81bc-88a96e41071f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GBufferPass">
+      <UniqueIdentifier>{391fc24d-1483-4e71-8ae5-d8ab9af04321}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,26 +56,11 @@
     <ClInclude Include="StickyBall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shaders\Particles\ParticlesGlobals.h">
+      <Filter>Resource Files\Particles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\GBufferPass\CollectibleGBufferShaderPS.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBufferPass\CollectibleGBufferShaderVS.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBufferPass\FloorGBufferShaderPS.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBufferPass\FloorGBufferShaderVS.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBufferPass\StickyBallGBufferShaderPS.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GBufferPass\StickyBallGBufferShaderVS.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\LightPass\SpotLightPShader.hlsl">
       <Filter>Resource Files\LightPass</Filter>
     </FxCompile>
@@ -90,6 +84,60 @@
     </FxCompile>
     <FxCompile Include="Shaders\LightPass\PointLightVShader.hlsl">
       <Filter>Resource Files\LightPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\EmitParticlesCShader.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\InitSimulateDispatchArgsCShader.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\RenderParticles_GS.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\RenderParticles_PS.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\RenderParticles_VS.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\ResetCShader.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Particles\SimulateParticlesCShader.hlsl">
+      <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LightPass\PointLightInstancedPShader.hlsl">
+      <Filter>Resource Files\LightPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LightPass\PointLightInstancedVShader.hlsl">
+      <Filter>Resource Files\LightPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\PointLightCS\SimulatePointLightCShader.hlsl">
+      <Filter>Resource Files\PointLightCS</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBufferPass\CollectibleGBufferShaderPS.hlsl">
+      <Filter>Resource Files\GBufferPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBufferPass\CollectibleGBufferShaderVS.hlsl">
+      <Filter>Resource Files\GBufferPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBufferPass\FloorGBufferShaderPS.hlsl">
+      <Filter>Resource Files\GBufferPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBufferPass\FloorGBufferShaderVS.hlsl">
+      <Filter>Resource Files\GBufferPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBufferPass\StickyBallGBufferShaderPS.hlsl">
+      <Filter>Resource Files\GBufferPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBufferPass\StickyBallGBufferShaderVS.hlsl">
+      <Filter>Resource Files\GBufferPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBufferPass\PointLightInstancedGBufferPS.hlsl">
+      <Filter>Resource Files\GBufferPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GBufferPass\PointLightInstancedGBufferVS.hlsl">
+      <Filter>Resource Files\GBufferPass</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

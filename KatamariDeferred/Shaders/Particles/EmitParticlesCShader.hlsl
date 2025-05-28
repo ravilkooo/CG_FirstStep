@@ -55,14 +55,17 @@ cbuffer emitterPointConstantBuffer : register(b2)
     float particlesMass;
     
     float particleSizeStart;
-    float particleSizeEnd;
-    
+    float particleSizeEnd;    
     float longitudeMin;
     float longitudeMax;
 
     float latitudeMax;
     float particleScreenSpinSpeed;
-    float2 emitterPadding;
+    float particleWorldSpinSpeed;
+    uint particleOrientation;
+    
+    
+    //float2 emitterPadding;
 };
 
 ConsumeStructuredBuffer<uint> deadListBuffer : register(u0);
@@ -106,9 +109,28 @@ void main(uint3 id : SV_DispatchThreadID)
         p.lifeSpan = particlesLifeSpan;
         p.age = abs(p.lifeSpan); //abs() so if lifetime is infinite ( < 0.0) it's still has a life
 
-        p.mass = particlesMass;
         p.screenSpin = 0;
         p.screenSpinSpeed = particleScreenSpinSpeed;
+        
+        p.worldSpin = 0;
+        p.worldSpinSpeed = particleWorldSpinSpeed;
+        
+        p.worldSpinAxis = float3(0, 0, 0);
+        p.mass = particlesMass;
+        p.orientation = particleOrientation;
+        
+        if (particleOrientation == PARTICLE_ORIENTATION_RANDOM)
+        {
+            uint rng_state_3 = wang_hash(id.x + 7 * rngSeed);
+            uint rng_state_4 = wang_hash(id.x + 13 * rngSeed);
+         
+            float _colatitude = 3.14159265 * rand_xorshift_normalized(rng_state_3); // 3.1415
+            float _longitude = 2 * 3.14159265 * rand_xorshift_normalized(rng_state_4); // 2 * 3.1415
+        
+            p.worldSpinAxis.x = sin(_colatitude) * cos(_longitude);
+            p.worldSpinAxis.z = sin(_colatitude) * sin(_longitude);
+            p.worldSpinAxis.y = cos(_colatitude);
+        }
         
         uint index = deadListBuffer.Consume();
         particleList[index] = p;

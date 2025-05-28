@@ -113,6 +113,7 @@ CollectibleObject::CollectibleObject(ID3D11Device* device, const std::string& mo
     appliedScale = radius / modelRadius;
     initialPosition = position;
     initialPosition.y = radius;
+    randomInitRotation = GetRandomRotateTransform();
     // std::cout << initialPosition.x << " "  << initialPosition.y << " " << initialPosition.z << "\n";
     
     worldMat = Matrix::CreateScale(appliedScale) * Matrix::CreateTranslation(initialPosition);
@@ -274,6 +275,6 @@ void CollectibleObject::Update(float deltaTime)
         worldMat = attachTransform * Matrix::CreateScale(1 / attachedBall->radius) * attachedBall->worldMat;
     }
     else {
-        worldMat = Matrix::CreateScale(appliedScale) * Matrix::CreateTranslation(initialPosition);
+        worldMat = Matrix::CreateScale(appliedScale) * randomInitRotation * Matrix::CreateTranslation(initialPosition);
     }
 }

@@ -40,13 +40,27 @@ public:
 
     DirectionalLight* _dl_1;
     SpotLight* _sl_1;
-    std::vector<PointLight*> pointLights;
 
+    // int _randomPointLights = 6;
+    //std::vector<Vector3> pointLightSpeeds;
+    //std::vector<Vector3> pointLightAccel;
+    //std::vector<PointLight*> pointLights;
+    
+
+    UINT instancedCnt = 1000;
+    PointLightInstanced* instancedPointLights;
+    /*
+    ID3D11Buffer* pointLightsBuffer;
+    */
+
+
+    /*
     XMFLOAT3 pointLightColors[8];
     XMFLOAT3 pointLightDirections[8];
     float pointLightLifeTime[8];
     float lifeTime = 2.0f;
     size_t currPointLightBullet = 0;
+    */
 
     ParticleSystem* dustParticleSystem;
     ParticleSystem* starParticleSystem;

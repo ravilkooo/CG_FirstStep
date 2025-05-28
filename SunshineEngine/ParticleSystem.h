@@ -28,10 +28,16 @@ public:
         float Age;
         float LifeSpan;
         
-        float Mass;
         float ScreenSpin;
         float ScreenSpinSpeed;
-        float padding;
+        float WorldSpin;
+        float WorldSpinSpeed;
+
+        XMFLOAT3 WorldSpinAxis;
+        float Mass;
+
+        float orientation;
+        XMFLOAT3 padding;
     };
 
 
@@ -50,13 +56,14 @@ public:
 
         float particleSizeStart;
         float particleSizeEnd;
-
         float longitudeMin;
         float longitudeMax;
 
         float latitudeMax;
         float particleScreenSpinSpeed;
-        UINT padding[2];
+        float particleWorldSpinSpeed;
+        UINT particleOrientation;
+        
     };
 
     struct ParticleIndexElement

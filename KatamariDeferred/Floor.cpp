@@ -12,7 +12,7 @@ Floor::Floor(ID3D11Device* device)
 	UINT sliceCount = 10;
 	UINT elevationCount = 5;
 	XMFLOAT4 col(0.9f, 0.0f, 0.0f, 1.0f);
-	CreateRandomHeightPlane(100.0f, 100.0f, 400, 400, 0.0f,
+	CreateRandomHeightPlane(100.0f, 100.0f, 4, 4, 0.0f,
 		DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
 		&vertices, &verticesNum, &indices, &indicesNum);
 	worldMat = Matrix::CreateTranslation(position);
