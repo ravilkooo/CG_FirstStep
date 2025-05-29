@@ -202,5 +202,13 @@ private:
     Bind::TextureB* m_texture;    // tool
     Bind::Sampler* textureSampler;
 
+public:
+    std::vector<Bind::Bindable*> additionalBindablesForSimulationPass;
+    void AddBindablesToSimulationPass(Bind::Bindable* bindable) {
+        additionalBindablesForSimulationPass.push_back(bindable);
+    }
+    // if depth test greater
+    //  get normal from NormalMap
+    //  reflect particle
 };
 

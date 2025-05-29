@@ -528,11 +528,9 @@ void ParticleSystem::Simulate()
 
 	//simulation
 
-
-	// m_d3dContext->UpdateSubresource(m_simulateParticlesBuffer.Get(), 0, nullptr, &m_simulateParticlesBufferData, 0, 0);
+	//m_d3dContext->UpdateSubresource(m_simulateParticlesBuffer.Get(), 0, nullptr, &m_simulateParticlesBufferData, 0, 0);
 
 	//m_d3dContext->CSSetConstantBuffers(4, 1, m_simulateParticlesBuffer.GetAddressOf());
-
 
 	m_d3dContext->CSSetConstantBuffers(0, 1, m_sceneConstantBuffer.GetAddressOf());
 
@@ -570,7 +568,11 @@ void ParticleSystem::Simulate()
 	}
 	*/
 	m_d3dContext->CSSetShader(m_simulateParticlesCShader.Get(), nullptr, 0);
-	// 
+	
+	for (auto bindable : additionalBindablesForSimulationPass) {
+		bindable->Bind(m_d3dContext.Get());
+	}
+
 	m_d3dContext->DispatchIndirect(m_indirectDispatchArgsBuffer[m_currentAliveBuffer].Get(), 0);
 	m_d3dContext->CSSetShader(nullptr, nullptr, 0);
 

@@ -138,7 +138,7 @@ PointLightInstanced::PointLightInstanced(ID3D11Device* device, UINT lightsCnt,
         gBufferPass->AddBind(new Bind::Rasterizer(device, rastDesc));
 
 
-        techniques.insert({ "GBufferPass", gBufferPass });
+        //techniques.insert({ "GBufferPass", gBufferPass });
     }
 
     // PointLight Data

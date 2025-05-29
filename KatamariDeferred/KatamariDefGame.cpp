@@ -26,7 +26,6 @@ KatamariDefGame::KatamariDefGame()
 
 		renderer->AddPass(gBufferPass);
 	}
-	LightPass* gLightPass;
 	{
 		gLightPass = new LightPass(renderer->GetDevice(), renderer->GetDeviceContext(),
 			renderer->GetBackBuffer(), winWidth, winHeight, gBufferPass->pGBuffer, gBufferPass->GetCamera());
@@ -206,8 +205,6 @@ KatamariDefGame::KatamariDefGame()
 		node->camera = renderer->GetMainCamera();
 	}
 
-
-
 	//Matrix::CreateFromQuaternion(Quaternion::FromToRotation({ 0,1,0 }, { 0,0,1 }));
 	Vector3 emitDir = { 0,0,1 };
 	ParticleSystem::EmitterPointConstantBuffer emitterDesc =
@@ -216,7 +213,7 @@ KatamariDefGame::KatamariDefGame()
 		{ 0, 0, 0, 1 },
 		{ 1, 1, 1, 1 },
 		{ 1, 1, 1, 1 },
-		100, 1, 10, 1,
+		100, 4, 10, 1,
 		0.5, 0.1,
 		0, 3.1415 * 2,
 		3.1415 / 3, 20, 0, 0
@@ -318,6 +315,23 @@ KatamariDefGame::KatamariDefGame()
 	bubbleParticleSystem->SetTexture(
 		new Bind::TextureB(renderer->GetDevice(), "bubble24bpp.dds", aiTextureType_DIFFUSE, 0u));
 	bubbleParticleSystem->SetEmissionRate(40);
+
+	
+	normalMap = new Bind::TextureB(renderer->GetDevice(), gBufferPass->pGBuffer->pNormalSRV.Get(), 0u, Bind::PipelineStage::COMPUTE_SHADER);
+	worldPosMap = new Bind::TextureB(renderer->GetDevice(), gBufferPass->pGBuffer->pWorldPosSRV.Get(), 1u, Bind::PipelineStage::COMPUTE_SHADER);
+
+	sam = new Bind::Sampler(renderer->GetDevice(), CD3D11_SAMPLER_DESC(), 0u, Bind::PipelineStage::COMPUTE_SHADER);
+	particlesViewProjMat = new Bind::ComputeConstantBuffer<viewProjectionBuffer>(renderer->GetDevice(), 3u);
+
+	for (auto partSys : gLightPass->particleSystems)
+	{
+		partSys->AddBindablesToSimulationPass(normalMap);
+		partSys->AddBindablesToSimulationPass(worldPosMap);
+		partSys->AddBindablesToSimulationPass(sam);
+		partSys->AddBindablesToSimulationPass(particlesViewProjMat);
+	}
+
+
 }
 
 KatamariDefGame::~KatamariDefGame()
@@ -326,6 +340,8 @@ KatamariDefGame::~KatamariDefGame()
 
 void KatamariDefGame::Update(float deltaTime)
 {
+	particlesViewProjMat->Update(renderer->GetDeviceContext(),
+		{ renderer->GetMainCamera()->GetViewMatrix(), renderer->GetMainCamera()->GetProjectionMatrix() });
 
 	//std::cout << floor->binds.size() << " " << ball->binds.size() << " " << "\n";
 	// delete this
@@ -434,6 +450,8 @@ void KatamariDefGame::Update(float deltaTime)
 		_spotDir.Normalize();
 		_sl_1->spotLightData.Direction = _spotDir;
 	}
+
+	
 }
 
 void KatamariDefGame::Render()

@@ -4,28 +4,28 @@
 namespace Bind
 {
 	TextureB::TextureB(ID3D11Device* device, ID3D11Resource* pTexture,
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc, UINT slot)
-		: pTexture(pTexture), slot(slot)
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc, UINT slot, Bind::PipelineStage pipelineStage)
+		: pTexture(pTexture), slot(slot), pipelineStage(pipelineStage)
 	{
 		auto hr = device->CreateShaderResourceView(pTexture, &srvDesc, &pTextureView);
 		if (FAILED(hr)) {
 			throw std::runtime_error("Failed to create shader resource view from texture generated from color data.");
 		}
 	}
-	TextureB::TextureB(ID3D11Device* device, ID3D11Resource* pTexture, ID3D11ShaderResourceView* pTextureView, UINT slot)
-		: slot(slot)
+	TextureB::TextureB(ID3D11Device* device, ID3D11Resource* pTexture, ID3D11ShaderResourceView* pTextureView, UINT slot, Bind::PipelineStage pipelineStage)
+		: slot(slot), pipelineStage(pipelineStage)
 	{
 		this->pTexture = pTexture;
 		this->pTextureView = pTextureView;
 	}
-	TextureB::TextureB(ID3D11Device* device, ID3D11ShaderResourceView* pTextureView, UINT slot)
-		: slot(slot)
+	TextureB::TextureB(ID3D11Device* device, ID3D11ShaderResourceView* pTextureView, UINT slot, Bind::PipelineStage pipelineStage)
+		: slot(slot), pipelineStage(pipelineStage)
 	{
 		this->pTexture = nullptr;
 		this->pTextureView = pTextureView;
 	}
-	TextureB::TextureB(ID3D11Device* device, const std::string& filePath, aiTextureType type, UINT slot)
-		: slot(slot), filePath(filePath), type(type)
+	TextureB::TextureB(ID3D11Device* device, const std::string& filePath, aiTextureType type, UINT slot, Bind::PipelineStage pipelineStage)
+		: slot(slot), filePath(filePath), type(type), pipelineStage(pipelineStage)
 	{
 		if (StringHelper::GetFileExtension(filePath) == "dds")
 		{
@@ -53,22 +53,34 @@ namespace Bind
 		}
 	}
 
-	TextureB::TextureB(ID3D11Device* device, const SE_Color& color, aiTextureType type, UINT slot)
-		: slot(slot)
+	TextureB::TextureB(ID3D11Device* device, const SE_Color& color, aiTextureType type, UINT slot, Bind::PipelineStage pipelineStage)
+		: slot(slot), pipelineStage(pipelineStage)
 	{
 		this->Initialize1x1ColorTexture(device, color, type);
 	}
 
-	TextureB::TextureB(ID3D11Device* device, const SE_Color* colorData, UINT width, UINT height, aiTextureType type, UINT slot)
-		: slot(slot)
+	TextureB::TextureB(ID3D11Device* device, const SE_Color* colorData, UINT width, UINT height, aiTextureType type, UINT slot, Bind::PipelineStage pipelineStage)
+		: slot(slot), pipelineStage(pipelineStage)
 	{
 		this->InitializeColorTexture(device, colorData, width, height, type);
 	}
 
 	void TextureB::Bind(ID3D11DeviceContext* context) noexcept
 	{
-		context->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf());
+		if (pipelineStage == Bind::PipelineStage::PIXEL_SHADER)
+			context->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf());
+		else if (pipelineStage == Bind::PipelineStage::COMPUTE_SHADER)
+			context->CSSetShaderResources(slot, 1u, pTextureView.GetAddressOf());
 		//context->PSSetShaderResources(0, 1u, pTextureView.GetAddressOf());
+	}
+
+	void TextureB::Unbind(ID3D11DeviceContext* context) noexcept
+	{
+		ID3D11ShaderResourceView* nullSRVs[] = {nullptr};
+		if (pipelineStage == Bind::PipelineStage::PIXEL_SHADER)
+			context->PSSetShaderResources(slot, 1u, nullSRVs);
+		else if (pipelineStage == Bind::PipelineStage::COMPUTE_SHADER)
+			context->CSSetShaderResources(slot, 1u, nullSRVs);
 	}
 
 	bool TextureB::HasAlpha() const noexcept

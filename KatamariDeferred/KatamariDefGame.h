@@ -68,6 +68,22 @@ public:
     Vector3 bubbleFlowDirection = { 1, 0, 0 };
     // Shadow
     //Bind::PixelConstantBuffer<DL_ShadowMapPass::CascadesData>* cascadesConstantBuffer;
+    
+    LightPass* gLightPass;
+
+    Bind::TextureB* normalMap;
+    Bind::TextureB* worldPosMap;
+
+    Bind::Sampler* sam;
+
+    struct viewProjectionBuffer
+    {
+        Matrix vMat;
+        Matrix pMat;
+    };
+
+    Bind::ComputeConstantBuffer<viewProjectionBuffer>* particlesViewProjMat;
+
 };
 
 #endif

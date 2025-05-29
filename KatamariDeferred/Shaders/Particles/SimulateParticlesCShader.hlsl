@@ -124,39 +124,40 @@ RWStructuredBuffer<Particle> particleList : register(u3);
 ConsumeStructuredBuffer<ParticleIndexElement> aliveParticleIndexIn : register(u4);
 RWBuffer<uint> indirectDispatchArgs : register(u5);
 
-float3 snoiseVec3(float3 x)
+// Additional Bindables
+
+Texture2D NormalMap : register(t0);
+Texture2D WorldPosMap : register(t1);
+SamplerState Sam : register(s0);
+
+cbuffer viewProjectionBuffer : register(b3)
 {
+    row_major float4x4 vMat;
+    row_major float4x4 pMat;
+}
+/*
+static const float SCREEN_SIZE_X = 1000.0f;
+static const float PIXEL_DX = 1.0f / SCREEN_SIZE_X;
 
-    float s = snoise(float3(x));
-    float s1 = snoise(float3(x.y - 19.1, x.z + 33.4, x.x + 47.2));
-    float s2 = snoise(float3(x.z + 74.2, x.x - 124.5, x.y + 99.4));
-    float3 c = float3(s, s1, s2);
-    return c;
+static const float SCREEN_SIZE_Y = 800.0f;
+static const float PIXEL_DY = 1.0f / SCREEN_SIZE_Y;
 
+float2 convertToScreen(float2 input)
+{
+    return (input.xy + 1) * 0.5 * float2(1000, 800);
 }
 
-float3 curlNoise(float3 p)
+float4 sampleNormal(float2 input)
 {
-    float epsilon = 0.1;
-    float3 dx = float3(epsilon, 0.0, 0.0);
-    float3 dy = float3(0.0, epsilon, 0.0);
-    float3 dz = float3(0.0, 0.0, epsilon);
-
-    float3 p_x0 = snoiseVec3(p - dx);
-    float3 p_x1 = snoiseVec3(p + dx);
-    float3 p_y0 = snoiseVec3(p - dy);
-    float3 p_y1 = snoiseVec3(p + dy);
-    float3 p_z0 = snoiseVec3(p - dz);
-    float3 p_z1 = snoiseVec3(p + dz);
-
-    float x = p_y1.z - p_y0.z - p_z1.y + p_z0.y;
-    float y = p_z1.x - p_z0.x - p_x1.z + p_x0.z;
-    float z = p_x1.y - p_x0.y - p_y1.x + p_y0.x;
-
-    float divisor = 1.0 / (2.0 * epsilon);
-
-    return normalize(float3(x, y, z) * divisor);
+    int2 screenInput = int2(convertToScreen(input));
+    float4 s0 = NormalMap[screenInput.xy];
+    float4 s1 = NormalMap[screenInput.xy + float2(PIXEL_DX, 0)];
+    float4 s2 = NormalMap[screenInput.xy + float2(0, PIXEL_DY)];
+    float4 s3 = NormalMap[screenInput.xy + float2(PIXEL_DX, PIXEL_DY)];
+    
+    
 }
+*/
 
 //256 particles per thread group
 [numthreads(256, 1, 1)]
@@ -190,20 +191,92 @@ void main(uint3 id : SV_DispatchThreadID, uint groupId : SV_GroupIndex) //SV_Gro
             p.age -= dt;
         }
 
-        //float4 force = float4(0, -2.0, 0, 0); // tool
         float4 acceleration = force / p.mass;
-            
-        //TEMP
-        //float cap = 1.0;
-        //p.velocity.xyz = clamp(p.velocity.xyz, float3(-cap, -cap, -cap), float3(cap, cap, cap));
         
-        p.velocity.xyz += acceleration * dt;
-        p.position.xyz += p.velocity.xyz * dt;
+        
+        
+        float4 p_viewPos_prev = mul(float4(p.position.xyz, 1.0f), vMat);
+        p_viewPos_prev = p_viewPos_prev / p_viewPos_prev.w;
+        float4 p_projPos_prev = mul(p_viewPos_prev, pMat);
+        p_projPos_prev = p_projPos_prev / p_projPos_prev.w;
+        
+        
+        if (abs(p_projPos_prev.x) < 1 && abs(p_projPos_prev.y) < 1
+            && p_projPos_prev.z > 0 && p_projPos_prev.z < 1
+            )
+        {
+            int2 prevSample = int2(float2(p_projPos_prev.x + 1, 1 - p_projPos_prev.y) * 0.5 * float2(1000, 800));
+            //int2 prevSample = int2((p_viewProjPos_prev.xy * float2(1.0, -1.0) + 1) * 0.5 * float2(1000, 800));
+            //float4 worldMapValue_prev = WorldPosMap.Sample(Sam, p_viewProjPos_prev.xy);
+            float3 worldMapValue_prev = WorldPosMap[prevSample].xyz;
+            //worldMapValue_prev = worldMapValue_prev / worldMapValue_prev.w;
+            float4 viewValue_prev = mul(float4(worldMapValue_prev, 1.0f), vMat);
+            viewValue_prev = viewValue_prev / viewValue_prev.w;
+            //float4 viewProj_prev = mul(viewProj_prev, pMat);
+            //viewProj_prev = viewProj_prev / viewProj_prev.w;
+        
+            float deltaZ_prev = p_viewPos_prev.z - viewValue_prev.z;
+        
+            p.velocity.xyz += acceleration * dt;
+            p.position.xyz += p.velocity.xyz * dt;
+            float4 p_position_2x = float4(p.position.xyz + p.velocity.xyz * 2 * dt, 1.0f);
+        
+            float4 p_viewPos_next = mul(p_position_2x, vMat);
+            p_viewPos_next = p_viewPos_next / p_viewPos_next.w;
+            float4 p_projPos_next = mul(p_viewPos_next, pMat);
+            p_projPos_next = p_projPos_next / p_projPos_next.w;
+            
+            int2 nextSample = int2(float2(p_projPos_next.x + 1, 1 - p_projPos_next.y) * 0.5 * float2(1000, 800));
+            //float4 worldMapValue_next = WorldPosMap.Sample(Sam, p_viewProjPos_next.xy);
+            float3 worldMapValue_next = WorldPosMap[nextSample].xyz;
+            //worldMapValue_next = worldMapValue_next / worldMapValue_next.w;
+            float4 viewValue_next = mul(float4(worldMapValue_next, 1.0f), vMat);
+            viewValue_next = viewValue_next / viewValue_next.w;
+        
+            float deltaZ_next = p_viewPos_next.z - viewValue_next.z;
+        
+        
+            if ((deltaZ_prev < 0) && (deltaZ_next > 0) && (deltaZ_next > -0.5)) //  
+            {
+                float4 normal = normalize(NormalMap[nextSample]);
+                if (dot(normal.xyz, p.velocity.xyz) < 0)
+                {
+                    float3 newVelocity = reflect(p.velocity.xyz, normal.xyz);
+                    newVelocity += 4s * (newVelocity * normal.xyz) * normal.xyz;
+                
+                    
+                    float alpha = 1 - smoothstep(0.0, abs(p.lifeSpan), p.age);
+                    float p_size = p.sizeStart + alpha * (p.sizeEnd - p.sizeStart);
+                    
+                    p.position.xyz += newVelocity.xyz * dt + normal.xyz * p_size;
+                    p.velocity = float4(newVelocity, 0);
+                }
+            
+            }
+            else if ((deltaZ_prev > 0) && (deltaZ_next < 0))
+            {
+                float4 normal = normalize(NormalMap[prevSample]);
+                if (dot(normal.xyz, p.velocity.xyz) > 0)
+                {
+                    float3 newVelocity = reflect(p.velocity.xyz, -normal.xyz);
+                
+                    float alpha = 1 - smoothstep(0.0, abs(p.lifeSpan), p.age);
+                    float p_size = p.sizeStart + alpha * (p.sizeEnd - p.sizeStart);
+                    
+                    p.position.xyz += newVelocity.xyz * dt - normal.xyz * p_size;
+                    p.velocity = float4(newVelocity, 0);
+                }
+            
+            }
+        }
+        else
+        {
+            p.velocity.xyz += acceleration * dt;
+            p.position.xyz += p.velocity.xyz * dt;
+        }
         
         p.screenSpin += p.screenSpinSpeed * dt;
         p.worldSpin += p.worldSpinSpeed * dt;
-
-        // p.color = normalize(lerp(p.colorStart, p.colorEnd, 1.0 - p.age / p.lifeSpan));
         
         if (p.age > 0)
         {
